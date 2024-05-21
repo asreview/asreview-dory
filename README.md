@@ -1,8 +1,12 @@
 # ASReview NEMO: New Exciting Models
 
-This repository is an expansion to the ASReview software, providing new models
-for classification and feature extraction. It is maintained by the ASReview Lab
-Developers. You can install it via PyPI using the following command:
+This repository is an expansion to the [ASReview
+software](https://github.com/asreview/asreview), providing new models for
+classification and feature extraction. It is maintained by the [ASReview Lab
+Developers](https://asreview.ai/about). 
+
+You can install ASReview NEMO via PyPI using the following command:
+
     
 ```bash
 pip install asreview-nemo
