@@ -21,6 +21,7 @@ broad range of algorithms for their systematic review processes.
 ```
 xgboost
 nn-2-layer
+dynamic-nn
 adaboost
 knn
 ```
