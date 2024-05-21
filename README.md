@@ -11,10 +11,8 @@ pip install asreview-nemo
 ## Overview
 
 ASReview NEMO (New Exciting Models) is a plugin for the ASReview software that
-provides a diverse suite of models, expanding the capabilities of ASReview for
-automated systematic reviews. This plugin integrates several advanced
-classifiers and feature extraction techniques, enabling users to leverage a
-broad range of algorithms for their systematic review processes.
+provides new and exciting classification and feature extraction models,
+expanding the capabilities of ASReview for automated systematic reviews.
 
 ### Classifiers Available
 
