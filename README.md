@@ -20,25 +20,21 @@ expanding the capabilities of ASReview for automated systematic reviews.
 
 ### Classifiers Available
 
-```
-xgboost
-nn-2-layer
-dynamic-nn
-adaboost
-knn
-```
+    xgboost
+    nn-2-layer
+    dynamic-nn
+    adaboost
+    knn
 
 ### Feature Extractors Available
 
-```
-sbert
-doc2vec
-multilingual
-labse
-spacy
-scaled-doc2vec
-mxbai
-```
+    sbert
+    doc2vec
+    multilingual
+    labse
+    spacy
+    scaled-doc2vec
+    mxbai
 
 ## Usage
 
