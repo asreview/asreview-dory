@@ -19,20 +19,12 @@ jobs:
       run: |
         python -c "
         import asreview
-        from asreview.feature_extraction import list_feature_extraction
-        from asreview.classifiers import list_classifiers
+        from asreview.models.feature_extraction import list_feature_extraction
+        from asreview.models.classifiers import list_classifiers
 
         feature_extractions = list_feature_extraction()
         classifiers = list_classifiers()
 
-        pre_made_feature_extractions = ['sbert', 'doc2vec', 'multilingual', 'labse', 'spacy', 'scaled-doc2vec', 'mxbai']
-        pre_made_classifiers = ['xgboost', 'nn-2-layer', 'adaboost', 'knn', 'dynamic-nn']
-
-        feature_extractions_match = (feature_extractions == pre_made_feature_extractions)
-        classifiers_match = (classifiers == pre_made_classifiers)
-
         print('Feature Extractions:', feature_extractions)
         print('Classifiers:', classifiers)
-        print('Feature Extractions Match:', feature_extractions_match)
-        print('Classifiers Match:', classifiers_match)
         "
