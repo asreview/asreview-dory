@@ -30,6 +30,11 @@ setup(
     ],
     entry_points={
         'asreview.models.classifiers': [
+            'xgboost = asreviewcontrib.models.classifiers:XGBoost',
+            'nn-2-layer = asreviewcontrib.models.classifiers:NN2LayerClassifier',
+            'adaboost = asreviewcontrib.models.classifiers:AdaBoost',
+            'knn = asreviewcontrib.models.classifiers:KNN',
+            'dynamic-nn = asreviewcontrib.models.classifiers:DynamicNNClassifier',
         ],
         'asreview.models.feature_extraction': [
         ],
