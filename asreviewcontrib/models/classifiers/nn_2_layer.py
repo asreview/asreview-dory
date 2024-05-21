@@ -14,7 +14,6 @@
 
 __all__ = ["NN2LayerClassifier"]
 
-import tensorflow as tf
 from tensorflow.keras import regularizers
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
