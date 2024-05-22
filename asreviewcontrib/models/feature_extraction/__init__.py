@@ -1,5 +1,7 @@
 __all__ = [
-    "SBERT"
+    "SBERT",
+    "Doc2Vec"
 ]
 
 from .sbert import SBERT
+from .doc2vec import Doc2Vec

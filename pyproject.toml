@@ -26,7 +26,7 @@ dependencies = [
     "spacy",
     "scikit-learn",
     "tensorflow",
-    "scipy"
+    "scipy==1.12"
 ]
 
 [project.urls]
@@ -52,6 +52,7 @@ write_to = "asreviewcontrib/models/_version.py"
 
 [project.entry-points."asreview.models.feature_extraction"]
 "sbert" = "asreviewcontrib.models.feature_extraction:SBERT"
+"doc2vec" = "asreviewcontrib.models.feature_extraction:Doc2Vec"
 
 [tool.ruff]
 select = ["E", "F", "UP", "B"]
