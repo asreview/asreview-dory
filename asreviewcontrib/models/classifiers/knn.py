@@ -30,7 +30,7 @@ class KNN(BaseTrainClassifier):
     """
 
     name = "knn"
-    label = "k-NN"
+    label = "k-nearest neighbors"
 
     def __init__(self):
         super().__init__()

@@ -24,7 +24,7 @@ from asreview.models.classifiers.base import BaseTrainClassifier
 
 class DynamicNNClassifier(BaseTrainClassifier):
     name = "dynamic-nn"
-    label = "Fully connected neural network (Dynamic Layer Count)"
+    label = "Fully connected neural network (dynamic layer count)"
 
     def __init__(self, verbose=0, patience=5, min_delta=0.01):
         super().__init__()
