@@ -1,5 +1,5 @@
 __all__ = [
-    "sbert"
+    "SBERT"
 ]
 
 from .sbert import SBERT
