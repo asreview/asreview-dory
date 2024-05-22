@@ -37,7 +37,8 @@ class DynamicNNClassifier(BaseTrainClassifier):
         max_features = 1000
 
         if X.shape[1] > max_features:
-            raise ValueError(f"Feature size too large: {X.shape[1]} features. Maximum allowed is {max_features}.")
+            raise ValueError(f"Feature size too large: {X.shape[1]} features. "
+                             f"Maximum allowed is {max_features}.")
 
         # Determine the number of layers based on the number of rows
         num_layers = min(3, ceil(log10(max(10, X.shape[0]))))
