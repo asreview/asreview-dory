@@ -111,10 +111,18 @@ class Doc2Vec(BaseFeatureExtraction):
         ]
 
         if self.dm == 2:
+            print(
+                "Training Doc2Vec with Distributed Memory and Distributed Bag of Words"
+            )
             model_param["vector_size"] = int(model_param["vector_size"] / 2)
             self.model_dm = _train_model(corpus, **model_param, dm=1)
             self.model_dbow = _train_model(corpus, **model_param, dm=0)
         else:
+            print(
+                "Training Doc2Vec with Distributed Memory"
+                if self.dm == 1
+                else "Training Doc2Vec with Distributed Bag of Words"
+            )
             self.model = _train_model(corpus, **model_param, dm=self.dm)
 
     def transform(self, texts):
@@ -128,6 +136,7 @@ class Doc2Vec(BaseFeatureExtraction):
             X = np.concatenate((X_dm, X_dbow), axis=1)
         else:
             X = _transform_text(self.model, corpus)
+        print("Finished transforming texts to vectors")
         return X
 
 
