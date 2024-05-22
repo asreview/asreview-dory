@@ -50,6 +50,9 @@ write_to = "asreviewcontrib/models/_version.py"
 "knn" = "asreviewcontrib.models.classifiers:KNN"
 "dynamic-nn" = "asreviewcontrib.models.classifiers:DynamicNNClassifier"
 
+[project.entry-points."asreview.models.feature_extraction"]
+"sbert" = "asreviewcontrib.models.feature_extraction:SBERT"
+
 [tool.ruff]
 select = ["E", "F", "UP", "B"]
 
