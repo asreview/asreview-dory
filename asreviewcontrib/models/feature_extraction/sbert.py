@@ -57,22 +57,6 @@ class SBERT(BaseFeatureExtraction):
     name = "sbert"
     label = "Sentence BERT"
 
-    @property
-    def model(self):
-        if not hasattr(self, "_model"):
-            if self.is_pretrained_sbert:
-                self._model = SentenceTransformer(self.transformer_model)
-            else:
-                word_embedding_model = models.Transformer(self.transformer_model)
-                pooling_layer = models.Pooling(
-                    word_embedding_model.get_word_embedding_dimension(),
-                    pooling_mode=self.pooling_mode,
-                )
-                self._model = SentenceTransformer(
-                    modules=[word_embedding_model, pooling_layer]
-                )
-            print("Transformer Model loaded.")
-        return self._model
 
     def __init__(
         self,
@@ -86,6 +70,19 @@ class SBERT(BaseFeatureExtraction):
         self.transformer_model = transformer_model
         self.is_pretrained_sbert = is_pretrained_sbert
         self.pooling_mode = pooling_mode
+    
+    def fit(self, texts):
+        if self.is_pretrained_sbert:
+                self.model = SentenceTransformer(self.transformer_model)
+        else:
+            word_embedding_model = models.Transformer(self.transformer_model)
+            pooling_layer = models.Pooling(
+                word_embedding_model.get_word_embedding_dimension(),
+                pooling_mode=self.pooling_mode,
+            )
+            self.model = SentenceTransformer(
+                modules=[word_embedding_model, pooling_layer]
+            )
 
     def transform(self, texts):
         print(

@@ -79,6 +79,7 @@ class Doc2Vec(BaseFeatureExtraction):
         dm_concat=False,
         dm=2,
         dbow_words=False,
+        normalize=True,
         **kwargs,
     ):
         """Initialize the doc2vec model."""
@@ -94,6 +95,7 @@ class Doc2Vec(BaseFeatureExtraction):
         self._model = None
         self._model_dm = None
         self._model_dbow = None
+        self.normalize = normalize
 
     def fit(self, texts):
         model_param = {
@@ -111,18 +113,10 @@ class Doc2Vec(BaseFeatureExtraction):
         ]
 
         if self.dm == 2:
-            print(
-                "Training Doc2Vec with Distributed Memory and Distributed Bag of Words"
-            )
             model_param["vector_size"] = int(model_param["vector_size"] / 2)
             self.model_dm = _train_model(corpus, **model_param, dm=1)
             self.model_dbow = _train_model(corpus, **model_param, dm=0)
         else:
-            print(
-                "Training Doc2Vec with Distributed Memory"
-                if self.dm == 1
-                else "Training Doc2Vec with Distributed Bag of Words"
-            )
             self.model = _train_model(corpus, **model_param, dm=self.dm)
 
     def transform(self, texts):
@@ -137,7 +131,18 @@ class Doc2Vec(BaseFeatureExtraction):
         else:
             X = _transform_text(self.model, corpus)
         print("Finished transforming texts to vectors")
+        if self.normalize:
+            X = _min_max_normalize(X)
         return X
+
+
+def _min_max_normalize(X):
+    X_min = X.min(axis=0)
+    X_max = X.max(axis=0)
+    X_norm = (X - X_min) / (X_max - X_min)
+    X_norm[:, X_max == X_min] = 0
+
+    return X_norm
 
 
 def _train_model(corpus, *args, **kwargs):

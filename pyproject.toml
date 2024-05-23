@@ -23,7 +23,6 @@ dependencies = [
     "gensim",
     "numpy",
     "scikeras",
-    "spacy",
     "scikit-learn",
     "tensorflow",
     "scipy==1.12"
@@ -47,12 +46,13 @@ write_to = "asreviewcontrib/models/_version.py"
 "xgboost" = "asreviewcontrib.models.classifiers:XGBoost"
 "nn-2-layer" = "asreviewcontrib.models.classifiers:NN2LayerClassifier"
 "adaboost" = "asreviewcontrib.models.classifiers:AdaBoost"
-"knn" = "asreviewcontrib.models.classifiers:KNN"
 "dynamic-nn" = "asreviewcontrib.models.classifiers:DynamicNNClassifier"
 
 [project.entry-points."asreview.models.feature_extraction"]
 "sbert" = "asreviewcontrib.models.feature_extraction:SBERT"
 "doc2vec" = "asreviewcontrib.models.feature_extraction:Doc2Vec"
+"mxbai" = "asreviewcontrib.models.feature_extraction:MXBAI"
+"labse" = "asreviewcontrib.models.feature_extraction:LaBSE"
 
 [tool.ruff]
 select = ["E", "F", "UP", "B"]

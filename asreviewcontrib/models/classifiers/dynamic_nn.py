@@ -25,18 +25,21 @@ from asreview.models.classifiers.utils import _set_class_weight
 
 
 class DynamicNNClassifier(BaseTrainClassifier):
+    """Fully connected neural network classifier with dynamic layer count."""
+
     name = "dynamic-nn"
     label = "Fully connected neural network (dynamic layer count)"
 
-    def __init__(self,
-                 verbose=0,
-                 patience=5, 
-                 epochs=100,
-                 batch_size=32,
-                 shuffle=True,
-                 min_delta=0.01,
-                 class_weight=30.0
-                 ):
+    def __init__(
+        self,
+        verbose=0,
+        patience=5,
+        epochs=100,
+        batch_size=32,
+        shuffle=True,
+        min_delta=0.01,
+        class_weight=30.0,
+    ):
         super().__init__()
         self.patience = patience
         self.epochs = epochs
