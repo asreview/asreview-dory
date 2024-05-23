@@ -23,16 +23,12 @@ expanding the capabilities of ASReview for automated systematic reviews.
     nn-2-layer
     dynamic-nn
     adaboost
-    knn
 
 ### Feature Extractors Available
 
     sbert
-    doc2vec
-    multilingual
+    doc2vec (scaled)
     labse
-    spacy
-    scaled-doc2vec
     mxbai
 
 ## Usage
