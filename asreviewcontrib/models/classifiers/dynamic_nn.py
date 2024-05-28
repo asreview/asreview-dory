@@ -15,45 +15,77 @@
 __all__ = ["DynamicNNClassifier"]
 
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.layers import Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
 from scikeras.wrappers import KerasClassifier
 from tensorflow.keras.callbacks import EarlyStopping
 from math import log10, ceil
 from asreview.models.classifiers.base import BaseTrainClassifier
+from asreview.models.classifiers.utils import _set_class_weight
+
 
 class DynamicNNClassifier(BaseTrainClassifier):
-    name = "dynamic-nn"
-    label = "Fully connected neural network (Dynamic Layer Count)"
+    """Fully connected neural network classifier with dynamic layer count."""
 
-    def __init__(self, verbose=0, patience=5, min_delta=0.01):
+    name = "dynamic-nn"
+    label = "Fully connected neural network (dynamic layer count)"
+
+    def __init__(
+        self,
+        verbose=0,
+        patience=5,
+        epochs=100,
+        batch_size=32,
+        shuffle=True,
+        min_delta=0.01,
+        class_weight=30.0,
+    ):
         super().__init__()
         self.patience = patience
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.shuffle = shuffle
         self.min_delta = min_delta
         self.verbose = verbose
         self._model = None
+        self.class_weight = class_weight
 
     def fit(self, X, y):
         max_features = 1000
 
         if X.shape[1] > max_features:
-            raise ValueError(f"Feature size too large: {X.shape[1]} features. Maximum allowed is {max_features}.")
+            raise ValueError(
+                f"Feature size too large: {X.shape[1]} features. "
+                f"Maximum allowed is {max_features}."
+            )
 
         # Determine the number of layers based on the number of rows
         num_layers = min(3, ceil(log10(max(10, X.shape[0]))))
 
-        self._model = KerasClassifier(model=_create_model, 
-                                      model__input_dim=X.shape[1], 
-                                      model__num_layers=num_layers,
-                                      verbose=self.verbose)
+        self._model = KerasClassifier(
+            model=_create_model,
+            model__input_dim=X.shape[1],
+            model__num_layers=num_layers,
+            verbose=self.verbose,
+        )
 
-        callback = EarlyStopping(monitor='loss', patience=self.patience, 
-                                 min_delta=self.min_delta, 
-                                 restore_best_weights=True)
+        callback = EarlyStopping(
+            monitor="loss",
+            patience=self.patience,
+            min_delta=self.min_delta,
+            restore_best_weights=True,
+        )
 
-        self._model.fit(X, y, epochs=100, batch_size=32, 
-                        shuffle=True, callbacks=[callback])
-        
+        self._model.fit(
+            X,
+            y,
+            epochs=self.epochs,
+            batch_size=self.batch_size,
+            shuffle=self.shuffle,
+            callbacks=[callback],
+            class_weight=_set_class_weight(self.class_weight),
+        )
+
         if self.verbose == 1:
             print("\nNumber of features:", X.shape[1])
             print("Number of layers:", num_layers)
@@ -65,16 +97,17 @@ class DynamicNNClassifier(BaseTrainClassifier):
 
 
 def _create_model(input_dim, num_layers):
-    model = Sequential()
-    model.add(Dense(64, input_dim=input_dim, activation='relu'))
-    
+    model = Sequential([Input(shape=(input_dim,)), Dense(64, activation="relu")])
+
     for _ in range(num_layers - 1):
-        model.add(Dense(64, activation='relu'))
+        model.add(Dense(64, activation="relu"))
         model.add(Dropout(0.5))
 
-    model.add(Dense(1, activation='sigmoid'))
+    model.add(Dense(1, activation="sigmoid"))
 
-    model.compile(optimizer=Adam(learning_rate=0.001), 
-                  loss='binary_crossentropy', 
-                  metrics=['accuracy'])
+    model.compile(
+        optimizer=Adam(learning_rate=0.001),
+        loss="binary_crossentropy",
+        metrics=["accuracy"],
+    )
     return model
