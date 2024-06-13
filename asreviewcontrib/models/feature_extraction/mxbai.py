@@ -4,6 +4,13 @@ from sentence_transformers.quantization import quantize_embeddings
 
 
 class MXBAI(BaseFeatureExtraction):
+    """MXBAI Feature Extractor
+
+    This transformer based feature extractor is based on 
+    'mixedbread-ai/mxbai-embed-large-v1'.
+
+    """
+
     name = "mxbai"
     label = "mixedbread ai feature extraction"
 

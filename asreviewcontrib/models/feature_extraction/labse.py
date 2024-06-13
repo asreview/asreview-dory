@@ -3,6 +3,12 @@ from asreview.models.feature_extraction.base import BaseFeatureExtraction
 
 
 class LaBSE(BaseFeatureExtraction):
+    """LaBSE Feature Extractor
+
+    This multilingual feature extractor is based on 'sentence-transformers/LaBSE'.
+
+    """
+
     name = "labse"
     label = "LaBSE Transformer (max_seq_length: 256)"
     
