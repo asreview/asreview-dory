@@ -60,7 +60,7 @@ class Doc2Vec(BaseFeatureExtraction):
         vector_size=40,
         epochs=33,
         min_count=1,
-        n_jobs=-1,
+        n_jobs=1,
         window=7,
         dm_concat=False,
         dm=2,
