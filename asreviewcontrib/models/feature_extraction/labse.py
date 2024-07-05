@@ -12,7 +12,7 @@ class LaBSE(BaseFeatureExtraction):
     name = "labse"
     label = "LaBSE Transformer (max_seq_length: 256)"
     
-    def fit(self, texts):
+    def fit(self, texts = None):
         self.model = SentenceTransformer("sentence-transformers/LaBSE")
 
     def transform(self, texts):

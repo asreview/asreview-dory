@@ -62,7 +62,7 @@ class SBERT(BaseFeatureExtraction):
         self.normalize = normalize
         self.verbose = verbose
     
-    def fit(self, texts):
+    def fit(self, texts = None):
         if self.is_pretrained_sbert:
                 self.model = SentenceTransformer(self.transformer_model)
         else:

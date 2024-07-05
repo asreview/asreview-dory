@@ -25,7 +25,7 @@ class MXBAI(BaseFeatureExtraction):
         self.quantize = quantize
         self.precision = precision
 
-    def fit(self, texts):
+    def fit(self, texts = None):
         self.model = SentenceTransformer(self.model_name)
 
     def transform(self, texts):
