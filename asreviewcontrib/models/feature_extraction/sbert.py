@@ -4,6 +4,7 @@ from sentence_transformers import models
 from sentence_transformers.SentenceTransformer import SentenceTransformer
 
 from asreview.models.feature_extraction.base import BaseFeatureExtraction
+import numpy as np
 
 
 class SBERT(BaseFeatureExtraction):
@@ -50,12 +51,16 @@ class SBERT(BaseFeatureExtraction):
         transformer_model="all-mpnet-base-v2",
         is_pretrained_sbert=True,
         pooling_mode="mean",
+        normalize=False,
+        verbose=True,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.transformer_model = transformer_model
         self.is_pretrained_sbert = is_pretrained_sbert
         self.pooling_mode = pooling_mode
+        self.normalize = normalize
+        self.verbose = verbose
     
     def fit(self, texts):
         if self.is_pretrained_sbert:
@@ -71,8 +76,18 @@ class SBERT(BaseFeatureExtraction):
             )
 
     def transform(self, texts):
-        print(
-            f"Encoding texts using {self.transformer_model}, this may take a while..."
-        )
-        X = self.model.encode(texts, show_progress_bar=True)
+        if self.verbose:
+            print(
+                f"Encoding texts using {self.transformer_model}, this may take a while..."
+            )
+        X = self.model.encode(texts, show_progress_bar=self.verbose)
+        if self.normalize:
+            X = _min_max_normalize(X)
         return X
+
+
+def _min_max_normalize(embedding):
+    min_val = np.min(embedding)
+    max_val = np.max(embedding)
+    normalized_embedding = (embedding - min_val) / (max_val - min_val)
+    return normalized_embedding

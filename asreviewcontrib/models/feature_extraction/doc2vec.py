@@ -122,13 +122,11 @@ class Doc2Vec(BaseFeatureExtraction):
         return X
 
 
-def _min_max_normalize(X):
-    X_min = X.min(axis=0)
-    X_max = X.max(axis=0)
-    X_norm = (X - X_min) / (X_max - X_min)
-    X_norm[:, X_max == X_min] = 0
-
-    return X_norm
+def _min_max_normalize(embedding):
+    min_val = np.min(embedding)
+    max_val = np.max(embedding)
+    normalized_embedding = (embedding - min_val) / (max_val - min_val)
+    return normalized_embedding
 
 
 def _train_model(corpus, *args, **kwargs):
