@@ -19,7 +19,7 @@ class DynamicNNClassifier(BaseTrainClassifier):
 
 
     name = "dynamic-nn"
-    label = "Fully connected neural network (dynamic layer count)"
+    label = "NEMO: Fully connected neural network (dynamic layer count)"
 
     def __init__(
         self,
