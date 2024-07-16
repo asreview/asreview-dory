@@ -2,18 +2,18 @@ __all__ = ["SBERT"]
 
 from sentence_transformers import models
 from sentence_transformers.SentenceTransformer import SentenceTransformer
-
 from asreview.models.feature_extraction.base import BaseFeatureExtraction
-import numpy as np
+from asreviewcontrib.models.utils import min_max_normalize
 
 
 class SBERT(BaseFeatureExtraction):
-    """Sentence BERT feature extraction technique (``sbert``).
+    """
+    Sentence BERT feature extraction technique (``sbert``).
 
     By setting the ``transformer_model`` parameter, you can use other
-    transformer models. For example, ``transformer_model='bert-base-nli-stsb-
-    large'``. For a list of available models, see the `Sentence BERT
-    documentation <https://huggingface.co/sentence-transformers>`__.
+    transformer models. For example, ``transformer_model='bert-base-nli-stsb-large'``.
+    For a list of available models, see the `Sentence BERT documentation 
+    <https://huggingface.co/sentence-transformers>`__.
 
     Sentence BERT is a sentence embedding model that is trained on a large
     corpus of human written text. It is a fast and accurate model that can
@@ -29,21 +29,23 @@ class SBERT(BaseFeatureExtraction):
     transformer_model : str, optional
         The transformer model to use.
         Default: 'all-mpnet-base-v2'
-    is_pretrained_SBERT: boolean, optional
+    is_pretrained_sbert : bool, optional
+        Whether to use a pretrained SBERT model.
         Default: True
-    pooling_mode: str, optional
-        Pooling mode to get sentence embeddings from word embeddings
+    pooling_mode : str, optional
+        Pooling mode to get sentence embeddings from word embeddings.
+        Options are 'mean', 'max', and 'cls'.
         Default: 'mean'
-        Other options available are 'mean', 'max' and 'cls'.
-        Only used if is_pretrained_SBERT=False
-        mean: Uses mean pooling of word embeddings
-        max: Uses max pooling of word embeddings
-        cls: Uses embeddings of [CLS] token as sentence embeddings
+        Only used if is_pretrained_sbert=False
+    normalize : bool, optional
+        Whether to normalize the embeddings.
+        Default: False
+    verbose : bool, optional
+        Whether to print progress information.
+        Default: True
     """
-
     name = "sbert"
     label = "Sentence BERT"
-
 
     def __init__(
         self,
@@ -62,32 +64,47 @@ class SBERT(BaseFeatureExtraction):
         self.normalize = normalize
         self.verbose = verbose
     
-    def fit(self, texts = None):
-        if self.is_pretrained_sbert:
+    
+    @property
+    def _model(self):
+        if not hasattr(self, "model"):
+            if self.is_pretrained_sbert:
                 self.model = SentenceTransformer(self.transformer_model)
-        else:
-            word_embedding_model = models.Transformer(self.transformer_model)
-            pooling_layer = models.Pooling(
-                word_embedding_model.get_word_embedding_dimension(),
-                pooling_mode=self.pooling_mode,
-            )
-            self.model = SentenceTransformer(
-                modules=[word_embedding_model, pooling_layer]
-            )
+            else:
+                word_embedding_model = models.Transformer(self.transformer_model)
+                pooling_layer = models.Pooling(
+                    word_embedding_model.get_word_embedding_dimension(),
+                    pooling_mode=self.pooling_mode,
+                )
+                self.model = SentenceTransformer(
+                    modules=[word_embedding_model, pooling_layer]
+                )
+            if self.verbose:
+                print(f"Model '{self.model_name}' has been loaded.")
+        return self.model
 
     def transform(self, texts):
-        if self.verbose:
-            print(
-                f"Encoding texts using {self.transformer_model}, this may take a while..."
-            )
-        X = self.model.encode(texts, show_progress_bar=self.verbose)
-        if self.normalize:
-            X = _min_max_normalize(X)
-        return X
+        """
+        Transform texts to embeddings using the SBERT model.
 
+        Parameters
+        ----------
+        texts : list of str
+            List of texts to be transformed.
 
-def _min_max_normalize(embedding):
-    min_val = np.min(embedding)
-    max_val = np.max(embedding)
-    normalized_embedding = (embedding - min_val) / (max_val - min_val)
-    return normalized_embedding
+        Returns
+        -------
+        np.ndarray
+            Transformed text embeddings.
+        """
+        try:
+            if self.verbose:
+                print(
+                    f"Encoding texts using {self.transformer_model}, this may take a while..."  # noqa
+                )
+            X = self._model.encode(texts, show_progress_bar=self.verbose)
+            if self.normalize:
+                X = min_max_normalize(X)
+            return X
+        except Exception as err:
+            raise RuntimeError(f"Error in transforming texts: {err}") from err

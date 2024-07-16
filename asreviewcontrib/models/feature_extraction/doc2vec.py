@@ -7,6 +7,7 @@ from gensim.models.doc2vec import TaggedDocument
 from gensim.utils import simple_preprocess
 
 from asreview.models.feature_extraction.base import BaseFeatureExtraction
+from asreviewcontrib.models.utils import min_max_normalize
 
 
 class Doc2Vec(BaseFeatureExtraction):
@@ -22,33 +23,37 @@ class Doc2Vec(BaseFeatureExtraction):
     .. note::
 
         Note that for a fully deterministically-reproducible run, you must also
-        limit the model to a single worker thread (`workers=1`), to eliminate
+        limit the model to a single worker thread (`n_jobs=1`), to eliminate
         ordering jitter from OS thread scheduling.
 
-    Arguments
-    ---------
-    vector_size: int
+    Parameters
+    ----------
+    vector_size : int
         Output size of the vector.
-    epochs: int
+    epochs : int
         Number of epochs to train the doc2vec model.
-    min_count: int
-        Minimum number of occurences for a word in the corpus for it to
+    min_count : int
+        Minimum number of occurrences for a word in the corpus for it to
         be included in the model.
-    n_jobs: int
+    n_jobs : int
         Number of threads to train the model with.
-    window: int
+    window : int
         Maximum distance over which word vectors influence each other.
-    dm_concat: bool
+    dm_concat : bool
         Whether to concatenate word vectors or not.
         See paper for more detail.
-    dm: int
+    dm : int
         Model to use.
         0: Use distribute bag of words (DBOW).
         1: Use distributed memory (DM).
         2: Use both of the above with half the vector size and concatenate
         them.
-    dbow_words: bool
+    dbow_words : bool
         Whether to train the word vectors using the skipgram method.
+    normalize : bool
+        Whether to normalize the embeddings.
+    verbose : bool
+        Whether to print progress information.
     """
 
     name = "doc2vec"
@@ -66,6 +71,7 @@ class Doc2Vec(BaseFeatureExtraction):
         dm=2,
         dbow_words=False,
         normalize=True,
+        verbose=True,
         **kwargs,
     ):
         """Initialize the doc2vec model."""
@@ -78,10 +84,11 @@ class Doc2Vec(BaseFeatureExtraction):
         self.dm_concat = 0 if dm_concat is False else 1
         self.dm = int(dm)
         self.dbow_words = 0 if dbow_words is False else 1
+        self.normalize = normalize
+        self.verbose = verbose
         self._model = None
         self._model_dm = None
         self._model_dbow = None
-        self.normalize = normalize
 
     def fit(self, texts):
         model_param = {
@@ -100,10 +107,20 @@ class Doc2Vec(BaseFeatureExtraction):
 
         if self.dm == 2:
             model_param["vector_size"] = int(model_param["vector_size"] / 2)
-            self.model_dm = _train_model(corpus, **model_param, dm=1)
-            self.model_dbow = _train_model(corpus, **model_param, dm=0)
+            if self.verbose:
+                print("Training DM model...")
+            self._model_dm = _train_model(corpus,
+                                          **model_param, dm=1, verbose=self.verbose)
+            if self.verbose:
+                print("Training DBOW model...")
+            self._model_dbow = _train_model(corpus,
+                                            **model_param, dm=0, verbose=self.verbose)
         else:
-            self.model = _train_model(corpus, **model_param, dm=self.dm)
+            if self.verbose:
+                print(f"Training model with dm={self.dm}...")
+            self._model = _train_model(corpus,
+                                       **model_param, dm=self.dm, verbose=self.verbose)
+
 
     def transform(self, texts):
         corpus = [
@@ -116,29 +133,33 @@ class Doc2Vec(BaseFeatureExtraction):
             X = np.concatenate((X_dm, X_dbow), axis=1)
         else:
             X = _transform_text(self.model, corpus)
-        print("Finished transforming texts to vectors")
+        if self.verbose:
+            print("Finished transforming texts to vectors")
         if self.normalize:
-            X = _min_max_normalize(X)
+            X = min_max_normalize(X)
         return X
 
 
-def _min_max_normalize(embedding):
-    min_val = np.min(embedding)
-    max_val = np.max(embedding)
-    normalized_embedding = (embedding - min_val) / (max_val - min_val)
-    return normalized_embedding
-
-
-def _train_model(corpus, *args, **kwargs):
+def _train_model(corpus, *args, verbose=False, **kwargs):
     model = GenSimDoc2Vec(*args, **kwargs)
+    if verbose:
+        print("Building vocabulary...")
     model.build_vocab(corpus)
+    if verbose:
+        print("Training model...")
     model.train(corpus, total_examples=model.corpus_count, epochs=model.epochs)
+    if verbose:
+        print("Model training complete.")
     return model
 
 
-def _transform_text(model, corpus):
+def _transform_text(model, corpus, verbose=False):
+    if verbose:
+        print("Inferring vectors for documents...")
     X = []
     for doc_id in range(len(corpus)):
         doc_vec = model.infer_vector(corpus[doc_id].words)
         X.append(doc_vec)
+    if verbose:
+        print("Vector inference complete.")
     return np.array(X)
