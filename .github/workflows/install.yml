@@ -14,6 +14,7 @@ jobs:
     - name: Install package
       run: |
         pip install .
+        pip install tf-keras
     - name: Run ASReview checks
       run: |
         python -c "
