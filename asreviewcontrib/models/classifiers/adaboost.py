@@ -11,7 +11,7 @@ class AdaBoost(BaseTrainClassifier):
     """
 
     name = "adaboost"
-    label = "AdaBoost"
+    label = "NEMO: AdaBoost"
 
     def __init__(self):
         super().__init__()
