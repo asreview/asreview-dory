@@ -33,7 +33,7 @@ class MXBAI(BaseFeatureExtraction):
     """
 
     name = "mxbai"
-    label = "mixedbread ai feature extraction"
+    label = "Mixedbread.AI Large V1"
 
     def __init__(
         self,
