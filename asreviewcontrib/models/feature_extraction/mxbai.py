@@ -10,7 +10,7 @@ class MXBAI(BaseFeatureExtraction):
     """
     MXBAI Feature Extractor
 
-    This transformer-based feature extractor is based on 
+    Transformer-based feature extractor based on 
     'mixedbread-ai/mxbai-embed-large-v1'.
 
     Parameters

@@ -7,7 +7,7 @@ import xgboost as xgb
 class XGBoost(BaseTrainClassifier):
     """XGBoost classifier
 
-    This classifier is based on the XGBClassifier.
+    Classifier based on the XGBClassifier.
 
     """
 

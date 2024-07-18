@@ -6,7 +6,7 @@ from sklearn.ensemble import AdaBoostClassifier
 class AdaBoost(BaseTrainClassifier):
     """AdaBoost classifier
 
-    This classifier is based on the AdaBoostClassifier from scikit-learn.
+    Classifier based on the AdaBoostClassifier from scikit-learn.
 
     """
 

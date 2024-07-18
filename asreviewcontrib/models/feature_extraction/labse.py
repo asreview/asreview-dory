@@ -5,7 +5,7 @@ from asreview.models.feature_extraction.base import BaseFeatureExtraction
 class LaBSE(BaseFeatureExtraction):
     """LaBSE Feature Extractor
 
-    This multilingual feature extractor is based on 'sentence-transformers/LaBSE'.
+    Multilingual feature extractor based on 'sentence-transformers/LaBSE'.
 
     """
 
