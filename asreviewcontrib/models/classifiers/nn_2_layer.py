@@ -53,7 +53,7 @@ class NN2LayerClassifier(BaseTrainClassifier):
     """
 
     name = "nn-2-layer"
-    label = "NEMO: Fully connected neural network (2 hidden layers)"
+    label = "Fully connected neural network (2 hidden layers)"
 
     def __init__(self,
                  dense_width=128,

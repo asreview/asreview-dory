@@ -33,7 +33,7 @@ class MXBAI(BaseFeatureExtraction):
     """
 
     name = "mxbai"
-    label = "NEMO: mxbai Sentence BERT"
+    label = "mxbai Sentence BERT"
 
     def __init__(
         self,

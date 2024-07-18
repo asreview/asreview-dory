@@ -57,7 +57,7 @@ class Doc2Vec(BaseFeatureExtraction):
     """
 
     name = "doc2vec"
-    label = "NEMO: Doc2Vec"
+    label = "Doc2Vec"
 
     def __init__(
         self,

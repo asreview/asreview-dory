@@ -45,7 +45,7 @@ class SBERT(BaseFeatureExtraction):
         Default: True
     """
     name = "sbert"
-    label = "NEMO: mpnet Sentence BERT"
+    label = "mpnet Sentence BERT"
 
     def __init__(
         self,

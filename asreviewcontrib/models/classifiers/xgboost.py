@@ -12,7 +12,7 @@ class XGBoost(BaseTrainClassifier):
     """
 
     name = "xgboost"
-    label = "NEMO: XGBoost"
+    label = "XGBoost"
 
     def __init__(self):
         super().__init__()

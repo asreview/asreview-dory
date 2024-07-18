@@ -10,7 +10,7 @@ class LaBSE(BaseFeatureExtraction):
     """
 
     name = "labse"
-    label = "NEMO: LaBSE Transformer"
+    label = "LaBSE Transformer"
     
     def fit(self, texts = None):
         self.model = SentenceTransformer("sentence-transformers/LaBSE")
