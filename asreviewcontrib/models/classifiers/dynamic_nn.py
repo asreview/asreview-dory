@@ -3,18 +3,43 @@ __all__ = ["DynamicNNClassifier"]
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
-from scikeras.wrappers import KerasClassifier
 from tensorflow.keras.callbacks import EarlyStopping
 from math import log10, ceil
 from asreview.models.classifiers.base import BaseTrainClassifier
 from asreview.models.classifiers.utils import _set_class_weight
 
+import numpy as np
+import scipy
 
 class DynamicNNClassifier(BaseTrainClassifier):
-    """dynamic-nn
+    """
+    Dynamic Neural Network Classifier
     
-    Fully connected neural network classifier with dynamic layer count.
+    Fully connected neural network classifier with dynamic layer count (``dynamic-nn``) .
 
+    Parameters
+    ----------
+    verbose : int, optional
+        Whether to print progress and model information.
+        Default: 0
+    patience : int, optional
+        How much patience to apply to the model.
+        Default: 5
+    epochs : int, optional
+        Number of epochs.
+        Default: 100
+    batch_size : int, optional
+        Batch size.
+        Default: 32
+    shuffle : boolean, optional
+        Whether to shuffle .
+        Default: True
+    min_delta : float, optional
+        Which min_delta to use.
+        Default: 0.01
+    class_weight : boolean, optional
+        Class weight value.
+        Default: 30.0
     """
 
 
@@ -53,13 +78,14 @@ class DynamicNNClassifier(BaseTrainClassifier):
         # Determine the number of layers based on the number of rows
         num_layers = min(3, ceil(log10(max(10, X.shape[0]))))
 
-        self._model = KerasClassifier(
-            model=_create_model,
-            model__input_dim=X.shape[1],
-            model__num_layers=num_layers,
-            verbose=self.verbose,
-        )
-
+        if scipy.sparse.issparse(X):
+            X = X.toarray()
+        if self._model is None or X.shape[1] != self.input_dim:
+            self.input_dim = X.shape[1]
+            self._model = _create_model(X.shape[1],
+                                    num_layers,
+                                    self.verbose)
+            
         callback = EarlyStopping(
             monitor="loss",
             patience=self.patience,
@@ -77,17 +103,32 @@ class DynamicNNClassifier(BaseTrainClassifier):
             class_weight=_set_class_weight(self.class_weight),
         )
 
-        if self.verbose == 1:
-            print("\nNumber of features:", X.shape[1])
-            print("Number of layers:", num_layers)
-            print("Number of epochs traine: ", callback.stopped_epoch + 1)
-            print("\n")
-
     def predict_proba(self, X):
-        return self._model.predict_proba(X)
+        if scipy.sparse.issparse(X):
+            X = X.toarray()
+        pos_pred = self._model.predict(X, verbose=self.verbose)
+        neg_pred = 1 - pos_pred
+        return np.hstack([neg_pred, pos_pred])
 
 
-def _create_model(input_dim, num_layers):
+def _create_model(input_dim, 
+                  num_layers,
+                  verbose=1):
+    """
+    Create callable model.
+
+    Parameters
+    ----------
+    input_dim : int
+        Input dimension of the model
+    num_layers : int
+        Number of layers of the model
+    
+    Returns
+    -------
+    tf.keras.Model 
+        Callable model
+    """
     model = Sequential([Input(shape=(input_dim,)), Dense(64, activation="relu")])
 
     for _ in range(num_layers - 1):
@@ -101,4 +142,8 @@ def _create_model(input_dim, num_layers):
         loss="binary_crossentropy",
         metrics=["accuracy"],
     )
+
+    if verbose == 1:
+        model.summary()
+
     return model
