@@ -4,12 +4,13 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
-from math import log10, ceil
-from asreview.models.classifiers.base import BaseTrainClassifier
-from asreview.models.classifiers.utils import _set_class_weight
 
+from math import log10, ceil
 import numpy as np
 import scipy
+
+from asreview.models.classifiers.base import BaseTrainClassifier
+from asreview.models.classifiers.utils import _set_class_weight
 
 class DynamicNNClassifier(BaseTrainClassifier):
     """
