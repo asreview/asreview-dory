@@ -80,7 +80,7 @@ class SBERT(BaseFeatureExtraction):
                     modules=[word_embedding_model, pooling_layer]
                 )
             if self.verbose:
-                print(f"Model '{self.model_name}' has been loaded.")
+                print(f"Model '{self.transformer_model}' has been loaded.")
         return self.model
 
     def transform(self, texts):
