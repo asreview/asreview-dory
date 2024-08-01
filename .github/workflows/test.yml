@@ -2,7 +2,7 @@ name: Test ASReview-NEMO Models
 on: [push,pull_request]
 jobs:
   build:
-    runs-on: ubunto-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5
