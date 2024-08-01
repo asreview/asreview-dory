@@ -12,6 +12,7 @@ jobs:
         run: |
           pip install pytest
           pip install asreview
+          pip install .
       - name: Run Test
         run: |
           pytest tests -v
