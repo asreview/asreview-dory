@@ -11,6 +11,7 @@ jobs:
       - name: Intall packages
         run: |
           pip install pytest
+          pip install asreview
       - name: Run Test
         run: |
           pytest tests/test_models_2.py
