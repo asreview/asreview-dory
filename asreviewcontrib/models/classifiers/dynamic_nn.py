@@ -71,7 +71,7 @@ class DynamicNNClassifier(BaseTrainClassifier):
         self.class_weight = class_weight
 
     def fit(self, X, y):
-        max_features = 1000
+        max_features = 1024
 
         if X.shape[1] > max_features:
             raise ValueError(
