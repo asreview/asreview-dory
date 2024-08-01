@@ -1,19 +1,16 @@
-name: Test ASReview-NEMO Models
+name: Install Package
 on: [push,pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-      - name: Intall packages
-        run: |
-          pip install pytest
-          pip install asreview
-          pip install tf-keras
-          pip install .
-      - name: Run Test
-        run: |
-          pytest tests -v
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: 'x64'
+    - name: Install package and run test
+      run: |
+        pip install .
+        pip install tf-keras
+        pytest tests -v
