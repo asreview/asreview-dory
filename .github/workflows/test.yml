@@ -1,13 +1,16 @@
 name: Test ASReview-NEMO Models
 on: [push,pull_request]
-steps:
-  - uses: actions/checkout@v3
-  - uses: actions/setup-python@v5
-    with:
-      python-version: "3.10"
-  - name: Intall packages
-    run: |
-      pip install pytest
-  - name: Run Test
-    run: |
-      pytest tests/test_models_2.py
+jobs:
+  build:
+    runs-on: ubunto-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Intall packages
+        run: |
+          pip install pytest
+      - name: Run Test
+        run: |
+          pytest tests/test_models_2.py

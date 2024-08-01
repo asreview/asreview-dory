@@ -1,13 +1,15 @@
 __all__ = ["DynamicNNClassifier"]
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, Input
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import EarlyStopping
+from math import ceil, log10
 
-from math import log10, ceil
 import numpy as np
 import scipy
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
 
 from asreview.models.classifiers.base import BaseTrainClassifier
 from asreview.models.classifiers.utils import _set_class_weight
@@ -16,7 +18,8 @@ class DynamicNNClassifier(BaseTrainClassifier):
     """
     Dynamic Neural Network Classifier
     
-    Fully connected neural network classifier with dynamic layer count (``dynamic-nn``) .
+    Fully connected neural network classifier 
+    with dynamic layer count (``dynamic-nn``) .
 
     Parameters
     ----------
