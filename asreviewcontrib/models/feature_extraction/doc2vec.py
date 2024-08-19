@@ -128,8 +128,8 @@ class Doc2Vec(BaseFeatureExtraction):
         ]
 
         if self.dm == 2:
-            X_dm = _transform_text(self.model_dm, corpus)
-            X_dbow = _transform_text(self.model_dbow, corpus)
+            X_dm = _transform_text(self._model_dm, corpus)
+            X_dbow = _transform_text(self._model_dbow, corpus)
             X = np.concatenate((X_dm, X_dbow), axis=1)
         else:
             X = _transform_text(self.model, corpus)
