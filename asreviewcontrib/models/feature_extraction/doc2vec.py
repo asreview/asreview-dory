@@ -132,7 +132,7 @@ class Doc2Vec(BaseFeatureExtraction):
             X_dbow = _transform_text(self._model_dbow, corpus)
             X = np.concatenate((X_dm, X_dbow), axis=1)
         else:
-            X = _transform_text(self.model, corpus)
+            X = _transform_text(self._model, corpus)
         if self.verbose:
             print("Finished transforming texts to vectors")
         if self.normalize:
