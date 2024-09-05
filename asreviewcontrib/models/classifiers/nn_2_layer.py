@@ -65,7 +65,7 @@ class NN2LayerClassifier(BaseTrainClassifier):
                  batch_size=32,
                  shuffle=False,
                  class_weight=30.0):
-        """Initialize the 2-layer neural network model."""
+
         super().__init__()
         self.dense_width = int(dense_width)
         self.optimizer = optimizer
@@ -118,14 +118,35 @@ def _create_dense_nn_model(vector_size=40,
                            learn_rate_mult=1.0,
                            regularization=0.01,
                            verbose=1):
-    """Return callable model.
+    """
+    Create the NN model
+
+    Parameters
+    ----------
+    vector_size : int, optional
+
+        Default: 40
+    dense_width : int, optional
+        Width of the dense layers
+        Default: 128
+    optimizer : text, optional
+        Model optimizer
+        Default: 'rmsprop'
+    learn_rate_mult : float, optional
+        Learning rate multiplier
+        Default: 1.0
+    regularizations : float, optional
+        Regularization rate
+        Default: 0.01
+    verbose : int, optional
+        Whether to print progress information
+        Default: 1
 
     Returns
     -------
     callable:
         A function that return the Keras Sklearn model when
         called.
-
     """
 
     model = Sequential()
