@@ -27,12 +27,13 @@ class XGBoost(BaseTrainClassifier):
     objective : str, optional
         Specify the learning task and the corresponding objective function.
         Default: 'binary:logistic'.
-    booster : str, optional
-        Specify which booster to use: gbtree, gblinear or dart.
-        Default: 'gbtree'.
-    n_jobs : int, optional
-        Number of parallel threads used to run xgboost.
-        Default: 1.
+    gamma : int, optional
+        Minimum loss reduction required to make a further partition on a leaf node of 
+        the tree.
+        Default: 0.
+    reg_lambda : int, optinal
+        L2 regularization term on weights.
+        Default: 1
     random_state : int, optional
         Random number seed.
         Default: None.
@@ -48,8 +49,8 @@ class XGBoost(BaseTrainClassifier):
         n_estimators=100,
         verbosity=1,
         objective='binary:logistic',
-        booster='gbtree',
-        n_jobs=1,
+        gamma=0,
+        reg_lambda = 1,
         random_state=None
         ):
 
@@ -59,9 +60,9 @@ class XGBoost(BaseTrainClassifier):
         self.n_estimators = n_estimators
         self.verbosity = verbosity
         self.objective = objective
-        self.booster = booster
-        self.n_jobs = n_jobs
+        self.gamma = gamma
         self.random_state = random_state
+        self.reg_lambda = reg_lambda
 
         self._model = xgb.XGBClassifier(
             max_depth=self.max_depth,
@@ -69,9 +70,9 @@ class XGBoost(BaseTrainClassifier):
             n_estimators=self.n_estimators,
             verbosity=self.verbosity,
             objective=self.objective,
-            booster=self.booster,
-            n_jobs=self.n_jobs,
-            random_state=self.random_state
+            random_state=self.random_state,
+            gamma=gamma,
+            reg_lambda=self.reg_lambda
         )
     
     def fit(self, X, y):
