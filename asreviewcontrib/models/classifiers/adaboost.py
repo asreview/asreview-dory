@@ -19,9 +19,6 @@ class AdaBoost(BaseTrainClassifier):
     learning_rate : float, optional
         Learning rate shrinks the contribution of each classifier.
         Default: 1.0.
-    algorithm : {'SAMME', 'SAMME.R'}, optional
-        The boosting algorithm to use.
-        Default: 'SAMME.R'.
     random_state : int or None, optional
         Controls the random seed given to the base estimator.
         Default: None.
