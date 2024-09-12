@@ -35,21 +35,18 @@ class AdaBoost(BaseTrainClassifier):
         estimator = None,
         n_estimators = 50,
         learning_rate = 1.0,
-        algorithm = 'SAMME',
         random_state = None   
     ):
         super().__init__()
         self.estimator = estimator
         self.n_estimators = n_estimators
         self.learning_rate = learning_rate
-        self.algorithm = algorithm
         self.random_state = random_state
 
         self._model = AdaBoostClassifier(
             estimator=self.estimator,
             n_estimators=self.n_estimators,
             learning_rate=self.learning_rate,
-            algorithm=self.algorithm,
             random_state=self.random_state
         )
 
