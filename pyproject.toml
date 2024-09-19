@@ -26,7 +26,6 @@ dependencies = [
     "scikit-learn",
     "tensorflow",
     "scipy==1.12",
-    "tensorrt",
     "tf-keras"
 ]
 
