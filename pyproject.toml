@@ -25,7 +25,9 @@ dependencies = [
     "scikeras",
     "scikit-learn",
     "tensorflow",
-    "scipy==1.12"
+    "scipy==1.12",
+    "tensorrt",
+    "tf-keras"
 ]
 
 [project.urls]
