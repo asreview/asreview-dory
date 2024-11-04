@@ -36,9 +36,11 @@ def test_asreview_simulation(classifier, feature_extractor):
     shutil.copy(dataset_path, project_data_path)
     project.add_dataset(dataset_path.name)
 
+    model = init_classifier(classifier)
+
     reviewer = ReviewSimulate(
         as_data=ASReviewData.from_file(project_data_path),
-        model=classifier(),
+        model= model,
         query_model=MaxQuery(),
         balance_model=DoubleBalance(),
         feature_model=feature_extractor(),
@@ -48,8 +50,14 @@ def test_asreview_simulation(classifier, feature_extractor):
         n_prior_included=1,
         n_prior_excluded=1,
     )
-
+    
     project.update_review(status="review")
     reviewer.review()
 
     shutil.rmtree(project_path)
+
+def init_classifier(model_class):
+    try:
+        return model_class(random_state=921)
+    except TypeError:
+        return model_class()
