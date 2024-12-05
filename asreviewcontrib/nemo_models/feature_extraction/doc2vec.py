@@ -2,7 +2,7 @@ __all__ = ["Doc2Vec"]
 
 import numpy as np
 from asreview.models.feature_extraction.base import BaseFeatureExtraction
-from asreviewcontrib.models.utils import min_max_normalize
+from asreviewcontrib.nemo_models.utils import min_max_normalize
 
 
 class Doc2Vec(BaseFeatureExtraction):

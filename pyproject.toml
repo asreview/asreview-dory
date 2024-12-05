@@ -18,7 +18,7 @@ keywords = ["systematic review"]
 requires-python = ">=3.8"
 dynamic = ["version"]
 dependencies = [
-    "asreview>=1,<2",
+    "asreview>=2",
     "xgboost",
     "sentence_transformers",
     "gensim",
@@ -39,22 +39,22 @@ build-backend = 'setuptools.build_meta'
 requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 
 [tool.setuptools]
-packages = ["asreviewcontrib", "asreviewcontrib.models", "asreviewcontrib.nemo"]
+packages = ["asreviewcontrib", "asreviewcontrib.nemo_models", "asreviewcontrib.nemo"]
 
 [tool.setuptools_scm]
 write_to = "asreviewcontrib/nemo/_version.py"
 
 [project.entry-points."asreview.models.classifiers"]
-"xgboost" = "asreviewcontrib.models.classifiers:XGBoost"
-"nn-2-layer" = "asreviewcontrib.models.classifiers:NN2LayerClassifier"
-"adaboost" = "asreviewcontrib.models.classifiers:AdaBoost"
-"dynamic-nn" = "asreviewcontrib.models.classifiers:DynamicNNClassifier"
+"xgboost" = "asreviewcontrib.nemo_models.classifiers:XGBoost"
+"nn-2-layer" = "asreviewcontrib.nemo_models.classifiers:NN2LayerClassifier"
+"adaboost" = "asreviewcontrib.nemo_models.classifiers:AdaBoost"
+"dynamic-nn" = "asreviewcontrib.nemo_models.classifiers:DynamicNNClassifier"
 
 [project.entry-points."asreview.models.feature_extraction"]
-"sbert" = "asreviewcontrib.models.feature_extraction:SBERT"
-"doc2vec" = "asreviewcontrib.models.feature_extraction:Doc2Vec"
-"mxbai" = "asreviewcontrib.models.feature_extraction:MXBAI"
-"labse" = "asreviewcontrib.models.feature_extraction:LaBSE"
+"sbert" = "asreviewcontrib.nemo_models.feature_extraction:SBERT"
+"doc2vec" = "asreviewcontrib.nemo_models.feature_extraction:Doc2Vec"
+"mxbai" = "asreviewcontrib.nemo_models.feature_extraction:MXBAI"
+"labse" = "asreviewcontrib.nemo_models.feature_extraction:LaBSE"
 
 [project.entry-points."asreview.entry_points"]
 nemo = "asreviewcontrib.nemo.entrypoint:NemoEntryPoint"
