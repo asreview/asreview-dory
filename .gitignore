@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 
 # Setup Tools SCM
-asreviewcontrib/models/_version.py
+asreviewcontrib/nemo/_version.py

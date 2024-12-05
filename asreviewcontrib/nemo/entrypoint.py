@@ -10,7 +10,7 @@ class NemoEntryPoint(BaseEntryPoint):
     @property
     def version(self):
         try:
-            from asreviewcontrib.models._version import __version__
+            from asreviewcontrib.nemo._version import __version__
             return __version__
         except ImportError:
             return "unknown"
