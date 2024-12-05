@@ -1,7 +1,5 @@
 __all__ = ["SBERT"]
 
-from sentence_transformers import models
-from sentence_transformers.SentenceTransformer import SentenceTransformer
 from asreview.models.feature_extraction.base import BaseFeatureExtraction
 from asreviewcontrib.models.utils import min_max_normalize
 
@@ -63,48 +61,33 @@ class SBERT(BaseFeatureExtraction):
         self.pooling_mode = pooling_mode
         self.normalize = normalize
         self.verbose = verbose
-    
-    
+        self._model_instance = None
+
     @property
     def _model(self):
-        if not hasattr(self, "model"):
+        if self._model_instance is None:
+            # Lazy import
+            from sentence_transformers import models, SentenceTransformer
+
             if self.is_pretrained_sbert:
-                self.model = SentenceTransformer(self.transformer_model)
+                self._model_instance = SentenceTransformer(self.transformer_model)
             else:
                 word_embedding_model = models.Transformer(self.transformer_model)
                 pooling_layer = models.Pooling(
                     word_embedding_model.get_word_embedding_dimension(),
                     pooling_mode=self.pooling_mode,
                 )
-                self.model = SentenceTransformer(
+                self._model_instance = SentenceTransformer(
                     modules=[word_embedding_model, pooling_layer]
                 )
             if self.verbose:
                 print(f"Model '{self.transformer_model}' has been loaded.")
-        return self.model
+        return self._model_instance
 
     def transform(self, texts):
-        """
-        Transform texts to embeddings using the SBERT model.
-
-        Parameters
-        ----------
-        texts : list of str
-            List of texts to be transformed.
-
-        Returns
-        -------
-        np.ndarray
-            Transformed text embeddings.
-        """
-        try:
-            if self.verbose:
-                print(
-                    f"Encoding texts using {self.transformer_model}, this may take a while..."  # noqa
-                )
-            X = self._model.encode(texts, show_progress_bar=self.verbose)
-            if self.normalize:
-                X = min_max_normalize(X)
-            return X
-        except Exception as err:
-            raise RuntimeError(f"Error in transforming texts: {err}") from err
+        if self.verbose:
+            print(f"Encoding texts using {self.transformer_model}, this may take a while...")
+        embeddings = self._model.encode(texts, show_progress_bar=self.verbose)
+        if self.normalize:
+            embeddings = min_max_normalize(embeddings)
+        return embeddings
