@@ -86,7 +86,8 @@ class SBERT(BaseFeatureExtraction):
 
     def transform(self, texts):
         if self.verbose:
-            print(f"Encoding texts using {self.transformer_model}, this may take a while...")
+            print(f"Encoding texts using {self.transformer_model}, \
+                  this may take a while...")
         embeddings = self._model.encode(texts, show_progress_bar=self.verbose)
         if self.normalize:
             embeddings = min_max_normalize(embeddings)
