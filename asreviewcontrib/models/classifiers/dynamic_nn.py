@@ -59,6 +59,7 @@ class DynamicNNClassifier(BaseTrainClassifier):
         shuffle=True,
         min_delta=0.01,
         class_weight=30.0,
+        max_features=1024
     ):
         super().__init__()
         self.patience = patience
@@ -69,17 +70,15 @@ class DynamicNNClassifier(BaseTrainClassifier):
         self.verbose = verbose
         self._model = None
         self.class_weight = class_weight
+        self.max_features = max_features
 
     def fit(self, X, y):
-        max_features = 1024
-
-        if X.shape[1] > max_features:
+        if X.shape[1] > self.max_features:
             raise ValueError(
                 f"Feature size too large: {X.shape[1]} features. "
-                f"Maximum allowed is {max_features}."
+                f"Maximum allowed is {self.max_features}."
             )
 
-        # Determine the number of layers based on the number of rows
         num_layers = min(3, ceil(log10(max(10, X.shape[0]))))
 
         if scipy.sparse.issparse(X):
@@ -89,7 +88,7 @@ class DynamicNNClassifier(BaseTrainClassifier):
             self._model = _create_model(X.shape[1],
                                     num_layers,
                                     self.verbose)
-            
+
         callback = EarlyStopping(
             monitor="loss",
             patience=self.patience,

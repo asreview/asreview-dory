@@ -11,7 +11,8 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
 ]
 keywords = ["systematic review"]
 requires-python = ">=3.8"
@@ -54,6 +55,9 @@ write_to = "asreviewcontrib/models/_version.py"
 "doc2vec" = "asreviewcontrib.models.feature_extraction:Doc2Vec"
 "mxbai" = "asreviewcontrib.models.feature_extraction:MXBAI"
 "labse" = "asreviewcontrib.models.feature_extraction:LaBSE"
+
+[project.entry-points."asreview.entry_points"]
+nemo = "asreviewcontrib.entrypoint:NemoEntryPoint"
 
 [tool.ruff]
 select = ["E", "F", "UP", "B"]
