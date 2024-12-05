@@ -1,6 +1,6 @@
 __all__ = ["NN2LayerClassifier"]
 
-from tensorflow.keras import regularizers
+from tensorflow.keras import regularizers, optimizers
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
 
@@ -8,7 +8,6 @@ import numpy as np
 import scipy
 
 from asreview.models.classifiers.base import BaseTrainClassifier
-from asreview.models.classifiers.lstm_base import _get_optimizer
 from asreview.models.classifiers.utils import _set_class_weight
 
 class NN2LayerClassifier(BaseTrainClassifier):
@@ -172,7 +171,18 @@ def _create_dense_nn_model(vector_size=40,
     # add Dense layer
     model.add(Dense(1, activation='sigmoid'))
 
-    optimizer_fn = _get_optimizer(optimizer, learn_rate_mult)
+    if optimizer == "sgd":
+        optimizer_fn = optimizers.SGD(learning_rate=0.01 * learn_rate_mult)
+    elif optimizer == "rmsprop":
+        optimizer_fn = optimizers.RMSprop(learning_rate=0.001 * learn_rate_mult)
+    elif optimizer == "adagrad":
+        optimizer_fn = optimizers.Adagrad(learning_rate=0.01 * learn_rate_mult)
+    elif optimizer == "adam":
+        optimizer_fn = optimizers.Adam(learning_rate=0.001 * learn_rate_mult)
+    elif optimizer == "nadam":
+        optimizer_fn = optimizers.Nadam(learning_rate=0.002 * learn_rate_mult)
+    else:
+        raise NotImplementedError
 
     # Compile model
     model.compile(

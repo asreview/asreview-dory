@@ -55,7 +55,6 @@ class NemoEntryPoint:
     def _get_all_models(self):
         feature_extractors = extensions("models.feature_extraction")
         classifiers = extensions("models.classifiers")
-        print(feature_extractors)
         return list(
             chain(
                 [fe for fe in feature_extractors if "asreviewcontrib.nemo_models" in str(fe)],
