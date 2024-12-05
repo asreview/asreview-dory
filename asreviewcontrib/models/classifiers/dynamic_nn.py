@@ -44,8 +44,10 @@ class DynamicNNClassifier(BaseTrainClassifier):
     class_weight : boolean, optional
         Class weight value.
         Default: 30.0
+    max_features : int, optional
+        Maximum number of features the model allows.
+        Default: 1024
     """
-
 
     name = "dynamic-nn"
     label = "Fully connected neural network (dynamic layer count)"
@@ -117,21 +119,6 @@ class DynamicNNClassifier(BaseTrainClassifier):
 def _create_model(input_dim, 
                   num_layers,
                   verbose=1):
-    """
-    Create callable model.
-
-    Parameters
-    ----------
-    input_dim : int
-        Input dimension of the model
-    num_layers : int
-        Number of layers of the model
-    
-    Returns
-    -------
-    tf.keras.Model 
-        Callable model
-    """
     model = Sequential([Input(shape=(input_dim,)), Dense(64, activation="relu")])
 
     for _ in range(num_layers - 1):
