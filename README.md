@@ -38,6 +38,11 @@ Explore the performance of these models in our [Simulation Gallery](https://jtei
 Once installed, the plugins will be available in the front-end of ASReview, as
 well as being accessible via the command-line interface.
 
+You can check all available models using:
+```console
+asreview nemo list
+```
+
 ### Caching Models
 
 You can pre-load models to avoid downloading them during runtime by using the `cache` command. To `cache` specific models, such as `xgboost` and `sbert`, run:

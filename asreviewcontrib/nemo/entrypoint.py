@@ -31,12 +31,15 @@ class NemoEntryPoint:
         )
 
         subparsers.add_parser("cache-all", help="Cache all available entry points")
+        subparsers.add_parser("list", help="List all available entry points")
 
         args = parser.parse_args(argv)
         if args.command == "cache":
             self.cache(args.model_names)
         elif args.command == "cache-all":
             self.cache([model.name for model in self._get_all_models()])
+        elif args.command == "list":
+            print([model.name for model in self._get_all_models()])
         else:
             parser.print_help()
 
@@ -57,15 +60,15 @@ class NemoEntryPoint:
         classifiers = extensions("models.classifiers")
         return list(
             chain(
-                [fe for fe in feature_extractors if "asreviewcontrib.nemo_models" in str(fe)],
-                [cls for cls in classifiers if "asreviewcontrib.nemo_models" in str(cls)],
+                [fe for fe in feature_extractors if "asreviewcontrib.nemo_models" in str(fe)],  # noqa: E501
+                [cls for cls in classifiers if "asreviewcontrib.nemo_models" in str(cls)],  # noqa: E501
             )
         )
 
     def _load_model(self, model):
+        print(f"Loading {model.name}...")
         try:
             model_instance = model()
             _ = model_instance._model
-            print(f"Successfully loaded: {model.name}")
         except Exception as e:
             print(f"Error loading model '{model.name}': {e}")
