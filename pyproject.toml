@@ -57,7 +57,7 @@ write_to = "asreviewcontrib/nemo/_version.py"
 "labse" = "asreviewcontrib.models.feature_extraction:LaBSE"
 
 [project.entry-points."asreview.entry_points"]
-nemo = "asreviewcontrib.entrypoint:NemoEntryPoint"
+nemo = "asreviewcontrib.nemo.entrypoint:NemoEntryPoint"
 
 [tool.ruff]
 select = ["E", "F", "UP", "B"]
