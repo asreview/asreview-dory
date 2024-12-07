@@ -1,63 +1,62 @@
-
 import shutil
-from itertools import product
+import tempfile
 from pathlib import Path
 
 import pytest
 from asreview import ASReviewData
 from asreview import ASReviewProject
 from asreview.models.balance import DoubleBalance
-from asreview.models.classifiers import list_classifiers
-from asreview.models.feature_extraction import list_feature_extraction
-from asreview.models.query import MaxQuery
-from asreview.review import ReviewSimulate
+from asreviewcontrib.nemo.entrypoint import _get_all_models
+from asreview.extensions import load_extension
+from asreview.simulation.simulate import Simulate
+from asreview import load_dataset
+from asreview.data import DataStore
 
 dataset_path = Path("tests/data/generic_labels.csv")
 
-classifiers = [cls for cls in list_classifiers() if 'asreviewcontrib' in str(cls)]
-feature_extractors = [fe for fe in list_feature_extraction() if 'asreviewcontrib' in str(fe)] # noqa: E501
+classifiers = _get_all_models("cl")
+feature_extractors = _get_all_models("fe")
 
-pairs = list(product(classifiers,feature_extractors))
 
-@pytest.mark.parametrize("classifier,feature_extractor", pairs)
-def test_asreview_simulation(classifier, feature_extractor):
-
-    project_path = Path(f"api_simulation_{classifier.__name__}_{feature_extractor.__name__}")  # noqa: E501
-    
-    project = ASReviewProject.create(
-        project_path=project_path,
-        project_id="api_example",
-        project_mode="simulate",
-        project_name="api_example",
+@pytest.mark.parametrize("feature_extractor", feature_extractors)
+def test_rf_with_all_feature_extractors(feature_extractor):
+    _run_simulation_test(
+        load_extension("models.classifiers", "rf")(),
+        load_extension("models.feature_extraction", feature_extractor)(),
     )
 
-    project_data_path = project_path / 'data' / dataset_path.name
 
-    shutil.copy(dataset_path, project_data_path)
-    project.add_dataset(dataset_path.name)
-
-    model = init_classifier(classifier)
-
-    reviewer = ReviewSimulate(
-        as_data=ASReviewData.from_file(project_data_path),
-        model= model,
-        query_model=MaxQuery(),
-        balance_model=DoubleBalance(),
-        feature_model=feature_extractor(),
-        init_seed=535,
-        n_instances=1,
-        project=project,
-        n_prior_included=1,
-        n_prior_excluded=1,
+@pytest.mark.parametrize("classifier", classifiers)
+def test_all_classifiers_with_onehot(classifier):
+    _run_simulation_test(
+        load_extension("models.classifiers", classifier)(),
+        load_extension("models.feature_extraction", "onehot")(),
     )
-    
-    project.update_review(status="review")
-    reviewer.review()
 
-    shutil.rmtree(project_path)
 
-def init_classifier(model_class):
-    try:
-        return model_class(random_state=921)
-    except TypeError:
-        return model_class()
+def _run_simulation_test(classifier_model, feature_model):
+    query_model = load_extension("models.query", "max")()
+    balance_model = load_extension("models.balance", "double")()
+
+    records = load_dataset(dataset_path)
+    data_store = DataStore(":memory:")
+    data_store.create_tables()
+    data_store.add_records(records)
+
+    fm = feature_model.fit_transform(data_store)
+
+    sim = Simulate(
+        fm,
+        data_store["included"],
+        classifier=classifier_model,
+        query_strategy=query_model,
+        balance_strategy=balance_model,
+        feature_extraction=feature_model,
+    )
+
+    sim.label_random(
+        n_included=1,
+        n_excluded=1,
+        prior=True,
+    )
+    sim.review()
