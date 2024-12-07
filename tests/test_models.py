@@ -1,11 +1,6 @@
-import shutil
-import tempfile
 from pathlib import Path
 
 import pytest
-from asreview import ASReviewData
-from asreview import ASReviewProject
-from asreview.models.balance import DoubleBalance
 from asreviewcontrib.nemo.entrypoint import _get_all_models
 from asreview.extensions import load_extension
 from asreview.simulation.simulate import Simulate
@@ -14,36 +9,37 @@ from asreview.data import DataStore
 
 dataset_path = Path("tests/data/generic_labels.csv")
 
-classifiers = _get_all_models("cl")
+classifiers = _get_all_models("cls")
 feature_extractors = _get_all_models("fe")
 
 
 @pytest.mark.parametrize("feature_extractor", feature_extractors)
-def test_rf_with_all_feature_extractors(feature_extractor):
+def test_feature_extractors(feature_extractor):
     _run_simulation_test(
-        load_extension("models.classifiers", "rf")(),
-        load_extension("models.feature_extraction", feature_extractor)(),
+        load_extension("models.classifiers", "logistic")(),
+        feature_extractor.load()(),
     )
 
 
 @pytest.mark.parametrize("classifier", classifiers)
-def test_all_classifiers_with_onehot(classifier):
+def test_classifiers(classifier):
     _run_simulation_test(
-        load_extension("models.classifiers", classifier)(),
-        load_extension("models.feature_extraction", "onehot")(),
+        classifier.load()(),
+        load_extension("models.feature_extraction", "tfidf")(),
     )
 
 
 def _run_simulation_test(classifier_model, feature_model):
+    print("Loaded Feature Extractor and Classifier succesfully")
     query_model = load_extension("models.query", "max")()
     balance_model = load_extension("models.balance", "double")()
 
-    records = load_dataset(dataset_path)
+    records = load_dataset(dataset_path, dataset_id=dataset_path.name)
     data_store = DataStore(":memory:")
     data_store.create_tables()
     data_store.add_records(records)
 
-    fm = feature_model.fit_transform(data_store)
+    fm = feature_model.fit_transform(data=data_store)
 
     sim = Simulate(
         fm,
