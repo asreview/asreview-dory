@@ -91,6 +91,8 @@ class Doc2Vec(BaseFeatureExtraction):
         return self.GenSimDoc2Vec
 
     def fit(self, texts):
+        _ = self._model
+
         if self.verbose:
             print("Preparing corpus...")
         corpus = [
@@ -147,7 +149,6 @@ class Doc2Vec(BaseFeatureExtraction):
 
         return X
 
-
     def _train_model(self, corpus, *args, **kwargs):
         model = self._model(*args, **kwargs)
         if self.verbose:
@@ -159,7 +160,6 @@ class Doc2Vec(BaseFeatureExtraction):
         if self.verbose:
             print("Model training complete.")
         return model
-
 
     def _infer_vectors(self, model, corpus):
         if self.verbose:
