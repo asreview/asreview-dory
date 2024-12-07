@@ -31,15 +31,31 @@ class NemoEntryPoint:
         )
 
         subparsers.add_parser("cache-all", help="Cache all available entry points")
-        subparsers.add_parser("list", help="List all available entry points")
+
+        list_parser = subparsers.add_parser(
+            "list", help="List all available entry points"
+            )
+        list_parser.add_argument(
+            "--classifiers",
+            action="store_true",
+            help="List only classifiers",
+        )
+        list_parser.add_argument(
+            "--feature-extractors",
+            action="store_true",
+            help="List only feature extractors",
+        )
 
         args = parser.parse_args(argv)
         if args.command == "cache":
             self.cache(args.model_names)
         elif args.command == "cache-all":
-            self.cache([model.name for model in self._get_all_models()])
+            self.cache([model.name for model in _get_all_models()])
         elif args.command == "list":
-            print([model.name for model in self._get_all_models()])
+            model_type = (
+                "fe" if args.feature_extractors else "cl" if args.classifiers else None
+            )
+            print([model.name for model in _get_all_models(model_type)])
         else:
             parser.print_help()
 
@@ -55,16 +71,6 @@ class NemoEntryPoint:
                 except ValueError:
                     print(f"Error: Model '{name}' not found.")
 
-    def _get_all_models(self):
-        feature_extractors = extensions("models.feature_extraction")
-        classifiers = extensions("models.classifiers")
-        return list(
-            chain(
-                [fe for fe in feature_extractors if "asreviewcontrib.nemo_models" in str(fe)],  # noqa: E501
-                [cls for cls in classifiers if "asreviewcontrib.nemo_models" in str(cls)],  # noqa: E501
-            )
-        )
-
     def _load_model(self, model):
         print(f"Loading {model.name}...")
         try:
@@ -72,3 +78,27 @@ class NemoEntryPoint:
             _ = model_instance._model
         except Exception as e:
             print(f"Error loading model '{model.name}': {e}")
+
+
+def _get_all_models(model_type=None):
+    feature_extractors = extensions("models.feature_extraction")
+    classifiers = extensions("models.classifiers")
+
+    if model_type == "fe":
+        models = list(
+            {str(entry_point): entry_point for entry_point in feature_extractors 
+             if "asreviewcontrib.nemo_models" in str(entry_point)}.values()
+        )
+    elif model_type == "cl":
+        models = list(
+            {str(entry_point): entry_point for entry_point in classifiers 
+             if "asreviewcontrib.nemo_models" in str(entry_point)}.values()
+        )
+    else:
+        models = list(
+            {str(entry_point): entry_point for entry_point in chain(
+                feature_extractors, classifiers
+            ) if "asreviewcontrib.nemo_models" in str(entry_point)}.values()
+        )
+
+    return models
