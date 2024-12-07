@@ -53,7 +53,7 @@ class NemoEntryPoint:
             self.cache([model.name for model in _get_all_models()])
         elif args.command == "list":
             model_type = (
-                "fe" if args.feature_extractors else "cl" if args.classifiers else None
+                "fe" if args.feature_extractors else "cls" if args.classifiers else None
             )
             print([model.name for model in _get_all_models(model_type)])
         else:
@@ -86,12 +86,12 @@ def _get_all_models(model_type=None):
 
     if model_type == "fe":
         models = list(
-            {str(entry_point): entry_point for entry_point in feature_extractors 
+            {str(entry_point): entry_point for entry_point in feature_extractors
              if "asreviewcontrib.nemo_models" in str(entry_point)}.values()
         )
-    elif model_type == "cl":
+    elif model_type == "cls":
         models = list(
-            {str(entry_point): entry_point for entry_point in classifiers 
+            {str(entry_point): entry_point for entry_point in classifiers
              if "asreviewcontrib.nemo_models" in str(entry_point)}.values()
         )
     else:
