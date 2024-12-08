@@ -8,7 +8,7 @@ class MXBAI(BaseFeatureExtraction):
     """
     MXBAI Feature Extractor
 
-    Transformer-based feature extractor based on 
+    Transformer-based feature extractor based on
     'mixedbread-ai/mxbai-embed-large-v1'.
 
     Parameters
@@ -56,11 +56,13 @@ class MXBAI(BaseFeatureExtraction):
     def _model(self):
         if self._model_instance is None:
             from sentence_transformers import SentenceTransformer
+
             self._model_instance = SentenceTransformer(self.model_name)
             if self.verbose:
                 print(f"Model '{self.model_name}' has been loaded.")
             if self.quantize:
                 from sentence_transformers.quantization import quantize_embeddings
+
                 self._quantize_embeddings = quantize_embeddings
         return self._model_instance
 
@@ -68,17 +70,14 @@ class MXBAI(BaseFeatureExtraction):
         if self.verbose:
             print("Encoding texts, this may take a while.")
         embeddings = self._model.encode(
-            texts, 
-            convert_to_tensor=self.quantize, 
-            show_progress_bar=self.verbose
+            texts, convert_to_tensor=self.quantize, show_progress_bar=self.verbose
         )
         if self.quantize:
             if self.verbose:
                 print(f"Quantizing embeddings with precision '{self.precision}'.")
             embeddings = self._quantize_embeddings(
-                embeddings, 
-                precision=self.precision
-                ).numpy()
+                embeddings, precision=self.precision
+            ).numpy()
         if self.normalize:
             if self.verbose:
                 print("Normalizing embeddings.")
