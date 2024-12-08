@@ -14,11 +14,12 @@ from tensorflow.keras.optimizers import Adam
 from asreview.models.classifiers.base import BaseTrainClassifier
 from asreview.models.classifiers.utils import _set_class_weight
 
+
 class DynamicNNClassifier(BaseTrainClassifier):
     """
     Dynamic Neural Network Classifier
-    
-    Fully connected neural network classifier 
+
+    Fully connected neural network classifier
     with dynamic layer count (``dynamic-nn``) .
 
     Parameters
@@ -61,7 +62,7 @@ class DynamicNNClassifier(BaseTrainClassifier):
         shuffle=True,
         min_delta=0.01,
         class_weight=30.0,
-        max_features=1024
+        max_features=1024,
     ):
         super().__init__()
         self.patience = patience
@@ -87,9 +88,7 @@ class DynamicNNClassifier(BaseTrainClassifier):
             X = X.toarray()
         if self._model is None or X.shape[1] != self.input_dim:
             self.input_dim = X.shape[1]
-            self._model = _create_model(X.shape[1],
-                                    num_layers,
-                                    self.verbose)
+            self._model = _create_model(X.shape[1], num_layers, self.verbose)
 
         callback = EarlyStopping(
             monitor="loss",
@@ -116,10 +115,10 @@ class DynamicNNClassifier(BaseTrainClassifier):
         return np.hstack([neg_pred, pos_pred])
 
 
-def _create_model(input_dim, 
-                  num_layers,
-                  verbose=1):
-    model = Sequential([Input(shape=(input_dim,)), Dense(64, activation="relu")])
+def _create_model(input_dim, num_layers, verbose=1):
+    model = Sequential()
+    model.add(Input(shape=(input_dim,)))
+    model.add(Dense(64, activation="relu"))
 
     for _ in range(num_layers - 1):
         model.add(Dense(64, activation="relu"))
