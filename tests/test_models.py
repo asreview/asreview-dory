@@ -12,8 +12,11 @@ dataset_path = Path("tests/data/generic_labels.csv")
 classifiers = _get_all_models("cls")
 feature_extractors = _get_all_models("fe")
 
-
-@pytest.mark.parametrize("feature_extractor", feature_extractors)
+@pytest.mark.parametrize(
+    "feature_extractor", 
+    feature_extractors, 
+    ids=[f"FeatureExtractor-{fe.name}" for fe in feature_extractors]
+)
 def test_feature_extractors(feature_extractor):
     _run_simulation_test(
         load_extension("models.classifiers", "logistic")(),
@@ -21,7 +24,11 @@ def test_feature_extractors(feature_extractor):
     )
 
 
-@pytest.mark.parametrize("classifier", classifiers)
+@pytest.mark.parametrize(
+    "classifier", 
+    classifiers, 
+    ids=[f"Classifier-{clf.name}" for clf in classifiers]
+)
 def test_classifiers(classifier):
     _run_simulation_test(
         classifier.load()(),
