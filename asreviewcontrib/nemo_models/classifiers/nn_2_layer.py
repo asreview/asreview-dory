@@ -1,7 +1,7 @@
 __all__ = ["NN2LayerClassifier"]
 
 from tensorflow.keras import regularizers, optimizers
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dense, Input
 from tensorflow.keras.models import Sequential
 
 import numpy as np
@@ -9,6 +9,7 @@ import scipy
 
 from asreview.models.classifiers.base import BaseTrainClassifier
 from asreview.models.classifiers.utils import _set_class_weight
+
 
 class NN2LayerClassifier(BaseTrainClassifier):
     """Fully connected neural network (2 hidden layers) classifier (``nn-2-layer``).
@@ -54,17 +55,18 @@ class NN2LayerClassifier(BaseTrainClassifier):
     name = "nn-2-layer"
     label = "Fully connected neural network (2 hidden layers)"
 
-    def __init__(self,
-                 dense_width=128,
-                 optimizer='rmsprop',
-                 learn_rate=1.0,
-                 regularization=0.01,
-                 verbose=0,
-                 epochs=35,
-                 batch_size=32,
-                 shuffle=False,
-                 class_weight=30.0):
-
+    def __init__(
+        self,
+        dense_width=128,
+        optimizer="rmsprop",
+        learn_rate=1.0,
+        regularization=0.01,
+        verbose=0,
+        epochs=35,
+        batch_size=32,
+        shuffle=False,
+        class_weight=30.0,
+    ):
         super().__init__()
         self.dense_width = int(dense_width)
         self.optimizer = optimizer
@@ -111,12 +113,14 @@ class NN2LayerClassifier(BaseTrainClassifier):
         return np.hstack([neg_pred, pos_pred])
 
 
-def _create_dense_nn_model(vector_size=40,
-                           dense_width=128,
-                           optimizer='rmsprop',
-                           learn_rate_mult=1.0,
-                           regularization=0.01,
-                           verbose=1):
+def _create_dense_nn_model(
+    vector_size=40,
+    dense_width=128,
+    optimizer="rmsprop",
+    learn_rate_mult=1.0,
+    regularization=0.01,
+    verbose=1,
+):
     """
     Create the NN model
 
@@ -150,26 +154,19 @@ def _create_dense_nn_model(vector_size=40,
 
     model = Sequential()
 
-    model.add(
-        Dense(
-            dense_width,
-            input_dim=vector_size,
-            kernel_regularizer=regularizers.l2(regularization),
-            activity_regularizer=regularizers.l1(regularization),
-            activation='relu',
-        ))
+    model.add(Input(shape=(vector_size,)))
 
-    # add Dense layer with relu activation
-    model.add(
-        Dense(
-            dense_width,
-            kernel_regularizer=regularizers.l2(regularization),
-            activity_regularizer=regularizers.l1(regularization),
-            activation='relu',
-        ))
+    for _ in range(2):
+        model.add(
+            Dense(
+                dense_width,
+                kernel_regularizer=regularizers.l2(regularization),
+                activity_regularizer=regularizers.l1(regularization),
+                activation="relu",
+            )
+        )
 
-    # add Dense layer
-    model.add(Dense(1, activation='sigmoid'))
+    model.add(Dense(1, activation="sigmoid"))
 
     if optimizer == "sgd":
         optimizer_fn = optimizers.SGD(learning_rate=0.01 * learn_rate_mult)
@@ -185,10 +182,7 @@ def _create_dense_nn_model(vector_size=40,
         raise NotImplementedError
 
     # Compile model
-    model.compile(
-        loss='binary_crossentropy',
-        optimizer=optimizer_fn,
-        metrics=['acc'])
+    model.compile(loss="binary_crossentropy", optimizer=optimizer_fn, metrics=["acc"])
 
     if verbose >= 1:
         model.summary()
