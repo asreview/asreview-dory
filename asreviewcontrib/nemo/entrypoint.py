@@ -4,7 +4,6 @@ from asreview.extensions import extensions, load_extension
 
 
 class NemoEntryPoint:
-
     description = "NEMO for ASReview."
     extension_name = "asreview-nemo"
 
@@ -12,6 +11,7 @@ class NemoEntryPoint:
     def version(self):
         try:
             from asreviewcontrib.nemo._version import __version__
+
             return __version__
         except ImportError:
             return "unknown"
@@ -32,30 +32,11 @@ class NemoEntryPoint:
 
         subparsers.add_parser("cache-all", help="Cache all available entry points")
 
-        list_parser = subparsers.add_parser(
-            "list", help="List all available entry points"
-            )
-        list_parser.add_argument(
-            "--classifiers",
-            action="store_true",
-            help="List only classifiers",
-        )
-        list_parser.add_argument(
-            "--feature-extractors",
-            action="store_true",
-            help="List only feature extractors",
-        )
-
         args = parser.parse_args(argv)
         if args.command == "cache":
             self.cache(args.model_names)
         elif args.command == "cache-all":
             self.cache([model.name for model in _get_all_models()])
-        elif args.command == "list":
-            model_type = (
-                "fe" if args.feature_extractors else "cls" if args.classifiers else None
-            )
-            print([model.name for model in _get_all_models(model_type)])
         else:
             parser.print_help()
 
@@ -86,19 +67,27 @@ def _get_all_models(model_type=None):
 
     if model_type == "fe":
         models = list(
-            {str(entry_point): entry_point for entry_point in feature_extractors
-             if "asreviewcontrib.nemo_models" in str(entry_point)}.values()
+            {
+                str(entry_point): entry_point
+                for entry_point in feature_extractors
+                if "asreviewcontrib.nemo_models" in str(entry_point)
+            }.values()
         )
     elif model_type == "cls":
         models = list(
-            {str(entry_point): entry_point for entry_point in classifiers
-             if "asreviewcontrib.nemo_models" in str(entry_point)}.values()
+            {
+                str(entry_point): entry_point
+                for entry_point in classifiers
+                if "asreviewcontrib.nemo_models" in str(entry_point)
+            }.values()
         )
     else:
         models = list(
-            {str(entry_point): entry_point for entry_point in chain(
-                feature_extractors, classifiers
-            ) if "asreviewcontrib.nemo_models" in str(entry_point)}.values()
+            {
+                str(entry_point): entry_point
+                for entry_point in chain(feature_extractors, classifiers)
+                if "asreviewcontrib.nemo_models" in str(entry_point)
+            }.values()
         )
 
     return models
