@@ -31,14 +31,35 @@ expanding the capabilities of ASReview for automated systematic reviews.
     labse
     mxbai
 
+Explore the performance of these models in our [Simulation Gallery](https://jteijema.github.io/synergy-simulations-website/models.html)! Look for the 🐟 icon to spot the NEMO models.
+
 ## Usage
 
 Once installed, the plugins will be available in the front-end of ASReview, as
-well as being accessible via the command-line interface (CLI).
+well as being accessible via the command-line interface.
+
+You can check all available models using:
+```console
+asreview algorithms
+```
+
+### Caching Models
+
+You can pre-load models to avoid downloading them during runtime by using the `cache` command. To `cache` specific models, such as `xgboost` and `sbert`, run:
+
+```console
+asreview nemo cache xgboost sbert
+```
+
+To cache all available models at once, use:
+
+```console
+asreview nemo cache-all
+```
 
 ## Compatibility
 
-This plugin is compatible with the latest version of ASReview. Ensure that your
+This plugin is compatible with `ASReview version 2+`. Ensure that your
 ASReview installation is up-to-date to avoid compatibility issues.
 
 The development of this plugin is done in parallel with the development of the
@@ -62,5 +83,5 @@ For any questions or further assistance, feel free to contact the ASReview Lab D
 
 ---
 
-Thank you for using ASReview NEMO! We hope these new models enhance your
+Enjoy using ASReview NEMO! We hope these new models enhance your
 systematic review processes.

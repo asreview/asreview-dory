@@ -11,13 +11,14 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
 ]
 keywords = ["systematic review"]
 requires-python = ">=3.8"
 dynamic = ["version"]
 dependencies = [
-    "asreview>=1,<2",
+    "asreview==2.0a3",
     "xgboost",
     "sentence_transformers",
     "gensim",
@@ -38,22 +39,25 @@ build-backend = 'setuptools.build_meta'
 requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
 
 [tool.setuptools]
-packages = ["asreviewcontrib", "asreviewcontrib.models"]
+packages = ["asreviewcontrib", "asreviewcontrib.nemo_models", "asreviewcontrib.nemo"]
 
 [tool.setuptools_scm]
-write_to = "asreviewcontrib/models/_version.py"
+write_to = "asreviewcontrib/nemo/_version.py"
 
 [project.entry-points."asreview.models.classifiers"]
-"xgboost" = "asreviewcontrib.models.classifiers:XGBoost"
-"nn-2-layer" = "asreviewcontrib.models.classifiers:NN2LayerClassifier"
-"adaboost" = "asreviewcontrib.models.classifiers:AdaBoost"
-"dynamic-nn" = "asreviewcontrib.models.classifiers:DynamicNNClassifier"
+"adaboost" = "asreviewcontrib.nemo_models.classifiers.adaboost:AdaBoost"
+"dynamic-nn" = "asreviewcontrib.nemo_models.classifiers.dynamic_nn:DynamicNNClassifier"
+"nn-2-layer" = "asreviewcontrib.nemo_models.classifiers.nn_2_layer:NN2LayerClassifier"
+"xgboost" = "asreviewcontrib.nemo_models.classifiers.xgboost:XGBoost"
 
 [project.entry-points."asreview.models.feature_extraction"]
-"sbert" = "asreviewcontrib.models.feature_extraction:SBERT"
-"doc2vec" = "asreviewcontrib.models.feature_extraction:Doc2Vec"
-"mxbai" = "asreviewcontrib.models.feature_extraction:MXBAI"
-"labse" = "asreviewcontrib.models.feature_extraction:LaBSE"
+"sbert" = "asreviewcontrib.nemo_models.feature_extraction.sbert:SBERT"
+"doc2vec" = "asreviewcontrib.nemo_models.feature_extraction.doc2vec:Doc2Vec"
+"mxbai" = "asreviewcontrib.nemo_models.feature_extraction.mxbai:MXBAI"
+"labse" = "asreviewcontrib.nemo_models.feature_extraction.labse:LaBSE"
+
+[project.entry-points."asreview.entry_points"]
+nemo = "asreviewcontrib.nemo.entrypoint:NemoEntryPoint"
 
 [tool.ruff]
 select = ["E", "F", "UP", "B"]
