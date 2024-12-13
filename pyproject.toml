@@ -18,7 +18,7 @@ keywords = ["systematic review"]
 requires-python = ">=3.8"
 dynamic = ["version"]
 dependencies = [
-    "asreview==2.0a4",
+    "asreview==2.0a3",
     "xgboost",
     "sentence_transformers",
     "gensim",
