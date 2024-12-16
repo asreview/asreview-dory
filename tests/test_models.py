@@ -46,7 +46,7 @@ def _run_simulation_test(classifier_model, feature_model):
     data_store.create_tables()
     data_store.add_records(records)
 
-    fm = feature_model.fit_transform(data=data_store)
+    fm = feature_model.from_data_store(data=data_store)
 
     sim = Simulate(
         fm,
