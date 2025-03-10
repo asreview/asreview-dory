@@ -161,4 +161,6 @@ cython_debug/
 
 # Setup Tools SCM
 asreviewcontrib/nemo/_version.py
+
+# vscode
 .vscode/settings.json

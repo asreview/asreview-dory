@@ -49,3 +49,4 @@ def test_asreview_simulation(classifier, feature_extractor):
 
     # Check results
     assert not simulate._results.empty, "Simulation produced no results."
+   

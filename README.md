@@ -40,7 +40,7 @@ well as being accessible via the command-line interface.
 
 You can check all available models using:
 ```console
-asreview nemo list
+asreview algorithms
 ```
 
 ### Caching Models

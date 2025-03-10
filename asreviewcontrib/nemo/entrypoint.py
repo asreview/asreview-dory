@@ -4,7 +4,6 @@ from asreview.extensions import extensions, load_extension
 
 
 class NemoEntryPoint:
-
     description = "NEMO for ASReview."
     extension_name = "asreview-nemo"
 
@@ -12,6 +11,7 @@ class NemoEntryPoint:
     def version(self):
         try:
             from asreviewcontrib.nemo._version import __version__
+
             return __version__
         except ImportError:
             return "unknown"
@@ -72,3 +72,34 @@ class NemoEntryPoint:
             _ = model_instance._model
         except Exception as e:
             print(f"Error loading model '{model.name}': {e}")
+
+def _get_all_models(model_type=None):
+    feature_extractors = extensions("models.feature_extraction")
+    classifiers = extensions("models.classifiers")
+
+    if model_type == "fe":
+        models = list(
+            {
+                str(entry_point): entry_point
+                for entry_point in feature_extractors
+                if "asreviewcontrib.nemo_models" in str(entry_point)
+            }.values()
+        )
+    elif model_type == "cls":
+        models = list(
+            {
+                str(entry_point): entry_point
+                for entry_point in classifiers
+                if "asreviewcontrib.nemo_models" in str(entry_point)
+            }.values()
+        )
+    else:
+        models = list(
+            {
+                str(entry_point): entry_point
+                for entry_point in chain(feature_extractors, classifiers)
+                if "asreviewcontrib.nemo_models" in str(entry_point)
+            }.values()
+        )
+
+    return models
