@@ -1,9 +1,8 @@
 __all__ = ["AdaBoost"]
 
-from asreview.models.classifiers.base import BaseTrainClassifier
 from sklearn.ensemble import AdaBoostClassifier
 
-class AdaBoost(BaseTrainClassifier):
+class AdaBoost:
     """AdaBoost classifier
 
     Classifier based on the AdaBoostClassifier from scikit-learn.
@@ -34,7 +33,6 @@ class AdaBoost(BaseTrainClassifier):
         learning_rate = 1.0,
         random_state = None   
     ):
-        super().__init__()
         self.estimator = estimator
         self.n_estimators = n_estimators
         self.learning_rate = learning_rate

@@ -1,10 +1,9 @@
 __all__ = ["LaBSE"]
 
-from asreview.models.feature_extraction.base import BaseFeatureExtraction
-from asreviewcontrib.nemo_models.utils import min_max_normalize
+from asreviewcontrib.nemo.utils import min_max_normalize
 
 
-class LaBSE(BaseFeatureExtraction):
+class LaBSE:
     """
     LaBSE Feature Extractor
 
@@ -30,13 +29,10 @@ class LaBSE(BaseFeatureExtraction):
 
     def __init__(
         self,
-        *args,
         model_name="sentence-transformers/LaBSE",
         normalize=False,
         verbose=True,
-        **kwargs,
     ):
-        super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.normalize = normalize
         self.verbose = verbose

@@ -1,10 +1,9 @@
 __all__ = ["MXBAI"]
 
-from asreview.models.feature_extraction.base import BaseFeatureExtraction
-from asreviewcontrib.nemo_models.utils import min_max_normalize
+from asreviewcontrib.nemo.utils import min_max_normalize
 
 
-class MXBAI(BaseFeatureExtraction):
+class MXBAI:
     """
     MXBAI Feature Extractor
 
@@ -35,15 +34,12 @@ class MXBAI(BaseFeatureExtraction):
 
     def __init__(
         self,
-        *args,
         model_name="mixedbread-ai/mxbai-embed-large-v1",
         quantize=False,
         precision="ubinary",
         normalize=False,
         verbose=True,
-        **kwargs,
     ):
-        super().__init__(*args, **kwargs)
         self.model_name = model_name
         self.quantize = quantize
         self.precision = precision

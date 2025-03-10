@@ -46,7 +46,7 @@ class NemoEntryPoint:
     def cache(self, model_names):
         for name in model_names:
             try:
-                model_class = load_extension("models.feature_extraction", name)
+                model_class = load_extension("models.feature_extractors", name)
                 self._load_model(model_class)
             except ValueError:
                 try:
@@ -56,12 +56,12 @@ class NemoEntryPoint:
                     print(f"Error: Model '{name}' not found.")
 
     def _get_all_models(self):
-        feature_extractors = extensions("models.feature_extraction")
+        feature_extractors = extensions("models.feature_extractors")
         classifiers = extensions("models.classifiers")
         return list(
             chain(
-                [fe for fe in feature_extractors if "asreviewcontrib.nemo_models" in str(fe)],  # noqa: E501
-                [cls for cls in classifiers if "asreviewcontrib.nemo_models" in str(cls)],  # noqa: E501
+                [fe for fe in feature_extractors if "asreviewcontrib.nemo" in str(fe)],  # noqa: E501
+                [cls for cls in classifiers if "asreviewcontrib.nemo" in str(cls)],  # noqa: E501
             )
         )
 

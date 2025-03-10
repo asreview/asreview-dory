@@ -1,63 +1,51 @@
-
-import shutil
+import pytest
+import pandas as pd
 from itertools import product
 from pathlib import Path
 
-import pytest
-from asreview import ASReviewData
-from asreview import ASReviewProject
-from asreview.models.balance import DoubleBalance
-from asreview.models.classifiers import list_classifiers
-from asreview.models.feature_extraction import list_feature_extraction
-from asreview.models.query import MaxQuery
-from asreview.review import ReviewSimulate
+import asreview
+from asreview.models.balancers import Balanced
+from asreview.extensions import extensions
+from asreview.models.queriers import Max
 
+# Define dataset path
 dataset_path = Path("tests/data/generic_labels.csv")
 
-classifiers = [cls for cls in list_classifiers() if 'asreviewcontrib' in str(cls)]
-feature_extractors = [fe for fe in list_feature_extraction() if 'asreviewcontrib' in str(fe)] # noqa: E501
+# Get all classifiers and feature extractors from ASReview, filtering contrib models
+classifiers = [
+    cls for cls in extensions("models.classifiers") if "asreviewcontrib" in str(cls)
+]
+feature_extractors = [
+    fe for fe in extensions("models.feature_extractors") if "asreviewcontrib" in str(fe)
+]
 
-pairs = list(product(classifiers,feature_extractors))
+# Generate all combinations of classifier and feature extractor
+pairs = list(product(classifiers, feature_extractors))
 
-@pytest.mark.parametrize("classifier,feature_extractor", pairs)
+test_ids = [
+    f"{classifier.name}__{feature_extractor.name}"
+    for classifier, feature_extractor in pairs
+]
+
+
+@pytest.mark.parametrize("classifier, feature_extractor", pairs, ids=test_ids)
 def test_asreview_simulation(classifier, feature_extractor):
+    # Load dataset
+    data = pd.read_csv(dataset_path)
+    labels = data["label_included"]
 
-    project_path = Path(f"api_simulation_{classifier.__name__}_{feature_extractor.__name__}")  # noqa: E501
-    
-    project = ASReviewProject.create(
-        project_path=project_path,
-        project_id="api_example",
-        project_mode="simulate",
-        project_name="api_example",
+    # Define Active Learning Cycle
+    alc = asreview.ActiveLearningCycle(
+        classifier=classifier.load(),
+        feature_extractor=feature_extractor.load(),
+        balancer=Balanced(),
+        querier=Max(),
     )
 
-    project_data_path = project_path / 'data' / dataset_path.name
+    # Run simulation
+    simulate = asreview.Simulate(X=data, labels=labels, cycles=[alc])
+    simulate.label([0, 1])
+    simulate.review()
 
-    shutil.copy(dataset_path, project_data_path)
-    project.add_dataset(dataset_path.name)
-
-    model = init_classifier(classifier)
-
-    reviewer = ReviewSimulate(
-        as_data=ASReviewData.from_file(project_data_path),
-        model= model,
-        query_model=MaxQuery(),
-        balance_model=DoubleBalance(),
-        feature_model=feature_extractor(),
-        init_seed=535,
-        n_instances=1,
-        project=project,
-        n_prior_included=1,
-        n_prior_excluded=1,
-    )
-    
-    project.update_review(status="review")
-    reviewer.review()
-
-    shutil.rmtree(project_path)
-
-def init_classifier(model_class):
-    try:
-        return model_class(random_state=921)
-    except TypeError:
-        return model_class()
+    # Check results
+    assert not simulate._results.empty, "Simulation produced no results."

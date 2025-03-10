@@ -7,16 +7,15 @@ from tensorflow.keras.models import Sequential
 import numpy as np
 import scipy
 
-from asreview.models.classifiers.base import BaseTrainClassifier
 from asreview.models.classifiers.utils import _set_class_weight
 
-class NN2LayerClassifier(BaseTrainClassifier):
+class NN2LayerClassifier:
     """Fully connected neural network (2 hidden layers) classifier (``nn-2-layer``).
 
     Neural network with two hidden, dense layers of the same size.
 
     Recommended feature extraction model is
-    :class:`asreview.models.feature_extraction.Doc2Vec`.
+    :class:`asreview.models.feature_extractors.Doc2Vec`.
 
     .. note::
 
@@ -27,7 +26,7 @@ class NN2LayerClassifier(BaseTrainClassifier):
     .. warning::
 
         Might crash on some systems with limited memory in
-        combination with :class:`asreview.models.feature_extraction.Tfidf`.
+        combination with :class:`asreview.models.feature_extractors.Tfidf`.
 
     Arguments
     ---------
@@ -65,7 +64,6 @@ class NN2LayerClassifier(BaseTrainClassifier):
                  shuffle=False,
                  class_weight=30.0):
 
-        super().__init__()
         self.dense_width = int(dense_width)
         self.optimizer = optimizer
         self.learn_rate = learn_rate

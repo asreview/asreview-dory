@@ -1,10 +1,8 @@
 __all__ = ["XGBoost"]
 
-from asreview.models.classifiers.base import BaseTrainClassifier
-
 import xgboost as xgb
 
-class XGBoost(BaseTrainClassifier):
+class XGBoost:
     """
     XGBoost classifier
 
@@ -54,7 +52,6 @@ class XGBoost(BaseTrainClassifier):
         random_state=None
         ):
 
-        super().__init__()
         self.max_depth = max_depth
         self.learning_rate = learning_rate
         self.n_estimators = n_estimators

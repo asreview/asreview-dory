@@ -1,10 +1,9 @@
 __all__ = ["SBERT"]
 
-from asreview.models.feature_extraction.base import BaseFeatureExtraction
-from asreviewcontrib.nemo_models.utils import min_max_normalize
+from asreviewcontrib.nemo.utils import min_max_normalize
 
 
-class SBERT(BaseFeatureExtraction):
+class SBERT():
     """
     Sentence BERT feature extraction technique (``sbert``).
 
@@ -47,15 +46,12 @@ class SBERT(BaseFeatureExtraction):
 
     def __init__(
         self,
-        *args,
         transformer_model="all-mpnet-base-v2",
         is_pretrained_sbert=True,
         pooling_mode="mean",
         normalize=False,
         verbose=True,
-        **kwargs,
     ):
-        super().__init__(*args, **kwargs)
         self.transformer_model = transformer_model
         self.is_pretrained_sbert = is_pretrained_sbert
         self.pooling_mode = pooling_mode

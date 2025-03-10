@@ -1,11 +1,10 @@
 __all__ = ["Doc2Vec"]
 
 import numpy as np
-from asreview.models.feature_extraction.base import BaseFeatureExtraction
-from asreviewcontrib.nemo_models.utils import min_max_normalize
+from asreviewcontrib.nemo.utils import min_max_normalize
 
 
-class Doc2Vec(BaseFeatureExtraction):
+class Doc2Vec:
     """
     Doc2Vec feature extraction technique (``doc2vec``).
 
@@ -50,7 +49,6 @@ class Doc2Vec(BaseFeatureExtraction):
 
     def __init__(
         self,
-        *args,
         vector_size=40,
         epochs=33,
         min_count=1,
@@ -61,9 +59,7 @@ class Doc2Vec(BaseFeatureExtraction):
         dbow_words=False,
         normalize=True,
         verbose=True,
-        **kwargs,
     ):
-        super().__init__(*args, **kwargs)
         self.vector_size = int(vector_size)
         self.epochs = int(epochs)
         self.min_count = int(min_count)
@@ -146,7 +142,10 @@ class Doc2Vec(BaseFeatureExtraction):
             X = min_max_normalize(X)
 
         return X
-
+    
+    def fit_transform(self, texts):
+        self.fit(texts)
+        return self.transform(texts)
 
     def _train_model(self, corpus, *args, **kwargs):
         model = self._model(*args, **kwargs)
