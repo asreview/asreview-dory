@@ -2,6 +2,27 @@ __all__ = ["Doc2Vec"]
 
 import numpy as np
 from asreviewcontrib.nemo.utils import min_max_normalize
+from gensim.models.doc2vec import Doc2Vec as GenSimDoc2Vec
+from gensim.models.doc2vec import TaggedDocument
+from gensim.utils import simple_preprocess
+from sklearn.pipeline import Pipeline
+from asreview.models.feature_extractors import TextMerger
+
+
+class Doc2VecWrapper(Pipeline):
+    name = "doc2vec"
+    label = "Doc2Vec"
+
+    def __init__(self, **kwargs):
+        if "ngram_range" in kwargs:
+            kwargs["ngram_range"] = tuple(kwargs["ngram_range"])
+
+        super().__init__(
+            [
+                ("text_merger", TextMerger(columns=["title", "abstract"])),
+                ("tfidf", Doc2Vec(**kwargs)),
+            ]
+        )
 
 
 class Doc2Vec:
@@ -14,7 +35,7 @@ class Doc2Vec:
 
     .. note::
 
-        For fully reproducible runs, limit the model to a single worker thread 
+        For fully reproducible runs, limit the model to a single worker thread
         (`n_jobs=1`) to eliminate potential variability due to thread scheduling.
 
     Parameters
@@ -44,9 +65,6 @@ class Doc2Vec:
         Print progress and status updates. Default: True
     """
 
-    name = "doc2vec"
-    label = "Doc2Vec"
-
     def __init__(
         self,
         vector_size=40,
@@ -72,26 +90,16 @@ class Doc2Vec:
         self.verbose = verbose
         self._model_instance = None
 
-    @property
-    def _model(self):
-        if self._model_instance is None:
-            # Lazy import of gensim
-            from gensim.models.doc2vec import Doc2Vec as GenSimDoc2Vec
-            from gensim.models.doc2vec import TaggedDocument
-            from gensim.utils import simple_preprocess
+        self._tagged_document = TaggedDocument
+        self._simple_preprocess = simple_preprocess
+        self._model = GenSimDoc2Vec
 
-            self.GenSimDoc2Vec = GenSimDoc2Vec
-            self.TaggedDocument = TaggedDocument
-            self.simple_preprocess = simple_preprocess
-
-        return self.GenSimDoc2Vec
-
-    def fit(self, texts):
+    def fit(self, X, y=None):
         if self.verbose:
             print("Preparing corpus...")
         corpus = [
-            self.TaggedDocument(self.simple_preprocess(text), [i])
-            for i, text in enumerate(texts)
+            self._tagged_document(self._simple_preprocess(text), [i])
+            for i, text in enumerate(X)
         ]
 
         model_param = {
@@ -122,7 +130,7 @@ class Doc2Vec:
         if self.verbose:
             print("Preparing corpus for transformation...")
         corpus = [
-            self.TaggedDocument(self.simple_preprocess(text), [i])
+            self._tagged_document(self._simple_preprocess(text), [i])
             for i, text in enumerate(texts)
         ]
 
@@ -142,10 +150,10 @@ class Doc2Vec:
             X = min_max_normalize(X)
 
         return X
-    
-    def fit_transform(self, texts):
-        self.fit(texts)
-        return self.transform(texts)
+
+    def fit_transform(self, X, y):
+        self.fit(X, y)
+        return self.transform(X)
 
     def _train_model(self, corpus, *args, **kwargs):
         model = self._model(*args, **kwargs)
@@ -158,7 +166,6 @@ class Doc2Vec:
         if self.verbose:
             print("Model training complete.")
         return model
-
 
     def _infer_vectors(self, model, corpus):
         if self.verbose:

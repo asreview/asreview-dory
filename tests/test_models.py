@@ -1,11 +1,9 @@
 import pytest
-import pandas as pd
 from itertools import product
 from pathlib import Path
 
-import asreview
-from asreview.models.balancers import Balanced
-from asreview.extensions import extensions
+import asreview as asr
+from asreview.extensions import extensions, get_extension
 from asreview.models.queriers import Max
 
 # Define dataset path
@@ -14,7 +12,7 @@ dataset_path = Path("tests/data/generic_labels.csv")
 # Get all classifiers and feature extractors from ASReview, filtering contrib models
 classifiers = [
     cls for cls in extensions("models.classifiers") if "asreviewcontrib" in str(cls)
-]
+] + [get_extension("models.classifiers", "svm")]
 feature_extractors = [
     fe for fe in extensions("models.feature_extractors") if "asreviewcontrib" in str(fe)
 ]
@@ -31,22 +29,22 @@ test_ids = [
 @pytest.mark.parametrize("classifier, feature_extractor", pairs, ids=test_ids)
 def test_asreview_simulation(classifier, feature_extractor):
     # Load dataset
-    data = pd.read_csv(dataset_path)
-    labels = data["label_included"]
+    data = asr.load_dataset(dataset_path)
 
     # Define Active Learning Cycle
-    alc = asreview.ActiveLearningCycle(
-        classifier=classifier.load(),
-        feature_extractor=feature_extractor.load(),
-        balancer=Balanced(),
+    alc = asr.ActiveLearningCycle(
+        classifier=classifier.load()(),
+        feature_extractor=feature_extractor.load()(),
+        balancer=None,
         querier=Max(),
     )
 
     # Run simulation
-    simulate = asreview.Simulate(X=data, labels=labels, cycles=[alc])
+    simulate = asr.Simulate(
+        X=data[['abstract', 'title']], labels=data["included"], cycles=[alc]
+    )
     simulate.label([0, 1])
     simulate.review()
 
     # Check results
     assert not simulate._results.empty, "Simulation produced no results."
-   

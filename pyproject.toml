@@ -45,15 +45,15 @@ write_to = "asreviewcontrib/nemo/_version.py"
 
 [project.entry-points."asreview.models.classifiers"]
 "adaboost" = "asreviewcontrib.nemo.classifiers.adaboost:AdaBoost"
-"dynamic-nn" = "asreviewcontrib.nemo.classifiers.dynamic_nn:DynamicNNClassifier"
-"nn-2-layer" = "asreviewcontrib.nemo.classifiers.nn_2_layer:NN2LayerClassifier"
+"dynamic-nn" = "asreviewcontrib.nemo.classifiers.neural_networks:DynamicNNClassifier"
+"nn-2-layer" = "asreviewcontrib.nemo.classifiers.neural_networks:NN2LayerClassifier"
 "xgboost" = "asreviewcontrib.nemo.classifiers.xgboost:XGBoost"
 
 [project.entry-points."asreview.models.feature_extractors"]
-"sbert" = "asreviewcontrib.nemo.feature_extractors.sbert:SBERT"
-"doc2vec" = "asreviewcontrib.nemo.feature_extractors.doc2vec:Doc2Vec"
-"mxbai" = "asreviewcontrib.nemo.feature_extractors.mxbai:MXBAI"
-"labse" = "asreviewcontrib.nemo.feature_extractors.labse:LaBSE"
+"doc2vec" = "asreviewcontrib.nemo.feature_extractors.doc2vec:Doc2VecWrapper"
+"sbert" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:SBERT"
+"mxbai" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:MXBAI"
+"labse" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:LaBSE"
 
 [project.entry-points."asreview.entry_points"]
 nemo = "asreviewcontrib.nemo.entrypoint:NemoEntryPoint"

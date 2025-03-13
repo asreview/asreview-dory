@@ -1,8 +1,9 @@
 __all__ = ["XGBoost"]
 
-import xgboost as xgb
+from xgboost import XGBClassifier
 
-class XGBoost:
+
+class XGBoost(XGBClassifier):
     """
     XGBoost classifier
 
@@ -26,7 +27,7 @@ class XGBoost:
         Specify the learning task and the corresponding objective function.
         Default: 'binary:logistic'.
     gamma : int, optional
-        Minimum loss reduction required to make a further partition on a leaf node of 
+        Minimum loss reduction required to make a further partition on a leaf node of
         the tree.
         Default: 0.
     reg_lambda : int, optinal
@@ -46,37 +47,18 @@ class XGBoost:
         learning_rate=0.3,
         n_estimators=100,
         verbosity=1,
-        objective='binary:logistic',
+        objective="binary:logistic",
         gamma=0,
-        reg_lambda = 1,
-        random_state=None
-        ):
-
-        self.max_depth = max_depth
-        self.learning_rate = learning_rate
-        self.n_estimators = n_estimators
-        self.verbosity = verbosity
-        self.objective = objective
-        self.gamma = gamma
-        self.random_state = random_state
-        self.reg_lambda = reg_lambda
-
-        self._model = xgb.XGBClassifier(
-            max_depth=self.max_depth,
-            learning_rate=self.learning_rate,
-            n_estimators=self.n_estimators,
-            verbosity=self.verbosity,
-            objective=self.objective,
-            random_state=self.random_state,
+        reg_lambda=1,
+        random_state=None,
+    ):
+        super().__init__(
+            max_depth=max_depth,
+            learning_rate=learning_rate,
+            n_estimators=n_estimators,
+            verbosity=verbosity,
+            objective=objective,
             gamma=gamma,
-            reg_lambda=self.reg_lambda
+            reg_lambda=reg_lambda,
+            random_state=random_state,
         )
-    
-    def fit(self, X, y):
-        self._model.fit(X, y)
-
-    def predict_proba(self, X):
-        return self._model.predict_proba(X)
-
-    def predict(self, X):
-        return self._model.predict(X)

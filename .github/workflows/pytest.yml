@@ -12,6 +12,5 @@ jobs:
     - name: Install package and run test
       run: |
         pip install .
-        pip install tf-keras
         pip install pytest
         pytest tests -v
