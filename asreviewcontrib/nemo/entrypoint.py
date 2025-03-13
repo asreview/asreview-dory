@@ -46,12 +46,12 @@ class NemoEntryPoint:
     def cache(self, model_names):
         for name in model_names:
             try:
-                model_class = load_extension("models.feature_extractors", name)
-                self._load_model(model_class)
+                load_extension("models.feature_extractors", name)
+                print(f"Loaded FE {name}")
             except ValueError:
                 try:
-                    model_class = load_extension("models.classifiers", name)
-                    self._load_model(model_class)
+                    load_extension("models.classifiers", name)
+                    print(f"Loaded CLS {name}")
                 except ValueError:
                     print(f"Error: Model '{name}' not found.")
 
@@ -60,15 +60,7 @@ class NemoEntryPoint:
         classifiers = extensions("models.classifiers")
         return list(
             chain(
-                [fe for fe in feature_extractors if "asreviewcontrib.nemo" in str(fe)],  # noqa: E501
-                [cls for cls in classifiers if "asreviewcontrib.nemo" in str(cls)],  # noqa: E501
+                [fe for fe in feature_extractors if "asreviewcontrib.nemo" in str(fe)],
+                [cls for cls in classifiers if "asreviewcontrib.nemo" in str(cls)],
             )
         )
-
-    def _load_model(self, model):
-        print(f"Loading {model.name}...")
-        try:
-            model_instance = model()
-            _ = model_instance._model
-        except Exception as e:
-            print(f"Error loading model '{model.name}': {e}")

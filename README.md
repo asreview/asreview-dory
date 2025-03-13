@@ -31,7 +31,9 @@ expanding the capabilities of ASReview for automated systematic reviews.
     labse
     mxbai
 
-Explore the performance of these models in our [Simulation Gallery](https://jteijema.github.io/synergy-simulations-website/models.html)! Look for the 🐟 icon to spot the NEMO models.
+Explore the performance of these models in our [Simulation
+Gallery](https://jteijema.github.io/synergy-simulations-website/models.html)!
+Look for the 🐟 icon to spot the NEMO models.
 
 ## Usage
 
@@ -45,10 +47,11 @@ asreview algorithms
 
 ### Caching Models
 
-You can pre-load models to avoid downloading them during runtime by using the `cache` command. To `cache` specific models, such as `xgboost` and `sbert`, run:
+You can pre-load models to avoid downloading them during runtime by using the
+`cache` command. To `cache` specific models, such as `xgboost` and `sbert`, run:
 
 ```console
-asreview nemo cache xgboost sbert
+asreview nemo cache nb xgboost sbert
 ```
 
 To cache all available models at once, use:
@@ -59,8 +62,8 @@ asreview nemo cache-all
 
 ## Compatibility
 
-This plugin is compatible with `ASReview version 2+`. Ensure that your
-ASReview installation is up-to-date to avoid compatibility issues.
+This plugin is compatible with `ASReview version 2+`. Ensure that your ASReview
+installation is up-to-date to avoid compatibility issues.
 
 The development of this plugin is done in parallel with the development of the
 ASReview software. We aim to maintain compatibility with the latest version of
@@ -68,7 +71,8 @@ ASReview, but please report any issues you encounter.
 
 ## Contributing
 
-We welcome contributions from the community. To contribute, please follow these steps:
+We welcome contributions from the community. To contribute, please follow these
+steps:
 
 1. Fork the repository.
 2. Create a new branch for your feature or bug fix.
@@ -77,11 +81,13 @@ We welcome contributions from the community. To contribute, please follow these 
 5. Push your changes to your fork.
 6. Open a pull request to the main repository.
 
-Please ensure your code adheres to the existing style and includes relevant tests.
+Please ensure your code adheres to the existing style and includes relevant
+tests.
 
-For any questions or further assistance, feel free to contact the ASReview Lab Developers.
+For any questions or further assistance, feel free to contact the ASReview Lab
+Developers.
 
 ---
 
-Enjoy using ASReview NEMO! We hope these new models enhance your
-systematic review processes.
+Enjoy using ASReview NEMO! We hope these new models enhance your systematic
+review processes.
