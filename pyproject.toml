@@ -17,14 +17,15 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
     "asreview>=2.0b0",
-    "xgboost",
-    "sentence_transformers",
-    "gensim",
-    "numpy",
-    "scikeras",
-    "scikit-learn",
+    "gensim>=4.3.3",
     "keras>=3.0.0",
-    "torch"
+    "numpy>=1.26.4",
+    "pytest>=8.3.5",
+    "scikit-learn>=1.6.1",
+    "sentence-transformers>=3.4.1",
+    "tensorflow>=2.18.1",
+    "torch>=2.6.0",
+    "xgboost>=2.1.4",
 ]
 
 [project.urls]
