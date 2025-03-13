@@ -43,7 +43,7 @@ class NemoEntryPoint:
         else:
             parser.print_help()
 
-    def cache(self, model_names):
+    def cache(self, model_names) -> None:
         for name in model_names:
             try:
                 load_extension("models.feature_extractors", name)
@@ -55,7 +55,7 @@ class NemoEntryPoint:
                 except ValueError:
                     print(f"Error: Model '{name}' not found.")
 
-    def _get_all_models(self):
+    def _get_all_models(self) -> list:
         feature_extractors = extensions("models.feature_extractors")
         classifiers = extensions("models.classifiers")
         return list(
