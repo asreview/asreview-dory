@@ -1,9 +1,9 @@
 import os
 from math import ceil, log10
 
-from keras import layers, losses, optimizers, regularizers, wrappers, models
-
 os.environ["KERAS_BACKEND"] = "torch"
+
+from keras import layers, losses, optimizers, regularizers, wrappers, models
 
 
 class BaseNNClassifier(wrappers.SKLearnClassifier):
