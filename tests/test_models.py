@@ -53,7 +53,7 @@ def test_asreview_simulation(classifier, feature_extractor):
 
 
 def test_get_all_models():
-    assert len(NemoEntryPoint()._get_all_models()) == 8
+    assert len(NemoEntryPoint()._get_all_models()) == 10
 
 
 def test_min_max_normalize():

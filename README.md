@@ -30,6 +30,8 @@ expanding the capabilities of ASReview for automated systematic reviews.
     doc2vec (scaled)
     labse
     mxbai
+    xlm-roberta
+    xlm-roberta-large
 
 Explore the performance of these models in our [Simulation
 Gallery](https://jteijema.github.io/synergy-simulations-website/models.html)!

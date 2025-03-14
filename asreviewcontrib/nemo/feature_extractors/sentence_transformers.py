@@ -23,9 +23,9 @@ class BaseSentenceTransformer:
         self.precision = precision
         self.verbose = verbose
 
-        self._model = self.load_model()
+        self._model = self._load_model()
 
-    def load_model(self):
+    def _load_model(self):
         model = SentenceTransformer(self.model_name)
         if self.verbose:
             print(f"Model '{self.model_name}' has been loaded.")
@@ -99,7 +99,7 @@ class SBERT(BaseSentenceTransformer):
         self.pooling_mode = pooling_mode
         super().__init__(model_name)
 
-    def load_model(self):
+    def _load_model(self):
         if self.is_pretrained_sbert:
             model = SentenceTransformer(self.model_name)
             if self.verbose:
@@ -112,3 +112,33 @@ class SBERT(BaseSentenceTransformer):
                 pooling_mode=self.pooling_mode,
             )
             return SentenceTransformer(modules=[word_embedding_model, pooling_layer])
+
+
+class XLMRoberta(BaseSentenceTransformer):
+    """
+    Multilingual version of RoBERTa by FacebookAI.
+    """
+
+    name = "xlm-roberta-large"
+    label = "XLM-RoBERTa model "
+
+    def __init__(
+        self,
+        model_name="FacebookAI/xlm-roberta-base",
+    ):
+        super().__init__(model_name)
+
+
+class XLMRobertaLarge(BaseSentenceTransformer):
+    """
+    Multilingual version of RoBERTa by FacebookAI, large version.
+    """
+
+    name = "xlm-roberta-large"
+    label = "XLM-RoBERTa Large model "
+
+    def __init__(
+        self,
+        model_name="FacebookAI/xlm-roberta-large",
+    ):
+        super().__init__(model_name)
