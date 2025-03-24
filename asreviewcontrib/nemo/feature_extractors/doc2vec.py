@@ -1,6 +1,5 @@
 __all__ = ["Doc2Vec"]
 
-import random
 from collections import Counter
 
 import numpy as np
@@ -252,6 +251,8 @@ class Doc2VecWrapper(BaseEstimator, TransformerMixin):
         for doc in documents:
             word_counts.update(doc.split())
 
+        word_total_count = sum(word_counts.values())
+
         vocab = {
             word: i
             for i, (word, count) in enumerate(word_counts.items())
@@ -268,13 +269,23 @@ class Doc2VecWrapper(BaseEstimator, TransformerMixin):
 
         for doc_id, doc in enumerate(documents):
             words = doc.split()
-            words = [w for w in words if w in vocab]
+            words_filtered = [w for w in words if w in vocab]
 
+            # Compute probability of keeping each word
             word_probs = {
-                w: 1 - np.sqrt(subsampling_threshold / freq)
-                for w, freq in word_counts.items()
+                w: max(
+                    0, 1 - np.sqrt(subsampling_threshold / (count / word_total_count))
+                )
+                for w, count in word_counts.items()
             }
-            words = [w for w in words if random.random() > word_probs.get(w, 0)]
+
+            # Filter words based on their probabilities
+            words = [
+                w for w in words_filtered if word_probs.get(w, 0) < np.random.random()
+            ]
+
+            if not words:
+                words = words_filtered
 
             if self.dm == 1:
                 for i, target_word in enumerate(words):
