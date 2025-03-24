@@ -1,10 +1,13 @@
-import pytest
 from itertools import product
 from pathlib import Path
 
 import asreview as asr
-from asreview.extensions import extensions, get_extension
+import pandas as pd
+import pytest
+from asreview.extensions import extensions
+from asreview.extensions import get_extension
 from asreview.models.queriers import Max
+
 from asreviewcontrib.nemo.entrypoint import NemoEntryPoint
 from asreviewcontrib.nemo.utils import min_max_normalize
 
@@ -43,13 +46,21 @@ def test_asreview_simulation(classifier, feature_extractor):
 
     # Run simulation
     simulate = asr.Simulate(
-        X=data[['abstract', 'title']], labels=data["included"], cycles=[alc]
+        X=data[["abstract", "title"]], labels=data["included"], cycles=[alc]
     )
     simulate.label([0, 1])
     simulate.review()
 
-    # Check results
-    assert not simulate._results.empty, "Simulation produced no results."
+    assert isinstance(simulate._results, pd.DataFrame)
+    assert simulate._results.shape[0] > 2 and simulate._results.shape[0] <= 6, (
+        "Simulation produced incorrect number of results."
+    )
+    assert classifier.name in simulate._results["classifier"].unique(), (
+        "Classifier is not in results."
+    )
+    assert feature_extractor.name in simulate._results["feature_extractor"].unique(), (
+        "Feature extractor is not in results."
+    )
 
 
 def test_get_all_models():

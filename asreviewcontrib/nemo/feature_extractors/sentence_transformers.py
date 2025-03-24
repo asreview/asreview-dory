@@ -119,8 +119,8 @@ class XLMRoberta(BaseSentenceTransformer):
     Multilingual version of RoBERTa by FacebookAI.
     """
 
-    name = "xlm-roberta-large"
-    label = "XLM-RoBERTa model "
+    name = "xlm-roberta"
+    label = "XLM-RoBERTa model"
 
     def __init__(
         self,
