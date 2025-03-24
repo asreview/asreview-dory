@@ -1,4 +1,4 @@
-__all__ = ["LaBSE", "MXBAI", "SBERT"]
+__all__ = ["LaBSE", "MXBAI", "SBERT", "XLMRoberta", "XLMRobertaLarge"]
 
 from sentence_transformers import SentenceTransformer, models
 from asreview.models.feature_extractors import TextMerger
