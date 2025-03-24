@@ -17,7 +17,6 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
     "asreview>=2.0b0",
-    "gensim>=4.3.3",
     "keras>=3.0.0",
     "numpy>=1.26.4",
     "scikit-learn>=1.6.1",
@@ -47,7 +46,7 @@ write_to = "asreviewcontrib/nemo/_version.py"
 "xgboost" = "asreviewcontrib.nemo.classifiers.xgboost:XGBoost"
 
 [project.entry-points."asreview.models.feature_extractors"]
-"doc2vec" = "asreviewcontrib.nemo.feature_extractors.doc2vec:Doc2VecWrapper"
+"doc2vec" = "asreviewcontrib.nemo.feature_extractors.doc2vec:Doc2Vec"
 "sbert" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:SBERT"
 "mxbai" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:MXBAI"
 "labse" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:LaBSE"

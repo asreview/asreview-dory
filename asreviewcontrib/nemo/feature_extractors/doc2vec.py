@@ -1,15 +1,20 @@
 __all__ = ["Doc2Vec"]
 
+import random
+from collections import Counter
+
 import numpy as np
-from asreviewcontrib.nemo.utils import min_max_normalize
-from gensim.models.doc2vec import Doc2Vec as GenSimDoc2Vec
-from gensim.models.doc2vec import TaggedDocument
-from gensim.utils import simple_preprocess
-from sklearn.pipeline import Pipeline
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from asreview.models.feature_extractors import TextMerger
+from sklearn.base import BaseEstimator
+from sklearn.base import TransformerMixin
+from sklearn.pipeline import Pipeline
+from torch.utils.data import DataLoader
 
 
-class Doc2VecWrapper(Pipeline):
+class Doc2Vec(Pipeline):
     name = "doc2vec"
     label = "Doc2Vec"
 
@@ -20,157 +25,290 @@ class Doc2VecWrapper(Pipeline):
         super().__init__(
             [
                 ("text_merger", TextMerger(columns=["title", "abstract"])),
-                ("tfidf", Doc2Vec(**kwargs)),
+                ("tfidf", Doc2VecWrapper(**kwargs)),
             ]
         )
 
 
-class Doc2Vec:
-    """
-    Doc2Vec feature extraction technique (``doc2vec``).
+class Doc2VecModel(nn.Module):
+    def __init__(
+        self, vocab_size, doc_size, embedding_dim, dm, num_neg_samples, concat
+    ):
+        super().__init__()
+        self.dm = dm
+        self.num_neg_samples = num_neg_samples
+        self.concat = concat
 
-    Feature extraction technique provided by the `gensim
-    <https://radimrehurek.com/gensim/>`__ package. It trains a model to generate
-    document embeddings, which can reduce dimensionality and accelerate modeling.
+        self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
+        self.doc_embeddings = nn.Parameter(torch.randn(doc_size, embedding_dim))
+        self.dropout = nn.Dropout(p=0.3)
 
-    .. note::
+        if self.concat and self.dm == 1:
+            self.fc = nn.Linear(embedding_dim * 2, vocab_size)
 
-        For fully reproducible runs, limit the model to a single worker thread
-        (`n_jobs=1`) to eliminate potential variability due to thread scheduling.
+        else:
+            self.fc = nn.Linear(embedding_dim, vocab_size)
 
-    Parameters
-    ----------
-    vector_size : int, optional
-        Dimensionality of the feature vectors. Default: 40
-    epochs : int, optional
-        Number of epochs to train the model. Default: 33
-    min_count : int, optional
-        Ignores all words with total frequency lower than this. Default: 1
-    n_jobs : int, optional
-        Number of threads to use during training. Default: 1
-    window : int, optional
-        Maximum distance between the current and predicted word. Default: 7
-    dm_concat : bool, optional
-        If True, concatenate word vectors. Default: False
-    dm : int, optional
-        Training model:
-        - 0: Distributed Bag of Words (DBOW)
-        - 1: Distributed Memory (DM)
-        - 2: Both DBOW and DM (concatenated embeddings). Default: 2
-    dbow_words : bool, optional
-        Train word vectors alongside DBOW. Default: False
-    normalize : bool, optional
-        Normalize embeddings using min-max scaling. Default: True
-    verbose : bool, optional
-        Print progress and status updates. Default: True
-    """
+        self.register_buffer("word_freqs", torch.ones(vocab_size))
+        self.precomputed_neg_samples = None
 
+    def forward(self, doc_ids, word_ids, neg_samples=None):
+        doc_embeds = self.dropout(self.doc_embeddings[doc_ids])
+
+        if self.dm == 1:  # DM model
+            word_embeds = self.dropout(self.word_embeddings(word_ids))
+
+            if self.concat:
+                combined = torch.cat([doc_embeds, word_embeds], dim=-1)
+            else:
+                combined = (doc_embeds + word_embeds) / 2
+        else:  # DBOW model
+            combined = doc_embeds
+
+        output = self.fc(combined)
+
+        if neg_samples is not None:
+            return output, self.word_embeddings(neg_samples)
+
+        return output
+
+    def set_word_freqs(self, word_freqs):
+        self.register_buffer("word_freqs", word_freqs)
+        self._precompute_negative_samples()
+
+    @torch.no_grad()
+    def get_embeddings(self, index):
+        return self.doc_embeddings[index, :].data.tolist()
+
+    def get_neg_samples(self, batch_size, exclude_word):
+        """
+        Fetch negative samples from the precomputed buffer while avoiding the
+        exclude_word.
+        """
+        if self.precomputed_neg_samples is None:
+            raise ValueError("Negative samples not precomputed!")
+
+        valid_samples = []
+        while len(valid_samples) < batch_size * self.num_neg_samples:
+            sample = self.precomputed_neg_samples[self.neg_sample_index]
+            self.neg_sample_index += 1
+
+            # Now check element-wise if any element in 'sample' is equal to exclude_word
+            if torch.all(
+                torch.ne(sample, exclude_word)
+            ):  # If none of the samples equals exclude_word
+                valid_samples.append(sample)
+
+            # If buffer exhausted, refill it
+            if self.neg_sample_index >= len(self.precomputed_neg_samples):
+                self._precompute_negative_samples()
+                self.neg_sample_index = 0
+
+        return torch.tensor(valid_samples).view(batch_size, self.num_neg_samples)
+
+    def _precompute_negative_samples(self, buffer_size=10000):
+        """Precompute a buffer of negative samples."""
+        weights = self.word_freqs.clone()
+        weights = weights / weights.sum()  # Normalize probabilities
+        self.precomputed_neg_samples = torch.multinomial(
+            weights, buffer_size, replacement=True
+        )
+        self.neg_sample_index = 0
+
+
+class Doc2VecWrapper(BaseEstimator, TransformerMixin):
     def __init__(
         self,
         vector_size=40,
         epochs=33,
         min_count=1,
-        n_jobs=1,
         window=7,
-        dm_concat=False,
-        dm=2,
-        dbow_words=False,
+        dm=1,
+        num_neg_samples=5,
+        concat=False,
+        batch_size=64,
         normalize=True,
-        verbose=True,
+        subsampling_threshold=1e-4,
+        verbose=False,
     ):
-        self.vector_size = int(vector_size)
-        self.epochs = int(epochs)
-        self.min_count = int(min_count)
-        self.n_jobs = int(n_jobs)
-        self.window = int(window)
-        self.dm_concat = 1 if dm_concat else 0
-        self.dm = int(dm)
-        self.dbow_words = 1 if dbow_words else 0
+        self.vector_size = vector_size
+        self.epochs = epochs
+        self.min_count = min_count
+        self.window = window
+        self.dm = dm
+        self.num_neg_samples = num_neg_samples
+        self.concat = concat
+        self.batch_size = batch_size
         self.normalize = normalize
+        self.subsampling_threshold = subsampling_threshold
         self.verbose = verbose
-        self._model_instance = None
 
-        self._tagged_document = TaggedDocument
-        self._simple_preprocess = simple_preprocess
-        self._model = GenSimDoc2Vec
+        self.model = None
 
     def fit(self, X, y=None):
-        if self.verbose:
-            print("Preparing corpus...")
-        corpus = [
-            self._tagged_document(self._simple_preprocess(text), [i])
-            for i, text in enumerate(X)
-        ]
+        self.vocab, self.doc_ids, self.data, word_freqs = self._prepare_data(
+            X, self.subsampling_threshold
+        )
+        self.vocab_size = len(self.vocab)
+        self.doc_size = len(self.doc_ids)
+        self.model = Doc2VecModel(
+            self.vocab_size,
+            self.doc_size,
+            self.vector_size,
+            self.dm,
+            self.num_neg_samples,
+            self.concat,
+        )
+        self.model.set_word_freqs(word_freqs)
 
-        model_param = {
-            "vector_size": self.vector_size,
-            "epochs": self.epochs,
-            "min_count": self.min_count,
-            "workers": self.n_jobs,
-            "window": self.window,
-            "dm_concat": self.dm_concat,
-            "dbow_words": self.dbow_words,
-        }
+        if torch.cuda.is_available():
+            self.model.cuda()
 
-        if self.dm == 2:
-            # Train both DM and DBOW models
-            model_param["vector_size"] = int(self.vector_size / 2)
-            if self.verbose:
-                print("Training DM model...")
-            self._model_dm = self._train_model(corpus, **model_param, dm=1)
-            if self.verbose:
-                print("Training DBOW model...")
-            self._model_dbow = self._train_model(corpus, **model_param, dm=0)
-        else:
-            if self.verbose:
-                print(f"Training single model with dm={self.dm}...")
-            self._model_instance = self._train_model(corpus, **model_param, dm=self.dm)
+        self.criterion = NegativeSampling(num_neg_samples=self.num_neg_samples)
 
-    def transform(self, texts):
-        if self.verbose:
-            print("Preparing corpus for transformation...")
-        corpus = [
-            self._tagged_document(self._simple_preprocess(text), [i])
-            for i, text in enumerate(texts)
-        ]
+        self.optimizer = optim.Adam(self.model.parameters(), weight_decay=1e-4)
+        self.scheduler = optim.lr_scheduler.StepLR(
+            self.optimizer, step_size=10, gamma=0.95
+        )
 
-        if self.dm == 2:
-            X_dm = self._infer_vectors(self._model_dm, corpus)
-            X_dbow = self._infer_vectors(self._model_dbow, corpus)
-            X = np.concatenate((X_dm, X_dbow), axis=1)
-        else:
-            X = self._infer_vectors(self._model_instance, corpus)
+        return (
+            self.train_dm(self.batch_size)
+            if self.dm == 1
+            else self.train_dbow(self.batch_size)
+        )
 
-        if self.verbose:
-            print("Finished transforming texts to vectors.")
+    def train_dm(self, batch_size):
+        dataloader = DataLoader(self.data, batch_size=batch_size, shuffle=True)
+
+        for epoch in range(self.epochs):
+            total_loss = 0
+
+            for batch in dataloader:
+                doc_ids, word_ids, target_word_ids = batch
+                doc_tensor = torch.LongTensor(doc_ids)
+                word_tensor = torch.LongTensor(word_ids)
+                target_tensor = torch.LongTensor(target_word_ids)
+
+                self.optimizer.zero_grad()
+
+                output = self.model(doc_tensor, word_tensor)
+                neg_samples = self.model.get_neg_samples(len(doc_ids), target_tensor)
+                loss = self.criterion(output, target_tensor, neg_samples)
+
+                loss.backward()
+                self.optimizer.step()
+                total_loss += loss.item()
+
+            self.scheduler.step()
+
+            if self.verbose and epoch % 10 == 0:
+                print(f"Epoch {epoch}, Loss: {total_loss:.4f}")
+        return self
+
+    def train_dbow(self, batch_size):
+        dataloader = DataLoader(self.data, batch_size=batch_size, shuffle=True)
+
+        for epoch in range(self.epochs):
+            total_loss = 0
+
+            for batch in dataloader:
+                doc_ids, word_ids = batch
+                doc_tensor = torch.LongTensor(doc_ids)
+                word_tensor = torch.LongTensor(word_ids)
+
+                self.optimizer.zero_grad()
+
+                output = self.model(doc_tensor, word_tensor)
+                neg_samples = self.model.get_neg_samples(len(doc_ids), word_tensor)
+                loss = self.criterion(output, word_tensor, neg_samples)
+
+                loss.backward()
+                self.optimizer.step()
+                total_loss += loss.item()
+
+            self.scheduler.step()
+
+            if self.verbose and epoch % 10 == 0:
+                print(f"Epoch {epoch}, Loss: {total_loss:.4f}")
+        return self
+
+    def transform(self, X):
+        embeddings = []
+
+        for doc_id, _ in enumerate(X):
+            embeddings.append(self.model.get_embeddings(doc_id))
+
+        embeddings = np.array(embeddings)
 
         if self.normalize:
-            if self.verbose:
-                print("Normalizing embeddings.")
-            X = min_max_normalize(X)
+            embeddings = (embeddings - embeddings.min()) / (
+                embeddings.max() - embeddings.min()
+            )
 
-        return X
+        return embeddings
 
-    def fit_transform(self, X, y):
-        self.fit(X, y)
-        return self.transform(X)
+    def _prepare_data(self, documents, subsampling_threshold):
+        word_counts = Counter()
+        for doc in documents:
+            word_counts.update(doc.split())
 
-    def _train_model(self, corpus, *args, **kwargs):
-        model = self._model(*args, **kwargs)
-        if self.verbose:
-            print("Building vocabulary...")
-        model.build_vocab(corpus)
-        if self.verbose:
-            print("Training model...")
-        model.train(corpus, total_examples=model.corpus_count, epochs=model.epochs)
-        if self.verbose:
-            print("Model training complete.")
-        return model
+        vocab = {
+            word: i
+            for i, (word, count) in enumerate(word_counts.items())
+            if count >= self.min_count
+        }
 
-    def _infer_vectors(self, model, corpus):
-        if self.verbose:
-            print("Inferring vectors for documents...")
-        X = [model.infer_vector(doc.words) for doc in corpus]
-        if self.verbose:
-            print("Vector inference complete.")
-        return np.array(X)
+        # Convert word counts to frequencies for negative sampling
+        word_freqs = np.array([word_counts[word] for word in vocab])
+        word_freqs = word_freqs**0.75  # Smoothing as in original word2vec
+        word_freqs = word_freqs / word_freqs.sum()
+
+        doc_ids = list(range(len(documents)))
+        training_data = []
+
+        for doc_id, doc in enumerate(documents):
+            words = doc.split()
+            words = [w for w in words if w in vocab]
+
+            word_probs = {
+                w: 1 - np.sqrt(subsampling_threshold / freq)
+                for w, freq in word_counts.items()
+            }
+            words = [w for w in words if random.random() > word_probs.get(w, 0)]
+
+            if self.dm == 1:
+                for i, target_word in enumerate(words):
+                    target_word_id = vocab[target_word]
+
+                    start = max(0, i - self.window)
+                    end = min(len(words), i + self.window + 1)
+                    context_words = words[start:i] + words[i + 1 : end]
+
+                    for context_word in context_words:
+                        context_word_id = vocab[context_word]
+                        training_data.append((doc_id, context_word_id, target_word_id))
+
+            else:
+                for target_word in words:
+                    target_word_id = vocab[target_word]
+                    training_data.append((doc_id, target_word_id))
+
+        return vocab, doc_ids, training_data, torch.from_numpy(word_freqs).float()
+
+
+class NegativeSampling(nn.Module):
+    def __init__(self, num_neg_samples):
+        super().__init__()
+        self.num_neg_samples = num_neg_samples
+        self._log_sigmoid = nn.LogSigmoid()
+
+    def forward(self, output, target, noise):
+        # Gather the scores for positive samples
+        pos_scores = output.gather(1, target.unsqueeze(1))
+        pos_loss = self._log_sigmoid(pos_scores).squeeze(1)
+
+        # Gather the scores for negative samples
+        neg_scores = output.gather(1, noise)
+        neg_loss = torch.sum(self._log_sigmoid(-neg_scores), dim=1)
+
+        return -(pos_loss + neg_loss).mean()
