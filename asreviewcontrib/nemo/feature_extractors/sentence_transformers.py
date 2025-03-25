@@ -1,4 +1,4 @@
-__all__ = ["LaBSE", "MXBAI", "SBERT"]
+__all__ = ["LaBSE", "MXBAI", "SBERT", "XLMRoberta", "XLMRobertaLarge"]
 
 from sentence_transformers import SentenceTransformer, models
 from asreview.models.feature_extractors import TextMerger
@@ -119,8 +119,8 @@ class XLMRoberta(BaseSentenceTransformer):
     Multilingual version of RoBERTa by FacebookAI.
     """
 
-    name = "xlm-roberta-large"
-    label = "XLM-RoBERTa model "
+    name = "xlm-roberta"
+    label = "XLM-RoBERTa model"
 
     def __init__(
         self,
