@@ -53,6 +53,7 @@ write_to = "asreviewcontrib/nemo/_version.py"
 "labse" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:LaBSE"
 "xlm-roberta" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:XLMRoberta"
 "xlm-roberta-large" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:XLMRobertaLarge"
+"multilingual-e5-large" = "asreviewcontrib.nemo.feature_extractors.sentence_transformers:MultilingualE5Large"
 
 [project.entry-points."asreview.entry_points"]
 nemo = "asreviewcontrib.nemo.entrypoint:NemoEntryPoint"
