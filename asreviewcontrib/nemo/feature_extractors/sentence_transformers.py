@@ -1,7 +1,15 @@
-__all__ = ["LaBSE", "MXBAI", "SBERT", "XLMRoberta", "XLMRobertaLarge"]
+__all__ = [
+    "LaBSE",
+    "MXBAI",
+    "SBERT",
+    "XLMRoberta",
+    "XLMRobertaLarge",
+    "MultilingualE5Large",
+]
 
-from sentence_transformers import SentenceTransformer, models
 from asreview.models.feature_extractors import TextMerger
+from sentence_transformers import SentenceTransformer
+from sentence_transformers import models
 
 
 class BaseSentenceTransformer:
@@ -141,4 +149,17 @@ class XLMRobertaLarge(BaseSentenceTransformer):
         self,
         model_name="FacebookAI/xlm-roberta-large",
     ):
+        super().__init__(model_name)
+
+
+class MultilingualE5Large(BaseSentenceTransformer):
+    """
+    Multilingual E5 Large Feature Extractor using the 
+    'intfloat/multilingual-e5-large' model.
+    """
+
+    name = "multilingual-e5-large"
+    label = "Multilingual E5 Large"
+
+    def __init__(self, model_name="intfloat/multilingual-e5-large"):
         super().__init__(model_name)
