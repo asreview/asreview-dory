@@ -1,5 +1,6 @@
 import argparse
 from itertools import chain
+
 from asreview.extensions import extensions, load_extension
 
 

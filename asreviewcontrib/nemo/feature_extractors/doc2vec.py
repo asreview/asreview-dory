@@ -1,12 +1,13 @@
 __all__ = ["Doc2Vec"]
 
 import numpy as np
-from asreviewcontrib.nemo.utils import min_max_normalize
+from asreview.models.feature_extractors import TextMerger
 from gensim.models.doc2vec import Doc2Vec as GenSimDoc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from gensim.utils import simple_preprocess
 from sklearn.pipeline import Pipeline
-from asreview.models.feature_extractors import TextMerger
+
+from asreviewcontrib.nemo.utils import min_max_normalize
 
 
 class Doc2VecWrapper(Pipeline):

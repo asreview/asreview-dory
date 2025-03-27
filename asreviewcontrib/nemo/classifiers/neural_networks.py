@@ -1,9 +1,11 @@
+__all__ = ["DynamicNNClassifier", "NN2LayerClassifier"]
+
 import os
 from math import ceil, log10
 
 os.environ["KERAS_BACKEND"] = "torch"
 
-from keras import layers, losses, optimizers, regularizers, wrappers, models
+from keras import layers, losses, models, optimizers, regularizers, wrappers
 
 
 class BaseNNClassifier(wrappers.SKLearnClassifier):

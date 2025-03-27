@@ -2,6 +2,7 @@ __all__ = ["AdaBoost"]
 
 from sklearn.ensemble import AdaBoostClassifier
 
+
 class AdaBoost(AdaBoostClassifier):
     """AdaBoost classifier
 
@@ -27,16 +28,11 @@ class AdaBoost(AdaBoostClassifier):
     label = "AdaBoost"
 
     def __init__(
-        self,     
-        estimator = None,
-        n_estimators = 50,
-        learning_rate = 1.0,
-        random_state = None   
+        self, estimator=None, n_estimators=50, learning_rate=1.0, random_state=None
     ):
-
         super().__init__(
             estimator=estimator,
             n_estimators=n_estimators,
             learning_rate=learning_rate,
-            random_state=random_state
+            random_state=random_state,
         )
