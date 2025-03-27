@@ -2,14 +2,12 @@ __all__ = [
     "LaBSE",
     "MXBAI",
     "SBERT",
-    "XLMRoberta",
-    "XLMRobertaLarge",
     "MultilingualE5Large",
+    "GTR",
 ]
 
 from asreview.models.feature_extractors import TextMerger
-from sentence_transformers import SentenceTransformer
-from sentence_transformers import models
+from sentence_transformers import SentenceTransformer, models
 
 
 class BaseSentenceTransformer:
@@ -122,39 +120,9 @@ class SBERT(BaseSentenceTransformer):
             return SentenceTransformer(modules=[word_embedding_model, pooling_layer])
 
 
-class XLMRoberta(BaseSentenceTransformer):
-    """
-    Multilingual version of RoBERTa by FacebookAI.
-    """
-
-    name = "xlm-roberta"
-    label = "XLM-RoBERTa model"
-
-    def __init__(
-        self,
-        model_name="FacebookAI/xlm-roberta-base",
-    ):
-        super().__init__(model_name)
-
-
-class XLMRobertaLarge(BaseSentenceTransformer):
-    """
-    Multilingual version of RoBERTa by FacebookAI, large version.
-    """
-
-    name = "xlm-roberta-large"
-    label = "XLM-RoBERTa Large model "
-
-    def __init__(
-        self,
-        model_name="FacebookAI/xlm-roberta-large",
-    ):
-        super().__init__(model_name)
-
-
 class MultilingualE5Large(BaseSentenceTransformer):
     """
-    Multilingual E5 Large Feature Extractor using the 
+    Multilingual E5 Large Feature Extractor using the
     'intfloat/multilingual-e5-large' model.
     """
 
@@ -162,4 +130,17 @@ class MultilingualE5Large(BaseSentenceTransformer):
     label = "Multilingual E5 Large"
 
     def __init__(self, model_name="intfloat/multilingual-e5-large"):
+        super().__init__(model_name)
+
+
+class GTR(BaseSentenceTransformer):
+    """
+    GTR-T5-Large Feature Extractor using the
+    'gtr-t5-large' model.
+    """
+
+    name = "gtr-t5-large"
+    label = "Google GTR"
+
+    def __init__(self, model_name="gtr-t5-large"):
         super().__init__(model_name)
