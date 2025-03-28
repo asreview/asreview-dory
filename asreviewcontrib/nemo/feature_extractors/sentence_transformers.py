@@ -109,7 +109,7 @@ class SBERT(BaseSentenceTransformer):
         if self.is_pretrained_sbert:
             model = SentenceTransformer(self.model_name)
             if self.verbose:
-                print(f"Model '{self.model_name}' has been loaded successfully.")
+                print(f"Model '{self.model_name}' has been loaded.")
             return model
         else:
             word_embedding_model = models.Transformer(self.model_name)
