@@ -29,8 +29,6 @@ class BaseSentenceTransformer:
         self.precision = precision
         self.verbose = verbose
 
-        self._model = self._load_model()
-
     def _load_model(self):
         model = SentenceTransformer(self.model_name)
         if self.verbose:
@@ -38,6 +36,8 @@ class BaseSentenceTransformer:
         return model
 
     def fit_transform(self, texts):
+        self._model = self._load_model()
+
         texts = TextMerger(columns=["title", "abstract"]).transform(texts)
 
         if self.verbose:
@@ -109,7 +109,7 @@ class SBERT(BaseSentenceTransformer):
         if self.is_pretrained_sbert:
             model = SentenceTransformer(self.model_name)
             if self.verbose:
-                print(f"Model '{self.model_name}' has been loaded.")
+                print(f"Model '{self.model_name}' has been loaded successfully.")
             return model
         else:
             word_embedding_model = models.Transformer(self.model_name)
