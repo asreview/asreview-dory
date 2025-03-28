@@ -1,6 +1,7 @@
-__all__ = ['min_max_normalize']
+__all__ = ["min_max_normalize"]
 
 import numpy as np
+
 
 def min_max_normalize(embedding):
     """
