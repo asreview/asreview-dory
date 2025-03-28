@@ -29,6 +29,12 @@ class BaseSentenceTransformer:
         self.precision = precision
         self.verbose = verbose
 
+    @property
+    def model(self):
+        if not hasattr(self, "_model"):
+            self._model = self._load_model()
+        return self._model
+
     def _load_model(self):
         model = SentenceTransformer(self.model_name)
         if self.verbose:
@@ -36,14 +42,12 @@ class BaseSentenceTransformer:
         return model
 
     def fit_transform(self, texts):
-        self._model = self._load_model()
-
         texts = TextMerger(columns=["title", "abstract"]).transform(texts)
 
         if self.verbose:
             print("Embedding text...")
 
-        embeddings = self._model.encode(texts, show_progress_bar=self.verbose)
+        embeddings = self.model.encode(texts, show_progress_bar=self.verbose)
 
         if self.normalize:
             from asreviewcontrib.nemo.utils import min_max_normalize
