@@ -1,8 +1,8 @@
 __all__ = ["ScaledNaiveBayes"]
 
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.naive_bayes import MultinomialNB
 
 
 class ScaledNaiveBayes(Pipeline):
@@ -25,3 +25,9 @@ class ScaledNaiveBayes(Pipeline):
                 ("classifier", MultinomialNB(**kwargs)),
             ]
         )
+
+    def fit(self, X, y, sample_weight=None):
+        """Forward sample_weight parameter since we use a Pipeline"""
+        if sample_weight is not None:
+            return super().fit(X, y, classifier__sample_weight=sample_weight)
+        return super().fit(X, y)
