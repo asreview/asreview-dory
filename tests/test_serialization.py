@@ -24,6 +24,7 @@ test_ids = [
 ]
 
 
+# TODO: add parameters to classifier and feature_extractors
 @pytest.mark.parametrize("classifier, feature_extractor", pairs, ids=test_ids)
 def test_alc_to_and_from_meta(classifier, feature_extractor):
     # Define Active Learning Cycle
@@ -35,11 +36,10 @@ def test_alc_to_and_from_meta(classifier, feature_extractor):
     )
 
     alc2_meta = asr.ActiveLearningCycleData(
-        querier="max",
-        classifier="nb",
+        classifier=classifier.load()().name,
+        feature_extractor=classifier.load()().name,
         balancer="balanced",
-        feature_extractor="tfidf",
-        classifier_param={"alpha": 5},
+        querier="max",
     )
 
     alc1_meta = alc1.to_meta()
@@ -87,5 +87,71 @@ def test_alc_to_and_from_meta(classifier, feature_extractor):
     assert (
         alc1.querier.get_params()
         == alc1_from_meta.querier.get_params()
+        == alc2_from_meta.querier.get_params()
+    ), "Querier parameters do not match"
+
+
+# TODO: add parameters to classifier and feature_extractors
+@pytest.mark.parametrize("classifier, feature_extractor", pairs, ids=test_ids)
+def test_alc_to_and_from_file(classifier, feature_extractor):
+    # Define Active Learning Cycle
+    alc1 = asr.ActiveLearningCycle(
+        classifier=classifier.load()(),
+        feature_extractor=feature_extractor.load()(),
+        balancer=None,
+        querier=Max(),
+    )
+
+    alc2_meta = asr.ActiveLearningCycleData(
+        classifier=classifier.load()().name,
+        feature_extractor=classifier.load()().name,
+        balancer="balanced",
+        querier="max",
+    )
+
+    alc1.to_file("./alc1.json")
+    alc1_from_file = asr.ActiveLearningCycle.from_file("./alc1.json")
+
+    alc2_from_meta = asr.ActiveLearningCycle.from_meta(alc2_meta)
+
+    assert (
+        alc1.classifier.name
+        == alc1_from_file.classifier.name
+        == alc2_from_meta.classifier.name
+    ), "Classifier names do not match"
+    assert (
+        alc1.classifier.get_params()
+        == alc1_from_file.classifier.get_params()
+        == alc2_from_meta.classifier.get_params()
+    ), "Classifier parameters do not match"
+
+    assert (
+        alc1.feature_extractor.name
+        == alc1_from_file.feature_extractor.name
+        == alc2_from_meta.feature_extractor.name
+    ), "Feature extractor names do not match"
+    assert (
+        alc1.feature_extractor.get_params()
+        == alc1_from_file.feature_extractor.get_params()
+        == alc2_from_meta.feature_extractor.get_params()
+    ), "Feature extractor parameters do not match"
+
+    assert (
+        alc1.balancer.name
+        == alc1_from_file.balancer.name
+        == alc2_from_meta.balancer.name
+    ), "Balancer names do not match"
+    assert (
+        alc1.balancer.get_params()
+        == alc1_from_file.balancer.get_params()
+        == alc2_from_meta.balancer.get_params()
+    ), "Balancer parameters do not match"
+
+    assert (
+        alc1.querier.name == alc1_from_file.querier.name == alc2_from_meta.querier.name
+    ), "Querier names do not match"
+    assert (
+        alc1.querier.get_params()
+        == alc1_from_file.querier.get_params()
         == alc2_from_meta.querier.get_params()
     ), "Querier parameters do not match"
