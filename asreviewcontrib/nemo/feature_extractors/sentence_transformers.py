@@ -6,6 +6,8 @@ __all__ = [
     "GTR",
 ]
 
+from functools import cached_property
+
 from asreview.models.feature_extractors import TextMerger
 from sentence_transformers import SentenceTransformer, models
 
@@ -29,7 +31,9 @@ class BaseSentenceTransformer:
         self.precision = precision
         self.verbose = verbose
 
-        self._model = self._load_model()
+    @cached_property
+    def _model(self):
+        return self._load_model()
 
     def _load_model(self):
         model = SentenceTransformer(self.model_name)

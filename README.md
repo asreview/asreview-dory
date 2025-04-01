@@ -23,6 +23,7 @@ expanding the capabilities of ASReview for automated systematic reviews.
     nn-2-layer
     dynamic-nn
     adaboost
+    scaled-nb
 
 ### Feature Extractors Available
 
@@ -30,8 +31,8 @@ expanding the capabilities of ASReview for automated systematic reviews.
     doc2vec (scaled)
     labse
     mxbai
-    xlm-roberta
-    xlm-roberta-large
+    multilingual e5 large
+    gtr t5 large
 
 Explore the performance of these models in our [Simulation
 Gallery](https://jteijema.github.io/synergy-simulations-website/models.html)!
