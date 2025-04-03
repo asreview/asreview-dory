@@ -133,9 +133,10 @@ class NN2LayerClassifier(BaseNNClassifier):
 class WarmStartNNClassifier(BaseNNClassifier):
     """
     Neural network with warm-starting behavior.
-    
+
     Retains previous weights and uses them as initial state on subsequent fits.
     """
+
     name = "warmstart-nn"
     label = "Neural network (warm start, 2 hidden layers)"
 
@@ -180,7 +181,9 @@ class WarmStartNNClassifier(BaseNNClassifier):
                 model.set_weights(WarmStartNNClassifier._last_weights)
             except ValueError:
                 # Handle cases where the model architecture has changed
-                print("Warning: Previous weights do not match current model architecture.")
+                print(
+                    "Warning: Previous weights do not match current model architecture."
+                )
                 WarmStartNNClassifier._last_weights = None
         return model
 
