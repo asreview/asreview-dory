@@ -176,7 +176,12 @@ class WarmStartNNClassifier(BaseNNClassifier):
         )
 
         if WarmStartNNClassifier._last_weights is not None:
-            model.set_weights(WarmStartNNClassifier._last_weights)
+            try:
+                model.set_weights(WarmStartNNClassifier._last_weights)
+            except ValueError:
+                # Handle cases where the model architecture has changed
+                print("Warning: Previous weights do not match current model architecture.")
+                WarmStartNNClassifier._last_weights = None
         return model
 
     def fit(self, X, y, **kwargs):
