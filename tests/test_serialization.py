@@ -1,11 +1,29 @@
 from itertools import product
+from pathlib import Path
 
 import asreview as asr
 import pytest
-from asreview.extensions import extensions
-from asreview.extensions import get_extension
+from asreview.extensions import extensions, get_extension
+from asreview.models.balancers import Balanced
 from asreview.models.queriers import Max
 
+classifier_parameters = {
+    "svm": {"loss": "squared_hinge", "C": 0.15},
+    "xgboost": {"max_depth": 5},
+    "scaled-nb": {"alpha": 3.822},
+    "dynamic-nn": {"epochs": 30},
+    "nn-2-layer": {"epochs": 30},
+    "adaboost": {"n_estimators": 30},
+}
+
+feature_extractor_parameters = {
+    "labse": {"normalize": True},
+    "mxbai": {"normalize": True},
+    "sbert": {"normalize": True},
+    "multilingual-e5-large": {"normalize": True},
+    "gtr-t5-large": {"normalize": True},
+    "doc2vec": {"normalize": True},
+}
 
 # Get all classifiers and feature extractors from ASReview, filtering contrib models
 classifiers = [
@@ -24,21 +42,26 @@ test_ids = [
 ]
 
 
-# TODO: add parameters to classifier and feature_extractors
 @pytest.mark.parametrize("classifier, feature_extractor", pairs, ids=test_ids)
 def test_alc_to_and_from_meta(classifier, feature_extractor):
-    # Define Active Learning Cycle
     alc1 = asr.ActiveLearningCycle(
-        classifier=classifier.load()(),
-        feature_extractor=feature_extractor.load()(),
-        balancer=None,
+        classifier=classifier.load()(**classifier_parameters.get(classifier.name)),
+        feature_extractor=feature_extractor.load()(
+            **feature_extractor_parameters.get(feature_extractor.name)
+        ),
+        balancer=Balanced(ratio=5),
         querier=Max(),
     )
 
     alc2_meta = asr.ActiveLearningCycleData(
-        classifier=classifier.load()().name,
-        feature_extractor=classifier.load()().name,
+        classifier=classifier.name,
+        classifier_param=classifier_parameters.get(classifier.name),
+        feature_extractor=classifier.name,
+        feature_extractor_param=feature_extractor_parameters.get(
+            feature_extractor.name
+        ),
         balancer="balanced",
+        balancer_param={"ratio": 5},
         querier="max",
     )
 
@@ -91,26 +114,32 @@ def test_alc_to_and_from_meta(classifier, feature_extractor):
     ), "Querier parameters do not match"
 
 
-# TODO: add parameters to classifier and feature_extractors
 @pytest.mark.parametrize("classifier, feature_extractor", pairs, ids=test_ids)
-def test_alc_to_and_from_file(classifier, feature_extractor):
-    # Define Active Learning Cycle
+def test_alc_to_and_from_file(tmpdir, classifier, feature_extractor):
     alc1 = asr.ActiveLearningCycle(
-        classifier=classifier.load()(),
-        feature_extractor=feature_extractor.load()(),
-        balancer=None,
+        classifier=classifier.load()(classifier_parameters.get(classifier.name)),
+        feature_extractor=feature_extractor.load()(
+            feature_extractor_parameters.get(feature_extractor.name)
+        ),
+        balancer=Balanced(ratio=5),
         querier=Max(),
     )
 
     alc2_meta = asr.ActiveLearningCycleData(
-        classifier=classifier.load()().name,
-        feature_extractor=classifier.load()().name,
+        classifier=classifier.name,
+        classifier_param=classifier_parameters.get(classifier.name),
+        feature_extractor=classifier.name,
+        feature_extractor_param=feature_extractor_parameters.get(
+            feature_extractor.name
+        ),
         balancer="balanced",
+        balancer_param={"ratio": 5},
         querier="max",
     )
 
-    alc1.to_file("./alc1.json")
-    alc1_from_file = asr.ActiveLearningCycle.from_file("./alc1.json")
+    meta_file_path = Path(tmpdir, "alc1.json")
+    alc1.to_file(meta_file_path)
+    alc1_from_file = asr.ActiveLearningCycle.from_file(meta_file_path)
 
     alc2_from_meta = asr.ActiveLearningCycle.from_meta(alc2_meta)
 
