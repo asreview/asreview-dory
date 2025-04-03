@@ -27,6 +27,8 @@ class BaseNNClassifier(wrappers.SKLearnClassifier):
             model=self._build_nn_model, model_kwargs=kwargs, fit_kwargs=fit_kwargs
         )
 
+        print("model init")
+
     def _build_nn_model(self, X, y):
         raise NotImplementedError(
             "Subclasses should implement the _build_nn_model method."
@@ -126,3 +128,58 @@ class NN2LayerClassifier(BaseNNClassifier):
         )
 
         return model
+
+
+class WarmStartNNClassifier(BaseNNClassifier):
+    """
+    Neural network with warm-starting behavior.
+    
+    Retains previous weights and uses them as initial state on subsequent fits.
+    """
+    name = "warmstart-nn"
+    label = "Neural network (warm start, 2 hidden layers)"
+
+    _last_weights = None
+
+    def _build_nn_model(self, X, y):
+        input_dim = X.shape[1]
+
+        model = models.Sequential()
+        model.add(layers.Input(shape=(input_dim,)))
+        model.add(
+            layers.Dense(
+                128,
+                kernel_regularizer=regularizers.l2(0.01),
+                activity_regularizer=regularizers.l1(0.01),
+                activation="relu",
+            )
+        )
+        model.add(
+            layers.Dense(
+                128,
+                kernel_regularizer=regularizers.l2(0.01),
+                activity_regularizer=regularizers.l1(0.01),
+                activation="relu",
+            )
+        )
+        model.add(
+            layers.Dense(
+                y.shape[1] if len(y.shape) > 1 else 1,
+                activation="sigmoid",
+            )
+        )
+
+        model.compile(
+            loss="binary_crossentropy",
+            optimizer=optimizers.RMSprop(learning_rate=0.001),
+            metrics=["acc"],
+        )
+
+        if WarmStartNNClassifier._last_weights is not None:
+            model.set_weights(WarmStartNNClassifier._last_weights)
+        return model
+
+    def fit(self, X, y, **kwargs):
+        super().fit(X, y, **kwargs)
+        WarmStartNNClassifier._last_weights = self.model_.get_weights()
+        return self
