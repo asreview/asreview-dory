@@ -21,7 +21,7 @@ class Doc2VecWrapper(Pipeline):
         super().__init__(
             [
                 ("text_merger", TextMerger(columns=["title", "abstract"])),
-                ("tfidf", Doc2Vec(**kwargs)),
+                ("doc2vec", Doc2Vec(**kwargs)),
             ]
         )
 
