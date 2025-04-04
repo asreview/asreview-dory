@@ -13,6 +13,7 @@ classifier_parameters = {
     "scaled-nb": {"alpha": 3.822},
     "dynamic-nn": {"epochs": 30},
     "nn-2-layer": {"epochs": 30},
+    "warmstart-nn": {"epochs": 30},
     "adaboost": {"n_estimators": 30},
 }
 
