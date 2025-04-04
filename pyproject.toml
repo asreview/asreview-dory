@@ -44,6 +44,7 @@ write_to = "asreviewcontrib/nemo/_version.py"
 "adaboost" = "asreviewcontrib.nemo.classifiers.adaboost:AdaBoost"
 "dynamic-nn" = "asreviewcontrib.nemo.classifiers.neural_networks:DynamicNNClassifier"
 "nn-2-layer" = "asreviewcontrib.nemo.classifiers.neural_networks:NN2LayerClassifier"
+"warmstart-nn" = "asreviewcontrib.nemo.classifiers.neural_networks:WarmStartNNClassifier"
 "xgboost" = "asreviewcontrib.nemo.classifiers.xgboost:XGBoost"
 "scaled-nb" = "asreviewcontrib.nemo.classifiers.scaled_nb:ScaledNaiveBayes"
 
