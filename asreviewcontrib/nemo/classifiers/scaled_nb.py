@@ -16,13 +16,27 @@ class ScaledNaiveBayes(Pipeline):
     label = "Scaled Naive Bayes"
 
     def __init__(self, **kwargs):
+        scaler_params = {"feature_range": (1e-9, 1)}
+        classifier_params = {}
+
+        for key, value in kwargs.items():
+            if key.startswith("scaler__"):
+                scaler_params[key.split("__", 1)[1]] = value
+            elif key.startswith("classifier__"):
+                classifier_params[key.split("__", 1)[1]] = value
+            else:
+                classifier_params[key] = value
+        
+        if "feature_range" in scaler_params:
+            scaler_params["feature_range"] = tuple(scaler_params["feature_range"])
+
         super().__init__(
             [
                 (
                     "scaler",
-                    MinMaxScaler(feature_range=(1e-9, 1)),
+                    MinMaxScaler(**scaler_params),
                 ),
-                ("classifier", MultinomialNB(**kwargs)),
+                ("classifier", MultinomialNB(**classifier_params)),
             ]
         )
 
@@ -31,3 +45,20 @@ class ScaledNaiveBayes(Pipeline):
         if sample_weight is not None:
             return super().fit(X, y, classifier__sample_weight=sample_weight)
         return super().fit(X, y)
+    
+    def get_params(self, deep=True, instances=False):
+        """Get parameters for this pipeline.
+        
+        Parameters
+        ----------
+        deep: bool, default=True
+            If True, will return the parameters for this pipeline and
+            contained subobjects that are estimators.
+        instances: bool, default=False
+            If True, will return the instances of the estimators in the pipeline.
+        """
+        params = super().get_params(deep=deep)
+        if not instances:
+            params.pop("scaler", None)
+            params.pop("classifier", None)
+        return params

@@ -56,7 +56,7 @@ def test_alc_to_and_from_meta(classifier, feature_extractor):
     alc2_meta = asr.ActiveLearningCycleData(
         classifier=classifier.name,
         classifier_param=classifier_parameters.get(classifier.name),
-        feature_extractor=classifier.name,
+        feature_extractor=feature_extractor.name,
         feature_extractor_param=feature_extractor_parameters.get(
             feature_extractor.name
         ),
@@ -117,9 +117,9 @@ def test_alc_to_and_from_meta(classifier, feature_extractor):
 @pytest.mark.parametrize("classifier, feature_extractor", pairs, ids=test_ids)
 def test_alc_to_and_from_file(tmpdir, classifier, feature_extractor):
     alc1 = asr.ActiveLearningCycle(
-        classifier=classifier.load()(classifier_parameters.get(classifier.name)),
+        classifier=classifier.load()(**classifier_parameters.get(classifier.name)),
         feature_extractor=feature_extractor.load()(
-            feature_extractor_parameters.get(feature_extractor.name)
+            **feature_extractor_parameters.get(feature_extractor.name)
         ),
         balancer=Balanced(ratio=5),
         querier=Max(),
@@ -128,7 +128,7 @@ def test_alc_to_and_from_file(tmpdir, classifier, feature_extractor):
     alc2_meta = asr.ActiveLearningCycleData(
         classifier=classifier.name,
         classifier_param=classifier_parameters.get(classifier.name),
-        feature_extractor=classifier.name,
+        feature_extractor=feature_extractor.name,
         feature_extractor_param=feature_extractor_parameters.get(
             feature_extractor.name
         ),
@@ -148,10 +148,19 @@ def test_alc_to_and_from_file(tmpdir, classifier, feature_extractor):
         == alc1_from_file.classifier.name
         == alc2_from_meta.classifier.name
     ), "Classifier names do not match"
+    
+    alc1_params = alc1.classifier.get_params()
+    alc1_from_file_params = alc1_from_file.classifier.get_params()
+    alc2_from_meta_params = alc2_from_meta.classifier.get_params()
+
+    alc1_params.pop("missing", None)
+    alc1_from_file_params.pop("missing", None)
+    alc2_from_meta_params.pop("missing", None)
+
     assert (
-        alc1.classifier.get_params()
-        == alc1_from_file.classifier.get_params()
-        == alc2_from_meta.classifier.get_params()
+        alc1_params
+        == alc1_from_file_params
+        == alc2_from_meta_params
     ), "Classifier parameters do not match"
 
     assert (

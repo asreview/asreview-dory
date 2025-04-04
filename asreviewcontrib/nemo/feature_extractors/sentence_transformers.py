@@ -61,6 +61,14 @@ class BaseSentenceTransformer:
                 embeddings, precision=self.precision
             ).numpy()
         return embeddings
+    
+    def get_params(self):
+        return {
+            "model_name": self.model_name,
+            "normalize": self.normalize,
+            "quantize": self.quantize,
+            "precision": self.precision,
+        }
 
 
 class LaBSE(BaseSentenceTransformer):
@@ -71,8 +79,8 @@ class LaBSE(BaseSentenceTransformer):
     name = "labse"
     label = "LaBSE Transformer"
 
-    def __init__(self, model_name="sentence-transformers/LaBSE"):
-        super().__init__(model_name)
+    def __init__(self, model_name="sentence-transformers/LaBSE", **kwargs):
+        super().__init__(model_name=model_name, **kwargs)
 
 
 class MXBAI(BaseSentenceTransformer):
@@ -86,8 +94,9 @@ class MXBAI(BaseSentenceTransformer):
     def __init__(
         self,
         model_name="mixedbread-ai/mxbai-embed-large-v1",
+        **kwargs,
     ):
-        super().__init__(model_name)
+        super().__init__(model_name=model_name, **kwargs)
 
 
 class SBERT(BaseSentenceTransformer):
@@ -103,11 +112,12 @@ class SBERT(BaseSentenceTransformer):
         model_name="all-mpnet-base-v2",
         is_pretrained_sbert=True,
         pooling_mode="mean",
+        **kwargs,
     ):
         self.model_name = model_name
         self.is_pretrained_sbert = is_pretrained_sbert
         self.pooling_mode = pooling_mode
-        super().__init__(model_name)
+        super().__init__(model_name=model_name, **kwargs)
 
     def _load_model(self):
         if self.is_pretrained_sbert:
@@ -123,6 +133,11 @@ class SBERT(BaseSentenceTransformer):
             )
             return SentenceTransformer(modules=[word_embedding_model, pooling_layer])
 
+    def get_params(self):
+        params = super().get_params()
+        params["is_pretrained_sbert"] = self.is_pretrained_sbert
+        params["pooling_mode"] = self.pooling_mode
+        return params
 
 class MultilingualE5Large(BaseSentenceTransformer):
     """
@@ -133,8 +148,8 @@ class MultilingualE5Large(BaseSentenceTransformer):
     name = "multilingual-e5-large"
     label = "Multilingual E5 Large"
 
-    def __init__(self, model_name="intfloat/multilingual-e5-large"):
-        super().__init__(model_name)
+    def __init__(self, model_name="intfloat/multilingual-e5-large", **kwargs):
+        super().__init__(model_name=model_name, **kwargs)
 
 
 class GTR(BaseSentenceTransformer):
@@ -146,5 +161,5 @@ class GTR(BaseSentenceTransformer):
     name = "gtr-t5-large"
     label = "Google GTR"
 
-    def __init__(self, model_name="gtr-t5-large"):
-        super().__init__(model_name)
+    def __init__(self, model_name="gtr-t5-large", **kwargs):
+        super().__init__(model_name=model_name, **kwargs)

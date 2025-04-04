@@ -15,15 +15,40 @@ class Doc2VecWrapper(Pipeline):
     label = "Doc2Vec"
 
     def __init__(self, **kwargs):
-        if "ngram_range" in kwargs:
-            kwargs["ngram_range"] = tuple(kwargs["ngram_range"])
+        text_merger_params = {"columns": ["title", "abstract"]}
+        embedder_params = {}
+
+        for key, value in kwargs.items():
+            if key.startswith("text_merger__"):
+                text_merger_params[key.split("__", 1)[1]] = value
+            elif key.startswith("embedder__"):
+                embedder_params[key.split("__", 1)[1]] = value
+            else:
+                embedder_params[key] = value
 
         super().__init__(
             [
-                ("text_merger", TextMerger(columns=["title", "abstract"])),
-                ("tfidf", Doc2Vec(**kwargs)),
+                ("text_merger", TextMerger(**text_merger_params)),
+                ("embedder", Doc2Vec(**embedder_params)),
             ]
         )
+
+    def get_params(self, deep=True, instances=False):
+        """Get parameters for this pipeline.
+        
+        Parameters
+        ----------
+        deep: bool, default=True
+            If True, will return the parameters for this pipeline and
+            contained subobjects that are estimators.
+        instances: bool, default=False
+            If True, will return the instances of the estimators in the pipeline.
+        """
+        params = super().get_params(deep=deep)
+        if not instances:
+            params.pop("text_merger", None)
+            params.pop("embedder", None)
+        return params
 
 
 class Doc2Vec:

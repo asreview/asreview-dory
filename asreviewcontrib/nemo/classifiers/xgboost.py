@@ -51,6 +51,7 @@ class XGBoost(XGBClassifier):
         gamma=0,
         reg_lambda=1,
         random_state=None,
+        **kwargs,
     ):
         super().__init__(
             max_depth=max_depth,
@@ -61,4 +62,5 @@ class XGBoost(XGBClassifier):
             gamma=gamma,
             reg_lambda=reg_lambda,
             random_state=random_state,
+            **kwargs,
         )
