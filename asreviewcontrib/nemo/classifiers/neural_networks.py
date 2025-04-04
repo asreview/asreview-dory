@@ -27,7 +27,6 @@ class BaseNNClassifier(wrappers.SKLearnClassifier):
             model=self._build_nn_model, model_kwargs=kwargs, fit_kwargs=fit_kwargs
         )
 
-        print("model init")
 
     def _build_nn_model(self, X, y):
         raise NotImplementedError(
