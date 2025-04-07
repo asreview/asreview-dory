@@ -22,6 +22,7 @@ dependencies = [
     "numpy>=1.26.4",
     "scikit-learn>=1.6.1",
     "sentence-transformers>=3.4.1",
+    "accelerate>=1.0.0",
     "torch>=2.1.0",
     "xgboost>=2.1.4",
 ]
