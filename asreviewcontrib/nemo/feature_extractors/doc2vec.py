@@ -6,8 +6,7 @@ from gensim.models.doc2vec import Doc2Vec as GenSimDoc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from gensim.utils import simple_preprocess
 from sklearn.pipeline import Pipeline
-
-from asreviewcontrib.nemo.utils import min_max_normalize
+from sklearn.preprocessing import normalize as SKNormalize
 
 
 class Doc2VecWrapper(Pipeline):
@@ -102,6 +101,7 @@ class Doc2Vec:
         dm=2,
         dbow_words=False,
         normalize=True,
+        norm="l2",
         verbose=True,
     ):
         self.vector_size = int(vector_size)
@@ -113,6 +113,7 @@ class Doc2Vec:
         self.dm = int(dm)
         self.dbow_words = 1 if dbow_words else 0
         self.normalize = normalize
+        self.norm = norm
         self.verbose = verbose
         self._model_instance = None
 
@@ -173,7 +174,7 @@ class Doc2Vec:
         if self.normalize:
             if self.verbose:
                 print("Normalizing embeddings.")
-            X = min_max_normalize(X)
+            X = SKNormalize(X, norm=self.norm)
 
         return X
 

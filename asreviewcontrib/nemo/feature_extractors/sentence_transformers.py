@@ -9,7 +9,7 @@ __all__ = [
 from functools import cached_property
 
 from asreview.models.feature_extractors import TextMerger
-from sentence_transformers import SentenceTransformer, models
+from sentence_transformers import SentenceTransformer, quantize_embeddings
 
 
 class BaseSentenceTransformer:
@@ -20,7 +20,7 @@ class BaseSentenceTransformer:
     def __init__(
         self,
         model_name,
-        normalize=False,
+        normalize=True,
         quantize=False,
         precision="ubinary",
         verbose=True,
@@ -47,16 +47,11 @@ class BaseSentenceTransformer:
         if self.verbose:
             print("Embedding text...")
 
-        embeddings = self._model.encode(texts, show_progress_bar=self.verbose)
-
-        if self.normalize:
-            from asreviewcontrib.nemo.utils import min_max_normalize
-
-            embeddings = min_max_normalize(embeddings)
+        embeddings = self._model.encode(
+            texts, show_progress_bar=self.verbose, normalize_embeddings=self.normalize
+        )
 
         if self.quantize:
-            from sentence_transformers.quantization import quantize_embeddings
-
             embeddings = quantize_embeddings(
                 embeddings, precision=self.precision
             ).numpy()
@@ -107,37 +102,9 @@ class SBERT(BaseSentenceTransformer):
     name = "sbert"
     label = "mpnet Sentence BERT"
 
-    def __init__(
-        self,
-        model_name="all-mpnet-base-v2",
-        is_pretrained_sbert=True,
-        pooling_mode="mean",
-        **kwargs,
-    ):
-        self.model_name = model_name
-        self.is_pretrained_sbert = is_pretrained_sbert
-        self.pooling_mode = pooling_mode
-        super().__init__(model_name=model_name, **kwargs)
+    def __init__(self, model_name="all-mpnet-base-v2"):
+        super().__init__(model_name)
 
-    def _load_model(self):
-        if self.is_pretrained_sbert:
-            model = SentenceTransformer(self.model_name)
-            if self.verbose:
-                print(f"Model '{self.model_name}' has been loaded.")
-            return model
-        else:
-            word_embedding_model = models.Transformer(self.model_name)
-            pooling_layer = models.Pooling(
-                word_embedding_model.get_word_embedding_dimension(),
-                pooling_mode=self.pooling_mode,
-            )
-            return SentenceTransformer(modules=[word_embedding_model, pooling_layer])
-
-    def get_params(self):
-        params = super().get_params()
-        params["is_pretrained_sbert"] = self.is_pretrained_sbert
-        params["pooling_mode"] = self.pooling_mode
-        return params
 
 class MultilingualE5Large(BaseSentenceTransformer):
     """

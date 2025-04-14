@@ -16,12 +16,13 @@ keywords = ["systematic review"]
 requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-    "asreview>=2.0b0",
+    "asreview>=2.0b3",
     "gensim>=4.3.3",
-    "keras>=3.0.0",
+    "keras>=3.8.0",
     "numpy>=1.26.4",
     "scikit-learn>=1.6.1",
     "sentence-transformers>=3.4.1",
+    "accelerate>=1.0.0",
     "torch>=2.1.0",
     "xgboost>=2.1.4",
 ]
