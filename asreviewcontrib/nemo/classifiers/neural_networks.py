@@ -1,4 +1,4 @@
-__all__ = ["DynamicNNClassifier", "NN2LayerClassifier"]
+__all__ = ["DynamicNNClassifier", "NN2LayerClassifier", "WarmStartNNClassifier"]
 
 import os
 from math import ceil, log10
@@ -26,7 +26,6 @@ class BaseNNClassifier(wrappers.SKLearnClassifier):
         super().__init__(
             model=self._build_nn_model, model_kwargs=kwargs, fit_kwargs=fit_kwargs
         )
-
 
     def _build_nn_model(self, X, y):
         raise NotImplementedError(
