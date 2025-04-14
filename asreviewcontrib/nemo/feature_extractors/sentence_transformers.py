@@ -9,8 +9,7 @@ __all__ = [
 from functools import cached_property
 
 from asreview.models.feature_extractors import TextMerger
-from sentence_transformers import SentenceTransformer
-from sentence_transformers import quantize_embeddings
+from sentence_transformers import SentenceTransformer, quantize_embeddings
 
 
 class BaseSentenceTransformer:
