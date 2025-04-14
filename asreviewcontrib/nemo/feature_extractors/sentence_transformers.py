@@ -102,8 +102,8 @@ class SBERT(BaseSentenceTransformer):
     name = "sbert"
     label = "mpnet Sentence BERT"
 
-    def __init__(self, model_name="all-mpnet-base-v2"):
-        super().__init__(model_name)
+    def __init__(self, model_name="all-mpnet-base-v2", **kwargs):
+        super().__init__(model_name=model_name, **kwargs)
 
 
 class MultilingualE5Large(BaseSentenceTransformer):
