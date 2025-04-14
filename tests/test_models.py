@@ -9,7 +9,6 @@ from asreview.extensions import get_extension
 from asreview.models.queriers import Max
 
 from asreviewcontrib.nemo.entrypoint import NemoEntryPoint
-from asreviewcontrib.nemo.utils import min_max_normalize
 
 # Define dataset path
 dataset_path = Path("tests/data/generic_labels.csv")
@@ -67,7 +66,3 @@ def test_get_all_models():
     assert len(NemoEntryPoint()._get_all_models()) == 12
 
 
-def test_min_max_normalize():
-    normalized = min_max_normalize([5, 10, 15, 20, 25])
-    assert normalized.min() >= 0.0, "Minimum value is below 0"
-    assert normalized.max() <= 1.0, "Maximum value is above 1"
