@@ -136,7 +136,7 @@ def test_heavy_h3_preset():
         in simulate._results["classifier"].unique()
     ), "Classifier is not in results."
     assert (
-        get_extension("models.feature_extractors", "sbert").load()().name
+        get_extension("models.feature_extractors", "mxbai").load()().name
         in simulate._results["feature_extractor"].unique()
     ), "Feature extractor is not in results."
 
