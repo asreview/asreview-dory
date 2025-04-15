@@ -3,8 +3,7 @@ from pathlib import Path
 import asreview as asr
 import pandas as pd
 import pytest
-from asreview.extensions import extensions
-from asreview.extensions import get_extension
+from asreview.extensions import extensions, get_extension
 from asreview.models.balancers import Balanced
 from asreview.models.queriers import Max
 
@@ -74,12 +73,12 @@ def test_language_agnostic_l2_preset():
     # Define Active Learning Cycle
     alc = asr.ActiveLearningCycle(
         classifier=get_extension("models.classifiers", "svm").load()(
-            loss="squared_hinge", C=0.4
+            loss="squared_hinge", C=0.19
         ),
         feature_extractor=get_extension(
             "models.feature_extractors", "multilingual-e5-large"
-        ).load()(),
-        balancer=Balanced(ratio=5),
+        ).load()(normalize=True),
+        balancer=Balanced(ratio=9.9),
         querier=Max(),
     )
     # Run simulation
@@ -113,10 +112,12 @@ def test_heavy_h3_preset():
     # Define Active Learning Cycle
     alc = asr.ActiveLearningCycle(
         classifier=get_extension("models.classifiers", "svm").load()(
-            loss="squared_hinge", C=0.4
+            loss="squared_hinge", C=0.13
         ),
-        feature_extractor=get_extension("models.feature_extractors", "sbert").load()(),
-        balancer=Balanced(ratio=5),
+        feature_extractor=get_extension("models.feature_extractors", "mxbai").load()(
+            normalize=True
+        ),
+        balancer=Balanced(ratio=9.7),
         querier=Max(),
     )
     # Run simulation
@@ -136,12 +137,10 @@ def test_heavy_h3_preset():
         in simulate._results["classifier"].unique()
     ), "Classifier is not in results."
     assert (
-        get_extension("models.feature_extractors", "sbert").load()().name
+        get_extension("models.feature_extractors", "mxbai").load()().name
         in simulate._results["feature_extractor"].unique()
     ), "Feature extractor is not in results."
 
 
 def test_get_all_models():
     assert len(NemoEntryPoint()._get_all_models()) == 12
-
-

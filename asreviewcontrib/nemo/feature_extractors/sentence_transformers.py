@@ -66,8 +66,8 @@ class LaBSE(BaseSentenceTransformer):
     name = "labse"
     label = "LaBSE Transformer"
 
-    def __init__(self, model_name="sentence-transformers/LaBSE"):
-        super().__init__(model_name)
+    def __init__(self, model_name="sentence-transformers/LaBSE", **kwargs):
+        super().__init__(model_name=model_name, **kwargs)
 
 
 class MXBAI(BaseSentenceTransformer):
@@ -78,11 +78,8 @@ class MXBAI(BaseSentenceTransformer):
     name = "mxbai"
     label = "mxbai Sentence BERT"
 
-    def __init__(
-        self,
-        model_name="mixedbread-ai/mxbai-embed-large-v1",
-    ):
-        super().__init__(model_name)
+    def __init__(self, model_name="mixedbread-ai/mxbai-embed-large-v1", **kwargs):
+        super().__init__(model_name=model_name, **kwargs)
 
 
 class SBERT(BaseSentenceTransformer):
@@ -93,8 +90,8 @@ class SBERT(BaseSentenceTransformer):
     name = "sbert"
     label = "mpnet Sentence BERT"
 
-    def __init__(self, model_name="all-mpnet-base-v2"):
-        super().__init__(model_name)
+    def __init__(self, model_name="all-mpnet-base-v2", **kwargs):
+        super().__init__(model_name=model_name, **kwargs)
 
 
 class MultilingualE5Large(BaseSentenceTransformer):
@@ -106,8 +103,8 @@ class MultilingualE5Large(BaseSentenceTransformer):
     name = "multilingual-e5-large"
     label = "Multilingual E5 Large"
 
-    def __init__(self, model_name="intfloat/multilingual-e5-large"):
-        super().__init__(model_name)
+    def __init__(self, model_name="intfloat/multilingual-e5-large", **kwargs):
+        super().__init__(model_name=model_name, **kwargs)
 
 
 class GTR(BaseSentenceTransformer):
@@ -119,5 +116,5 @@ class GTR(BaseSentenceTransformer):
     name = "gtr-t5-large"
     label = "Google GTR"
 
-    def __init__(self, model_name="gtr-t5-large"):
-        super().__init__(model_name)
+    def __init__(self, model_name="gtr-t5-large", **kwargs):
+        super().__init__(model_name=model_name, **kwargs)
