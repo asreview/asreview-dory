@@ -56,7 +56,7 @@ class BaseSentenceTransformer:
                 embeddings, precision=self.precision
             ).numpy()
         return embeddings
-    
+
     def get_params(self):
         return {
             "model_name": self.model_name,
@@ -86,11 +86,7 @@ class MXBAI(BaseSentenceTransformer):
     name = "mxbai"
     label = "mxbai Sentence BERT"
 
-    def __init__(
-        self,
-        model_name="mixedbread-ai/mxbai-embed-large-v1",
-        **kwargs,
-    ):
+    def __init__(self, model_name="mixedbread-ai/mxbai-embed-large-v1", **kwargs):
         super().__init__(model_name=model_name, **kwargs)
 
 
