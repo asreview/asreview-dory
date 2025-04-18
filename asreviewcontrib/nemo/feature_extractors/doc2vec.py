@@ -7,50 +7,68 @@ from gensim.models.doc2vec import TaggedDocument
 from gensim.utils import simple_preprocess
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import normalize as SKNormalize
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class Doc2VecWrapper(Pipeline):
     name = "doc2vec"
     label = "Doc2Vec"
 
-    def __init__(self, **kwargs):
-        text_merger_params = {"columns": ["title", "abstract"]}
-        embedder_params = {}
-
-        for key, value in kwargs.items():
-            if key.startswith("text_merger__"):
-                text_merger_params[key.split("__", 1)[1]] = value
-            elif key.startswith("embedder__"):
-                embedder_params[key.split("__", 1)[1]] = value
-            else:
-                embedder_params[key] = value
-
+    def __init__(
+        self,
+        columns=None,
+        sep=" ",
+        vector_size=40,
+        epochs=33,
+        min_count=1,
+        n_jobs=1,
+        window=7,
+        dm_concat=False,
+        dm=2,
+        dbow_words=False,
+        normalize=True,
+        norm="l2",
+        verbose=True,
+        **kwargs,
+    ):
+        self.columns = columns or ["title", "abstract"]
+        self.sep = sep
+        self.vector_size = vector_size
+        self.epochs = epochs
+        self.min_count = min_count
+        self.n_jobs = n_jobs
+        self.window = window
+        self.dm_concat = 1 if dm_concat else 0
+        self.dm = dm
+        self.dbow_words = 1 if dbow_words else 0
+        self.normalize = normalize
+        self.norm = norm
+        self.verbose = verbose
         super().__init__(
             [
-                ("text_merger", TextMerger(**text_merger_params)),
-                ("embedder", Doc2Vec(**embedder_params)),
+                ("text_merger", TextMerger(columns=self.columns, sep=self.sep)),
+                (
+                    "embedder",
+                    Doc2Vec(
+                        vector_size=self.vector_size,
+                        epochs=self.epochs,
+                        min_count=self.min_count,
+                        n_jobs=self.n_jobs,
+                        window=self.window,
+                        dm_concat=self.dm_concat,
+                        dm=self.dm,
+                        dbow_words=self.dbow_words,
+                        normalize=self.normalize,
+                        norm=self.norm,
+                        verbose=self.verbose,
+                        **kwargs,
+                    ),
+                ),
             ]
         )
 
-    def get_params(self, deep=True, instances=False):
-        """Get parameters for this pipeline.
-        
-        Parameters
-        ----------
-        deep: bool, default=True
-            If True, will return the parameters for this pipeline and
-            contained subobjects that are estimators.
-        instances: bool, default=False
-            If True, will return the instances of the estimators in the pipeline.
-        """
-        params = super().get_params(deep=deep)
-        if not instances:
-            params.pop("text_merger", None)
-            params.pop("embedder", None)
-        return params
 
-
-class Doc2Vec:
+class Doc2Vec(BaseEstimator, TransformerMixin):
     """
     Doc2Vec feature extraction technique (``doc2vec``).
 

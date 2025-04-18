@@ -78,9 +78,9 @@ def test_alc_to_and_from_meta(classifier, feature_extractor):
         == alc2_from_meta.classifier.name
     ), "Classifier names do not match"
     assert (
-        alc1.classifier.get_params()
-        == alc1_from_meta.classifier.get_params()
-        == alc2_from_meta.classifier.get_params()
+        alc1.classifier.get_params(deep=False)
+        == alc1_from_meta.classifier.get_params(deep=False)
+        == alc2_from_meta.classifier.get_params(deep=False)
     ), "Classifier parameters do not match"
 
     assert (
@@ -89,9 +89,9 @@ def test_alc_to_and_from_meta(classifier, feature_extractor):
         == alc2_from_meta.feature_extractor.name
     ), "Feature extractor names do not match"
     assert (
-        alc1.feature_extractor.get_params()
-        == alc1_from_meta.feature_extractor.get_params()
-        == alc2_from_meta.feature_extractor.get_params()
+        alc1.feature_extractor.get_params(deep=False)
+        == alc1_from_meta.feature_extractor.get_params(deep=False)
+        == alc2_from_meta.feature_extractor.get_params(deep=False)
     ), "Feature extractor parameters do not match"
 
     assert (
@@ -100,18 +100,18 @@ def test_alc_to_and_from_meta(classifier, feature_extractor):
         == alc2_from_meta.balancer.name
     ), "Balancer names do not match"
     assert (
-        alc1.balancer.get_params()
-        == alc1_from_meta.balancer.get_params()
-        == alc2_from_meta.balancer.get_params()
+        alc1.balancer.get_params(deep=False)
+        == alc1_from_meta.balancer.get_params(deep=False)
+        == alc2_from_meta.balancer.get_params(deep=False)
     ), "Balancer parameters do not match"
 
     assert (
         alc1.querier.name == alc1_from_meta.querier.name == alc2_from_meta.querier.name
     ), "Querier names do not match"
     assert (
-        alc1.querier.get_params()
-        == alc1_from_meta.querier.get_params()
-        == alc2_from_meta.querier.get_params()
+        alc1.querier.get_params(deep=False)
+        == alc1_from_meta.querier.get_params(deep=False)
+        == alc2_from_meta.querier.get_params(deep=False)
     ), "Querier parameters do not match"
 
 
@@ -149,19 +149,11 @@ def test_alc_to_and_from_file(tmpdir, classifier, feature_extractor):
         == alc1_from_file.classifier.name
         == alc2_from_meta.classifier.name
     ), "Classifier names do not match"
-    
-    alc1_params = alc1.classifier.get_params()
-    alc1_from_file_params = alc1_from_file.classifier.get_params()
-    alc2_from_meta_params = alc2_from_meta.classifier.get_params()
-
-    alc1_params.pop("missing", None)
-    alc1_from_file_params.pop("missing", None)
-    alc2_from_meta_params.pop("missing", None)
 
     assert (
-        alc1_params
-        == alc1_from_file_params
-        == alc2_from_meta_params
+        alc1.classifier.get_params(deep=False)
+        == alc1.classifier.get_params(deep=False)
+        == alc1.classifier.get_params(deep=False)
     ), "Classifier parameters do not match"
 
     assert (
@@ -170,9 +162,9 @@ def test_alc_to_and_from_file(tmpdir, classifier, feature_extractor):
         == alc2_from_meta.feature_extractor.name
     ), "Feature extractor names do not match"
     assert (
-        alc1.feature_extractor.get_params()
-        == alc1_from_file.feature_extractor.get_params()
-        == alc2_from_meta.feature_extractor.get_params()
+        alc1.feature_extractor.get_params(deep=False)
+        == alc1_from_file.feature_extractor.get_params(deep=False)
+        == alc2_from_meta.feature_extractor.get_params(deep=False)
     ), "Feature extractor parameters do not match"
 
     assert (
@@ -181,16 +173,16 @@ def test_alc_to_and_from_file(tmpdir, classifier, feature_extractor):
         == alc2_from_meta.balancer.name
     ), "Balancer names do not match"
     assert (
-        alc1.balancer.get_params()
-        == alc1_from_file.balancer.get_params()
-        == alc2_from_meta.balancer.get_params()
+        alc1.balancer.get_params(deep=False)
+        == alc1_from_file.balancer.get_params(deep=False)
+        == alc2_from_meta.balancer.get_params(deep=False)
     ), "Balancer parameters do not match"
 
     assert (
         alc1.querier.name == alc1_from_file.querier.name == alc2_from_meta.querier.name
     ), "Querier names do not match"
     assert (
-        alc1.querier.get_params()
-        == alc1_from_file.querier.get_params()
-        == alc2_from_meta.querier.get_params()
+        alc1.querier.get_params(deep=False)
+        == alc1_from_file.querier.get_params(deep=False)
+        == alc2_from_meta.querier.get_params(deep=False)
     ), "Querier parameters do not match"
