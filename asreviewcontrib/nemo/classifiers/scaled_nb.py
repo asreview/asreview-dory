@@ -24,7 +24,7 @@ class ScaledNaiveBayes(Pipeline):
                     "scaler",
                     MinMaxScaler(feature_range=self.feature_range),
                 ),
-                ("classifier", MultinomialNB(alpha=self.alpha)),
+                ("classifier", MultinomialNB(alpha=self.alpha, **kwargs)),
             ]
         )
 
