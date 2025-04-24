@@ -47,7 +47,6 @@ write_to = "asreviewcontrib/nemo/_version.py"
 "nn-2-layer" = "asreviewcontrib.nemo.classifiers.neural_networks:NN2LayerClassifier"
 "warmstart-nn" = "asreviewcontrib.nemo.classifiers.neural_networks:WarmStartNNClassifier"
 "xgboost" = "asreviewcontrib.nemo.classifiers.xgboost:XGBoost"
-"scaled-nb" = "asreviewcontrib.nemo.classifiers.scaled_nb:ScaledNaiveBayes"
 
 [project.entry-points."asreview.models.feature_extractors"]
 "doc2vec" = "asreviewcontrib.nemo.feature_extractors.doc2vec:Doc2VecWrapper"
