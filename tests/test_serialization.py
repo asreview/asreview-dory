@@ -10,7 +10,6 @@ from asreview.models.queriers import Max
 classifier_parameters = {
     "svm": {"loss": "squared_hinge", "C": 0.15},
     "xgboost": {"max_depth": 5},
-    "scaled-nb": {"alpha": 3.822},
     "dynamic-nn": {"epochs": 30},
     "nn-2-layer": {"epochs": 30},
     "warmstart-nn": {"epochs": 30},
