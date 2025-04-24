@@ -7,25 +7,68 @@ from gensim.models.doc2vec import TaggedDocument
 from gensim.utils import simple_preprocess
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import normalize as SKNormalize
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class Doc2VecWrapper(Pipeline):
     name = "doc2vec"
     label = "Doc2Vec"
 
-    def __init__(self, **kwargs):
-        if "ngram_range" in kwargs:
-            kwargs["ngram_range"] = tuple(kwargs["ngram_range"])
-
+    def __init__(
+        self,
+        columns=None,
+        sep=" ",
+        vector_size=40,
+        epochs=33,
+        min_count=1,
+        n_jobs=1,
+        window=7,
+        dm_concat=False,
+        dm=2,
+        dbow_words=False,
+        normalize=True,
+        norm="l2",
+        verbose=True,
+        **kwargs,
+    ):
+        self.columns = columns or ["title", "abstract"]
+        self.sep = sep
+        self.vector_size = vector_size
+        self.epochs = epochs
+        self.min_count = min_count
+        self.n_jobs = n_jobs
+        self.window = window
+        self.dm_concat = 1 if dm_concat else 0
+        self.dm = dm
+        self.dbow_words = 1 if dbow_words else 0
+        self.normalize = normalize
+        self.norm = norm
+        self.verbose = verbose
         super().__init__(
             [
-                ("text_merger", TextMerger(columns=["title", "abstract"])),
-                ("doc2vec", Doc2Vec(**kwargs)),
+                ("text_merger", TextMerger(columns=self.columns, sep=self.sep)),
+                (
+                    "embedder",
+                    Doc2Vec(
+                        vector_size=self.vector_size,
+                        epochs=self.epochs,
+                        min_count=self.min_count,
+                        n_jobs=self.n_jobs,
+                        window=self.window,
+                        dm_concat=self.dm_concat,
+                        dm=self.dm,
+                        dbow_words=self.dbow_words,
+                        normalize=self.normalize,
+                        norm=self.norm,
+                        verbose=self.verbose,
+                        **kwargs,
+                    ),
+                ),
             ]
         )
 
 
-class Doc2Vec:
+class Doc2Vec(BaseEstimator, TransformerMixin):
     """
     Doc2Vec feature extraction technique (``doc2vec``).
 

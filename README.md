@@ -23,7 +23,6 @@ expanding the capabilities of ASReview for automated systematic reviews.
     nn-2-layer
     dynamic-nn
     adaboost
-    scaled-nb
 
 ### Feature Extractors Available
 
