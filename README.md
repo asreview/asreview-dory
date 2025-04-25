@@ -5,6 +5,15 @@ software](https://github.com/asreview/asreview), providing new models for
 classification and feature extraction. It is maintained by the [ASReview Lab
 Developers](https://asreview.ai/about).
 
+### Prerequisites for XGBoost on Mac OSX
+
+If you are using Max OSX and plan to use XGBoost, you should first install OpenMP:
+```bash
+brew install libomp
+```
+
+### Installation
+
 You can install ASReview NEMO via PyPI using the following command:
 
 ```bash
