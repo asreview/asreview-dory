@@ -143,4 +143,4 @@ def test_heavy_h3_preset():
 
 
 def test_get_all_models():
-    assert len(NemoEntryPoint()._get_all_models()) == 11
+    assert len(NemoEntryPoint()._get_all_models()) == 10
