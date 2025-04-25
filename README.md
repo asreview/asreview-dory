@@ -27,7 +27,6 @@ expanding the capabilities of ASReview for automated systematic reviews.
 ### Feature Extractors Available
 
     sbert
-    doc2vec (scaled)
     labse
     mxbai
     multilingual e5 large

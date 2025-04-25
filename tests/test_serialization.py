@@ -22,7 +22,6 @@ feature_extractor_parameters = {
     "sbert": {"normalize": True},
     "multilingual-e5-large": {"normalize": True},
     "gtr-t5-large": {"normalize": True},
-    "doc2vec": {"normalize": True},
 }
 
 # Get all classifiers and feature extractors from ASReview, filtering contrib models
