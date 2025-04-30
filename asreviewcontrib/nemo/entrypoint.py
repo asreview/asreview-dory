@@ -47,7 +47,14 @@ class NemoEntryPoint:
     def cache(self, model_names) -> None:
         for name in model_names:
             try:
-                load_extension("models.feature_extractors", name)
+                entry_point = load_extension("models.feature_extractors", name)
+                try:
+                    # Try to load sentence-transformers
+                    entry_point(verbose=False).named_steps[
+                        "sentence_transformer"
+                    ]._load_model()
+                except KeyError:
+                    pass
                 print(f"Loaded FE {name}")
             except ValueError:
                 try:
