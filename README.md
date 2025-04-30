@@ -1,49 +1,44 @@
-# ASReview NEMO: New Exciting Models
+# ASReview Dory
 
 This repository is an expansion to the [ASReview
 software](https://github.com/asreview/asreview), providing new models for
 classification and feature extraction. It is maintained by the [ASReview Lab
 Developers](https://asreview.ai/about).
 
-### Prerequisites for XGBoost on Mac OSX
+## Prerequisites for XGBoost on Mac OSX
 
 If you are using Max OSX and plan to use XGBoost, you should first install OpenMP:
 ```bash
 brew install libomp
 ```
 
-### Installation
+## Installation
 
-You can install ASReview NEMO via PyPI using the following command:
+You can install ASReview Dory via PyPI using the following command:
 
 ```bash
-pip install asreview-nemo
+pip install asreview-dory
 ```
 
-## Overview
+## Feature Extractors Available
 
-ASReview NEMO (New Exciting Models) is a plugin for the ASReview software that
-provides new and exciting classification and feature extraction models,
-expanding the capabilities of ASReview for automated systematic reviews.
+    GTR T5
+    LaBSE
+    MPNet
+    Multilingual E5
+    MXBAI
 
-### Classifiers Available
+## Classifiers Available
 
-    xgboost
-    nn-2-layer
-    dynamic-nn
-    adaboost
-
-### Feature Extractors Available
-
-    sbert
-    labse
-    mxbai
-    multilingual e5 large
-    gtr t5 large
+    AdaBoost
+    Neural Network - 2-Layer
+    Neural Network - Dynamic
+    Neural Network - Warm Start
+    XGBoost
 
 Explore the performance of these models in our [Simulation
 Gallery](https://jteijema.github.io/synergy-simulations-website/models.html)!
-Look for the 🐟 icon to spot the NEMO models.
+Look for the 🐟 icon to spot the Dory models.
 
 ## Usage
 
@@ -61,13 +56,13 @@ You can pre-load models to avoid downloading them during runtime by using the
 `cache` command. To `cache` specific models, such as `xgboost` and `sbert`, run:
 
 ```console
-asreview nemo cache nb xgboost sbert
+asreview dory cache nb xgboost sbert
 ```
 
 To cache all available models at once, use:
 
 ```console
-asreview nemo cache-all
+asreview dory cache-all
 ```
 
 ## Compatibility
@@ -99,5 +94,5 @@ Developers.
 
 ---
 
-Enjoy using ASReview NEMO! We hope these new models enhance your systematic
+Enjoy using ASReview Dory! We hope these new models enhance your systematic
 review processes.

@@ -7,7 +7,7 @@ from asreview.extensions import extensions, get_extension
 from asreview.models.balancers import Balanced
 from asreview.models.queriers import Max
 
-from asreviewcontrib.nemo.entrypoint import NemoEntryPoint
+from asreviewcontrib.dory.entrypoint import DoryEntryPoint
 
 # Define dataset path
 dataset_path = Path("tests/data/generic_labels.csv")
@@ -143,4 +143,4 @@ def test_heavy_h3_preset():
 
 
 def test_get_all_models():
-    assert len(NemoEntryPoint()._get_all_models()) == 10
+    assert len(DoryEntryPoint()._get_all_models()) == 10
