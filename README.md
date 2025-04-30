@@ -1,4 +1,4 @@
-# ASReview Dory
+# ASReview Dory 🐟
 
 This repository is an expansion to the [ASReview
 software](https://github.com/asreview/asreview), providing new models for
