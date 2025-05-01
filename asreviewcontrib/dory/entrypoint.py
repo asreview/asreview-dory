@@ -4,22 +4,22 @@ from itertools import chain
 from asreview.extensions import extensions, load_extension
 
 
-class NemoEntryPoint:
-    description = "NEMO for ASReview."
-    extension_name = "asreview-nemo"
+class DoryEntryPoint:
+    description = "Dory for ASReview."
+    extension_name = "asreview-dory"
 
     @property
     def version(self):
         try:
-            from asreviewcontrib.nemo._version import __version__
+            from asreviewcontrib.dory._version import __version__
 
             return __version__
         except ImportError:
             return "unknown"
 
     def execute(self, argv):
-        parser = argparse.ArgumentParser(prog="asreview nemo")
-        subparsers = parser.add_subparsers(dest="command", help="Subcommands for nemo")
+        parser = argparse.ArgumentParser(prog="asreview dory")
+        subparsers = parser.add_subparsers(dest="command", help="Subcommands for Dory")
 
         cache_parser = subparsers.add_parser(
             "cache", help="Cache specified entry points"
@@ -68,7 +68,7 @@ class NemoEntryPoint:
         classifiers = extensions("models.classifiers")
         return list(
             chain(
-                [fe for fe in feature_extractors if "asreviewcontrib.nemo" in str(fe)],
-                [cls for cls in classifiers if "asreviewcontrib.nemo" in str(cls)],
+                [fe for fe in feature_extractors if "asreviewcontrib.dory" in str(fe)],
+                [cls for cls in classifiers if "asreviewcontrib.dory" in str(cls)],
             )
         )

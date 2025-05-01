@@ -1,11 +1,11 @@
 cff-version: 1.2.0
-title: ASReview NEMO - A tool for AI-assisted systematic reviews
-message: "If you use the ASReview NEMO software in your work, please cite it as indicated."
+title: ASReview Dory - New and exciting models for ASReview
+message: "If you use the ASReview Dory software in your work, please cite it as indicated."
 type: software
 authors:
   - given-names: ASReview LAB developers
     affiliation: Utrecht University
     email: asreview@uu.nl
-version: 0.1.0
+version: 1.0
 date-released: 2024-06-01
-url: "https://github.com/asreview/asreview-nemo/"
+url: "https://github.com/asreview/asreview-dory/"

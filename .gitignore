@@ -160,7 +160,7 @@ cython_debug/
 #.idea/
 
 # Setup Tools SCM
-asreviewcontrib/nemo/_version.py
+asreviewcontrib/dory/_version.py
 
 # vscode
 .vscode/settings.json
