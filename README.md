@@ -1,16 +1,11 @@
 # ASReview Dory 🐟
 
-This repository is an expansion to the [ASReview
+> ❣️❗ ASReview Dory is part of the upcoming ASReview LAB version 2 release ❗❣️ 
+
+ASReview Dory is an extension to the [ASReview
 software](https://github.com/asreview/asreview), providing new models for
-classification and feature extraction. It is maintained by the [ASReview Lab
-Developers](https://asreview.ai/about).
-
-## Prerequisites for XGBoost on Mac OSX
-
-If you are using Max OSX and plan to use XGBoost, you should first install OpenMP:
-```bash
-brew install libomp
-```
+classification and feature extraction. The extension is maintained by the
+ASReview LAB team.
 
 ## Installation
 
@@ -20,7 +15,12 @@ You can install ASReview Dory via PyPI using the following command:
 pip install asreview-dory
 ```
 
-## Feature Extractors Available
+> ⚠️ **XGBoost on MacOS**
+> If you are using macOS and plan to use XGBoost, you should first install OpenMP (`brew install libomp`)
+
+## Model components
+
+Feature Extractors:
 
     GTR T5
     LaBSE
@@ -28,7 +28,7 @@ pip install asreview-dory
     Multilingual E5
     MXBAI
 
-## Classifiers Available
+Classifiers:
 
     AdaBoost
     Neural Network - 2-Layer
@@ -67,7 +67,7 @@ asreview dory cache-all
 
 ## Compatibility
 
-This plugin is compatible with `ASReview version 2+`. Ensure that your ASReview
+This plugin is compatible with ASReview version 2 or later. Ensure that your ASReview
 installation is up-to-date to avoid compatibility issues.
 
 The development of this plugin is done in parallel with the development of the
