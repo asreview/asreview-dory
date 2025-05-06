@@ -14,6 +14,52 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 
 
+class SentenceTransformerPipeline(Pipeline):
+    default_model_name = None
+    name = None
+    label = None
+
+    def __init__(
+        self,
+        columns=None,
+        sep=" ",
+        model_name=None,
+        normalize=True,
+        quantize=False,
+        precision="ubinary",
+        verbose=True,
+    ):
+        self.columns = ["title", "abstract"] if columns is None else columns
+        self.sep = sep
+        self.model_name = model_name or self.default_model_name
+        self.normalize = normalize
+        self.quantize = quantize
+        self.precision = precision
+        self.verbose = verbose
+
+        steps = [
+            ("text_merger", TextMerger(columns=self.columns, sep=self.sep)),
+            (
+                "sentence_transformer",
+                BaseSentenceTransformer(
+                    model_name=self.model_name,
+                    normalize=self.normalize,
+                    quantize=self.quantize,
+                    precision=self.precision,
+                    verbose=self.verbose,
+                ),
+            ),
+        ]
+
+        super().__init__(steps)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} model='{self.model_name}'>"
+
+    def __str__(self):
+        return self.__repr__()
+
+
 class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
     """
     Base class for sentence transformer feature extractors.
@@ -35,16 +81,14 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
 
     @cached_property
     def _model(self):
-        return self._load_model()
-
-    def _load_model(self):
         model = SentenceTransformer(self.model_name)
         if self.verbose:
             print(f"Model '{self.model_name}' has been loaded.")
         return model
 
     def fit(self, X, y=None):
-        # Necessary for being last step of a pipeline
+        # Required func for last Pipeline step, but not required
+        # for sentence-transformers, so return self
         return self
 
     def fit_transform(self, X, y=None):
@@ -62,218 +106,31 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
         return embeddings
 
 
-class LaBSE(Pipeline):
-    """
-    LaBSE Feature Extractor using the 'sentence-transformers/LaBSE' model.
-    """
-
+class LaBSE(SentenceTransformerPipeline):
     name = "labse"
     label = "LaBSE Transformer"
-
-    def __init__(
-        self,
-        columns=None,
-        sep=" ",
-        model_name="sentence-transformers/LaBSE",
-        normalize=True,
-        quantize=False,
-        precision="ubinary",
-        verbose=True,
-    ):
-        self.columns = ["title", "abstract"] if columns is None else columns
-        self.sep = sep
-        self.model_name = model_name
-        self.normalize = normalize
-        self.quantize = quantize
-        self.precision = precision
-        self.verbose = verbose
-
-        super().__init__(
-            [
-                ("text_merger", TextMerger(columns=self.columns, sep=self.sep)),
-                (
-                    "sentence_transformer",
-                    BaseSentenceTransformer(
-                        model_name=self.model_name,
-                        normalize=self.normalize,
-                        quantize=self.quantize,
-                        precision=self.precision,
-                        verbose=self.verbose,
-                    ),
-                ),
-            ]
-        )
+    default_model_name = "sentence-transformers/LaBSE"
 
 
-class MXBAI(Pipeline):
-    """
-    MXBAI Feature Extractor based on 'mixedbread-ai/mxbai-embed-large-v1'.
-    """
-
+class MXBAI(SentenceTransformerPipeline):
     name = "mxbai"
     label = "mxbai Sentence BERT"
-
-    def __init__(
-        self,
-        columns=None,
-        sep=" ",
-        model_name="mixedbread-ai/mxbai-embed-large-v1",
-        normalize=True,
-        quantize=False,
-        precision="ubinary",
-        verbose=True,
-    ):
-        self.columns = ["title", "abstract"] if columns is None else columns
-        self.sep = sep
-        self.model_name = model_name
-        self.normalize = normalize
-        self.quantize = quantize
-        self.precision = precision
-        self.verbose = verbose
-
-        super().__init__(
-            [
-                ("text_merger", TextMerger(columns=self.columns, sep=self.sep)),
-                (
-                    "sentence_transformer",
-                    BaseSentenceTransformer(
-                        model_name=self.model_name,
-                        normalize=self.normalize,
-                        quantize=self.quantize,
-                        precision=self.precision,
-                        verbose=self.verbose,
-                    ),
-                ),
-            ]
-        )
+    default_model_name = "mixedbread-ai/mxbai-embed-large-v1"
 
 
-class SBERT(Pipeline):
-    """
-    Sentence BERT feature extractor.
-    """
-
+class SBERT(SentenceTransformerPipeline):
     name = "sbert"
     label = "mpnet Sentence BERT"
-
-    def __init__(
-        self,
-        columns=None,
-        sep=" ",
-        model_name="all-mpnet-base-v2",
-        normalize=True,
-        quantize=False,
-        precision="ubinary",
-        verbose=True,
-    ):
-        self.columns = ["title", "abstract"] if columns is None else columns
-        self.sep = sep
-        self.model_name = model_name
-        self.normalize = normalize
-        self.quantize = quantize
-        self.precision = precision
-        self.verbose = verbose
-
-        super().__init__(
-            [
-                ("text_merger", TextMerger(columns=self.columns, sep=self.sep)),
-                (
-                    "sentence_transformer",
-                    BaseSentenceTransformer(
-                        model_name=self.model_name,
-                        normalize=self.normalize,
-                        quantize=self.quantize,
-                        precision=self.precision,
-                        verbose=self.verbose,
-                    ),
-                ),
-            ]
-        )
+    default_model_name = "all-mpnet-base-v2"
 
 
-class MultilingualE5Large(Pipeline):
-    """
-    Multilingual E5 Large Feature Extractor using the
-    'intfloat/multilingual-e5-large' model.
-    """
-
+class MultilingualE5Large(SentenceTransformerPipeline):
     name = "multilingual-e5-large"
     label = "Multilingual E5 Large"
-
-    def __init__(
-        self,
-        columns=None,
-        sep=" ",
-        model_name="intfloat/multilingual-e5-large",
-        normalize=True,
-        quantize=False,
-        precision="ubinary",
-        verbose=True,
-    ):
-        self.columns = ["title", "abstract"] if columns is None else columns
-        self.sep = sep
-        self.model_name = model_name
-        self.normalize = normalize
-        self.quantize = quantize
-        self.precision = precision
-        self.verbose = verbose
-
-        super().__init__(
-            [
-                ("text_merger", TextMerger(columns=self.columns, sep=self.sep)),
-                (
-                    "sentence_transformer",
-                    BaseSentenceTransformer(
-                        model_name=self.model_name,
-                        normalize=self.normalize,
-                        quantize=self.quantize,
-                        precision=self.precision,
-                        verbose=self.verbose,
-                    ),
-                ),
-            ]
-        )
+    default_model_name = "intfloat/multilingual-e5-large"
 
 
-class GTR(Pipeline):
-    """
-    GTR-T5-Large Feature Extractor using the
-    'gtr-t5-large' model.
-    """
-
+class GTR(SentenceTransformerPipeline):
     name = "gtr-t5-large"
     label = "Google GTR"
-
-    def __init__(
-        self,
-        columns=None,
-        sep=" ",
-        model_name="gtr-t5-large",
-        normalize=True,
-        quantize=False,
-        precision="ubinary",
-        verbose=True,
-    ):
-        self.columns = ["title", "abstract"] if columns is None else columns
-        self.sep = sep
-        self.model_name = model_name
-        self.normalize = normalize
-        self.quantize = quantize
-        self.precision = precision
-        self.verbose = verbose
-
-        super().__init__(
-            [
-                ("text_merger", TextMerger(columns=self.columns, sep=self.sep)),
-                (
-                    "sentence_transformer",
-                    BaseSentenceTransformer(
-                        model_name=self.model_name,
-                        normalize=self.normalize,
-                        quantize=self.quantize,
-                        precision=self.precision,
-                        verbose=self.verbose,
-                    ),
-                ),
-            ]
-        )
+    default_model_name = "gtr-t5-large"
