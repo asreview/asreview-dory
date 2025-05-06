@@ -48,11 +48,11 @@ write_to = "asreviewcontrib/dory/_version.py"
 "xgboost" = "asreviewcontrib.dory.classifiers.xgboost:XGBoost"
 
 [project.entry-points."asreview.models.feature_extractors"]
-"sbert" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:SBERT"
-"mxbai" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:MXBAI"
-"labse" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:LaBSE"
-"multilingual-e5-large" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:MultilingualE5Large"
-"gtr-t5-large" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:GTR"
+"sbert" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:SBERT"
+"mxbai" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:MXBAI"
+"labse" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:LaBSE"
+"multilingual-e5-large" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:MultilingualE5Large"
+"gtr-t5-large" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:GTR"
 
 [project.entry-points."asreview.entry_points"]
 dory = "asreviewcontrib.dory.entrypoint:DoryEntryPoint"
