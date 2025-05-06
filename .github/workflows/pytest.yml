@@ -7,9 +7,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest]  # Only x64 architecture for Ubuntu and Windows
         python-version: ["3.10", "3.13"]
-        architecture: [x64]
+        architecture: [x64]  # x64 for Ubuntu and Windows
     name: Python ${{ matrix.python-version }} on ${{ matrix.os }} with architecture ${{ matrix.architecture }}
 
     steps:
@@ -20,9 +20,26 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: ${{ matrix.architecture }}
 
-      - name: Set architecture to arm64 on macOS
-        if: runner.os == 'macOS'
-        run: echo "architecture=arm64" >> $GITHUB_ENV
+      - name: Install package and run tests
+        run: |
+          pip install .
+          pip install pytest
+          pytest tests -v
+
+  macos-arm64:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.13"]
+    name: Python ${{ matrix.python-version }} on macOS with arm64 architecture
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: arm64
 
       - name: Install package and run tests
         run: |
