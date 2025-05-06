@@ -1,5 +1,5 @@
 [project]
-name = "ASReview-Dory"
+name = "asreview-dory"
 description = "ASReview New Exciting Models"
 readme = "README.md"
 authors = [
@@ -16,7 +16,7 @@ keywords = ["systematic review"]
 requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-    "asreview>=2.0b5",
+    "asreview>=2.0rc1",
     "keras>=3.8.0",
     "numpy",
     "scikit-learn>=1.6.1",
@@ -48,11 +48,11 @@ write_to = "asreviewcontrib/dory/_version.py"
 "xgboost" = "asreviewcontrib.dory.classifiers.xgboost:XGBoost"
 
 [project.entry-points."asreview.models.feature_extractors"]
-"sbert" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:SBERT"
-"mxbai" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:MXBAI"
-"labse" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:LaBSE"
-"multilingual-e5-large" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:MultilingualE5Large"
-"gtr-t5-large" = "asreviewcontrib.dory.feature_extractors.sentence_transformers:GTR"
+"sbert" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:SBERT"
+"mxbai" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:MXBAI"
+"labse" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:LaBSE"
+"multilingual-e5-large" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:MultilingualE5Large"
+"gtr-t5-large" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:GTR"
 
 [project.entry-points."asreview.entry_points"]
 dory = "asreviewcontrib.dory.entrypoint:DoryEntryPoint"
