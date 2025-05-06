@@ -41,6 +41,15 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: "x64"
 
+      - name: Upgrade brew
+        run: |
+          brew upgrade
+
+      - name: Install gettext
+        run: |
+          brew install gettext
+          brew link gettext --force --overwrite
+
       - name: Upgrade pip, setuptools, wheel
         run: |
           python -m pip install --upgrade pip setuptools wheel
