@@ -34,6 +34,10 @@ jobs:
     name: Python ${{ matrix.python-version }} on macOS with arm64 architecture
 
     steps:
+      - name: Install libomp
+        run: |
+          brew install libomp
+          
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
