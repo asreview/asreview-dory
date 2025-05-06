@@ -7,9 +7,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]  # Only x64 architecture for Ubuntu and Windows
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.10", "3.13"]
-        architecture: [x64]  # x64 for Ubuntu and Windows
+        architecture: [x64]
     name: Python ${{ matrix.python-version }} on ${{ matrix.os }} with architecture ${{ matrix.architecture }}
 
     steps:
