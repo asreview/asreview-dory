@@ -1,16 +1,27 @@
 name: Install Package
-on: [push,pull_request]
+
+on: [push, pull_request]
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.13"]
+        architecture: [x64]
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }} with architecture ${{ matrix.architecture }}
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-        architecture: 'x64'
-    - name: Install package and run test
-      run: |
-        pip install .
-        pip install pytest
-        pytest tests -v
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.architecture }}
+
+      - name: Install package and run tests
+        run: |
+          pip install .
+          pip install pytest
+          pytest tests -v
