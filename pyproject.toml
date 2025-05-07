@@ -40,6 +40,9 @@ packages = ["asreviewcontrib", "asreviewcontrib.dory", "asreviewcontrib.dory.cla
 [tool.setuptools_scm]
 write_to = "asreviewcontrib/dory/_version.py"
 
+[project.entry-points."asreview.models"]
+_metadata = "asreviewcontrib.dory._metadata:MODEL_METADATA"
+
 [project.entry-points."asreview.models.classifiers"]
 "adaboost" = "asreviewcontrib.dory.classifiers.adaboost:AdaBoost"
 "dynamic-nn" = "asreviewcontrib.dory.classifiers.neural_networks:DynamicNNClassifier"
