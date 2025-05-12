@@ -1,7 +1,14 @@
 import argparse
+import multiprocessing as mp
+import os
 from itertools import chain
 
+os.environ["KERAS_BACKEND"] = "torch"
+
+import torch
 from asreview.extensions import extensions, load_extension
+
+torch.set_num_threads(mp.cpu_count() - 1)
 
 
 class DoryEntryPoint:
@@ -22,10 +29,10 @@ class DoryEntryPoint:
         subparsers = parser.add_subparsers(dest="command", help="Subcommands for Dory")
 
         parser.add_argument(
-            '--version', 
-            action='version', 
-            version=f'%(prog)s {self.version}', 
-            help="Show the version of the application"
+            "--version",
+            action="version",
+            version=f"%(prog)s {self.version}",
+            help="Show the version of the application",
         )
 
         cache_parser = subparsers.add_parser(
