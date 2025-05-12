@@ -9,6 +9,26 @@ from asreview.models.queriers import Max
 
 from asreviewcontrib.dory.entrypoint import DoryEntryPoint
 
+classifier_parameters = {
+    "svm": {"loss": "squared_hinge", "C": 0.15, "tol": 0.0002},
+    "xgboost": {"max_depth": 5, "n_estimators": 250},
+    "dynamic-nn": {"epochs": 30, "batch_size": 16},
+    "nn-2-layer": {"epochs": 50, "verbose": 1},
+    "warmstart-nn": {"epochs": 45, "shuffle": False},
+    "adaboost": {
+        "n_estimators": 30,
+        "learning_rate": 0.5,
+    },
+}
+
+feature_extractor_parameters = {
+    "labse": {"normalize": True, "quantize": True},
+    "mxbai": {"normalize": True, "precision": "binary", "quantize": True},
+    "sbert": {"normalize": True, "verbose": False, "quantize": True},
+    "multilingual-e5-large": {"normalize": True, "sep": ",", "quantize": True},
+    "gtr-t5-large": {"normalize": True, "columns": ["title"], "quantize": True},
+}
+
 # Define dataset path
 dataset_path = Path("tests/data/generic_labels.csv")
 
@@ -32,14 +52,18 @@ def test_all_fe_clf_combinations(feature_extractor):
     data = asr.load_dataset(dataset_path)
 
     # Preprocess data using feature extractor
-    fm = feature_extractor.load()().fit_transform(data)
+    fm = feature_extractor.load()(
+        **feature_extractor_parameters.get(feature_extractor.name)
+    ).fit_transform(data)
 
     # Test each classifier on the preprocessed FMs
     for classifier in classifiers:
         # Define Active Learning Cycle
         alc = asr.ActiveLearningCycle(
-            classifier=classifier.load()(),
-            feature_extractor=feature_extractor.load()(),
+            classifier=classifier.load()(**classifier_parameters.get(classifier.name)),
+            feature_extractor=feature_extractor.load()(
+                **feature_extractor_parameters.get(feature_extractor.name)
+            ),
             balancer=None,
             querier=Max(),
         )
@@ -73,12 +97,12 @@ def test_language_agnostic_l2_preset():
     # Define Active Learning Cycle
     alc = asr.ActiveLearningCycle(
         classifier=get_extension("models.classifiers", "svm").load()(
-            loss="squared_hinge", C=0.19
+            loss="squared_hinge", C=0.106, max_iter=5000
         ),
         feature_extractor=get_extension(
             "models.feature_extractors", "multilingual-e5-large"
         ).load()(normalize=True),
-        balancer=Balanced(ratio=9.9),
+        balancer=Balanced(ratio=9.707),
         querier=Max(),
     )
     # Run simulation
@@ -112,12 +136,12 @@ def test_heavy_h3_preset():
     # Define Active Learning Cycle
     alc = asr.ActiveLearningCycle(
         classifier=get_extension("models.classifiers", "svm").load()(
-            loss="squared_hinge", C=0.13
+            loss="squared_hinge", C=0.067, max_iter=5000
         ),
         feature_extractor=get_extension("models.feature_extractors", "mxbai").load()(
             normalize=True
         ),
-        balancer=Balanced(ratio=9.7),
+        balancer=Balanced(ratio=9.724),
         querier=Max(),
     )
     # Run simulation
