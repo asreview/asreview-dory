@@ -21,6 +21,13 @@ class DoryEntryPoint:
         parser = argparse.ArgumentParser(prog="asreview dory")
         subparsers = parser.add_subparsers(dest="command", help="Subcommands for Dory")
 
+        parser.add_argument(
+            '--version', 
+            action='version', 
+            version=f'%(prog)s {self.version}', 
+            help="Show the version of the application"
+        )
+
         cache_parser = subparsers.add_parser(
             "cache", help="Cache specified entry points"
         )
