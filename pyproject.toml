@@ -6,17 +6,21 @@ authors = [
     { name = "ASReview LAB developers", email = "asreview@uu.nl" }
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: MIT License",
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12"
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Text Processing :: General",
 ]
 keywords = ["systematic review"]
 requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-    "asreview>=2.0rc1",
+    "asreview>=2.0",
     "keras>=3.8.0",
     "numpy",
     "scikit-learn>=1.6.1",
