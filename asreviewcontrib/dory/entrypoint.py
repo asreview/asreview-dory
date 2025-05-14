@@ -1,7 +1,13 @@
 import argparse
+import os
 from itertools import chain
 
+os.environ["KERAS_BACKEND"] = "torch"
+
+import torch
 from asreview.extensions import extensions, load_extension
+
+torch.set_num_threads(max(1, os.cpu_count() - 1))
 
 
 class DoryEntryPoint:
@@ -20,6 +26,13 @@ class DoryEntryPoint:
     def execute(self, argv):
         parser = argparse.ArgumentParser(prog="asreview dory")
         subparsers = parser.add_subparsers(dest="command", help="Subcommands for Dory")
+
+        parser.add_argument(
+            "--version",
+            action="version",
+            version=f"%(prog)s {self.version}",
+            help="Show the version of the application",
+        )
 
         cache_parser = subparsers.add_parser(
             "cache", help="Cache specified entry points"

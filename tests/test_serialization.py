@@ -3,31 +3,30 @@ from pathlib import Path
 
 import asreview as asr
 import pytest
-from asreview.extensions import extensions, get_extension
+from asreview.extensions import extensions
 from asreview.models.balancers import Balanced
 from asreview.models.queriers import Max
 
 classifier_parameters = {
-    "svm": {"loss": "squared_hinge", "C": 0.15},
-    "xgboost": {"max_depth": 5},
-    "dynamic-nn": {"epochs": 30},
-    "nn-2-layer": {"epochs": 30},
-    "warmstart-nn": {"epochs": 30},
-    "adaboost": {"n_estimators": 30},
+    "xgboost": {"max_depth": 5, "n_estimators": 250},
+    "dynamic-nn": {"epochs": 30, "batch_size": 16},
+    "nn-2-layer": {"epochs": 50, "verbose": 1},
+    "warmstart-nn": {"epochs": 45, "shuffle": False},
+    "adaboost": {"n_estimators": 30, "learning_rate": 0.5},
 }
 
 feature_extractor_parameters = {
-    "labse": {"normalize": True},
-    "mxbai": {"normalize": True},
-    "sbert": {"normalize": True},
-    "multilingual-e5-large": {"normalize": True},
-    "gtr-t5-large": {"normalize": True},
+    "labse": {"normalize": True, "quantize": True},
+    "mxbai": {"normalize": True, "precision": "binary", "quantize": True},
+    "sbert": {"normalize": True, "verbose": False, "quantize": True},
+    "multilingual-e5-large": {"normalize": True, "sep": ",", "quantize": True},
+    "gtr-t5-large": {"normalize": True, "columns": ["title"], "quantize": True},
 }
 
 # Get all classifiers and feature extractors from ASReview, filtering contrib models
 classifiers = [
     cls for cls in extensions("models.classifiers") if "asreviewcontrib" in str(cls)
-] + [get_extension("models.classifiers", "svm")]
+]
 feature_extractors = [
     fe for fe in extensions("models.feature_extractors") if "asreviewcontrib" in str(fe)
 ]

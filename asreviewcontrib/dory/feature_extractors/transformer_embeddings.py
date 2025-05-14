@@ -100,9 +100,9 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
         )
 
         if self.quantize:
-            embeddings = quantize_embeddings(
-                embeddings, precision=self.precision
-            ).numpy()
+            embeddings = quantize_embeddings(embeddings, precision=self.precision)
+            if hasattr(embeddings, "numpy"):
+                embeddings = embeddings.numpy()
         return embeddings
 
 
