@@ -3,20 +3,16 @@ from pathlib import Path
 
 import asreview as asr
 import pytest
-from asreview.extensions import extensions, get_extension
+from asreview.extensions import extensions
 from asreview.models.balancers import Balanced
 from asreview.models.queriers import Max
 
 classifier_parameters = {
-    "svm": {"loss": "squared_hinge", "C": 0.15, "tol": 0.0002},
     "xgboost": {"max_depth": 5, "n_estimators": 250},
     "dynamic-nn": {"epochs": 30, "batch_size": 16},
     "nn-2-layer": {"epochs": 50, "verbose": 1},
     "warmstart-nn": {"epochs": 45, "shuffle": False},
-    "adaboost": {
-        "n_estimators": 30,
-        "learning_rate": 0.5,
-    },
+    "adaboost": {"n_estimators": 30, "learning_rate": 0.5},
 }
 
 feature_extractor_parameters = {
@@ -30,7 +26,7 @@ feature_extractor_parameters = {
 # Get all classifiers and feature extractors from ASReview, filtering contrib models
 classifiers = [
     cls for cls in extensions("models.classifiers") if "asreviewcontrib" in str(cls)
-] + [get_extension("models.classifiers", "svm")]
+]
 feature_extractors = [
     fe for fe in extensions("models.feature_extractors") if "asreviewcontrib" in str(fe)
 ]

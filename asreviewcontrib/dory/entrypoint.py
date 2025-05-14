@@ -1,5 +1,4 @@
 import argparse
-import multiprocessing as mp
 import os
 from itertools import chain
 
@@ -8,7 +7,7 @@ os.environ["KERAS_BACKEND"] = "torch"
 import torch
 from asreview.extensions import extensions, load_extension
 
-torch.set_num_threads(mp.cpu_count() - 1)
+torch.set_num_threads(max(1, os.cpu_count() - 1))
 
 
 class DoryEntryPoint:
