@@ -1,8 +1,5 @@
 import argparse
-import os
 from itertools import chain
-
-os.environ["KERAS_BACKEND"] = "torch"
 
 from asreview.extensions import extensions, load_extension
 
