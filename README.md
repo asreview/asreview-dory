@@ -1,7 +1,5 @@
 # ASReview Dory 🐟
 
-> ❣️❗ ASReview Dory is part of the upcoming ASReview LAB version 2 release ❗❣️ 
-
 ASReview Dory is an extension to the [ASReview
 software](https://github.com/asreview/asreview), providing new models for
 classification and feature extraction. The extension is maintained by the

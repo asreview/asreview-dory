@@ -1,6 +1,9 @@
 __all__ = ["DynamicNNClassifier", "NN2LayerClassifier", "WarmStartNNClassifier"]
 
+import os
 from math import ceil, log10
+
+os.environ["KERAS_BACKEND"] = "torch"
 
 from keras import layers, losses, models, optimizers, regularizers, wrappers
 

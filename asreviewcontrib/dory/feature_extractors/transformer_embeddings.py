@@ -5,13 +5,16 @@ __all__ = [
     "MultilingualE5Large",
     "GTR",
 ]
-
+import os
 from functools import cached_property
 
+import torch
 from asreview.models.feature_extractors import TextMerger
 from sentence_transformers import SentenceTransformer, quantize_embeddings
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
+
+torch.set_num_threads(max(1, os.cpu_count() - 1))
 
 
 class SentenceTransformerPipeline(Pipeline):
