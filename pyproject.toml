@@ -28,6 +28,7 @@ dependencies = [
     "accelerate>=1.0.0",
     "torch>=2.1.0",
     "xgboost>=2.1.4",
+    "pandas>=2.2.0",
 ]
 
 [project.urls]
