@@ -15,7 +15,7 @@ from asreview.models.feature_extractors import TextMerger
 from sentence_transformers import SentenceTransformer, quantize_embeddings
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.preprocessing import normalize as sklearn_normalize
 
 torch.set_num_threads(max(1, os.cpu_count() - 1))
@@ -42,9 +42,12 @@ class SentenceTransformerPipeline(Pipeline):
         If None, uses `default_model_name`.
     normalize : bool, default=True
         Whether to normalize the resulting embedding vectors.
-    normalize_method : {"l2", "minmax", "zscore"}, default="l2"
-        Normalization technique applied to the vectors.
-        Only has an effect if normalize=True.
+    normalize_method : {"l2", "minmax", "standard"}, default="l2"
+        Normalization strategy, only has an effect when `normalize=True`:
+        - "l2": Unit vector normalization.
+        - "minmax": Scales features to [0, 1] using MinMaxScaler.
+        - "standard": Standardizes features using StandardScaler 
+        (zero mean, unit variance).
     quantize : bool, default=False
         If True, applies quantization to reduce model/vector size.
     precision : {"float32", "int8", "uint8", "binary", "ubinary"}, default="float32"
@@ -63,7 +66,7 @@ class SentenceTransformerPipeline(Pipeline):
         sep: str = " ",
         model_name: str | None = None,
         normalize: bool = True,
-        normalize_method: Literal["l2", "minmax", "zscore", "none"] = "l2",
+        normalize_method: Literal["l2", "minmax", "standard"] = "l2",
         quantize: bool = False,
         precision: Literal["float32", "int8", "uint8", "binary", "ubinary"] = "float32",
         verbose=True,
@@ -165,10 +168,8 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
             return sklearn_normalize(embeddings, norm="l2")
         elif self.normalize_method == "minmax":
             return MinMaxScaler().fit_transform(embeddings)
-        elif self.normalize_method == "zscore":
-            std = embeddings.std(axis=0)
-            std[std == 0] = 1
-            return (embeddings - embeddings.mean(axis=0)) / std
+        elif self.normalize_method == "standard":
+            return StandardScaler().fit_transform(embeddings)
         else:
             raise ValueError(
                 f"Unsupported normalization method: '{self.normalize_method}'"
