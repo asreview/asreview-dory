@@ -15,8 +15,7 @@ from asreview.models.feature_extractors import TextMerger
 from sentence_transformers import SentenceTransformer, quantize_embeddings
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from sklearn.preprocessing import normalize as sklearn_normalize
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
 
 torch.set_num_threads(max(1, os.cpu_count() - 1))
 
@@ -86,14 +85,23 @@ class SentenceTransformerPipeline(Pipeline):
                 "sentence_transformer",
                 BaseSentenceTransformer(
                     model_name=self.model_name,
-                    normalize=self.normalize,
-                    normalize_method=self.normalize_method,
                     quantize=self.quantize,
                     precision=self.precision,
                     verbose=self.verbose,
                 ),
             ),
         ]
+        if self.normalize:
+            if self.normalize_method == "l2":
+                steps.append(("normalizer", Normalizer(norm="l2")))
+            elif self.normalize_method == "minmax":
+                steps.append(("normalizer", MinMaxScaler()))
+            elif self.normalize_method == "standard":
+                steps.append(("normalizer", StandardScaler()))
+            else:
+                raise ValueError(
+                    f"Unsupported normalization method: '{self.normalize_method}'"
+                )
 
         super().__init__(steps)
 
@@ -112,15 +120,11 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
     def __init__(
         self,
         model_name,
-        normalize,
-        normalize_method,
         quantize,
         precision,
         verbose,
     ):
         self.model_name = model_name
-        self.normalize = normalize
-        self.normalize_method = normalize_method
         self.quantize = quantize
         self.precision = precision
         self.verbose = verbose
@@ -137,16 +141,12 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
         # for sentence-transformers, so return self
         return self
 
-    def fit_transform(self, X, y=None):
+    def transform(self, X, y=None):
         if self.verbose:
             print("Embedding text...")
 
         embeddings = self._model.encode(X, show_progress_bar=self.verbose)
-
         embeddings = self._to_numpy(embeddings)
-
-        if self.normalize:
-            embeddings = self._normalize_embeddings(embeddings)
 
         if self.quantize:
             embeddings = quantize_embeddings(embeddings, precision=self.precision)
@@ -161,19 +161,6 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
         if not isinstance(arr, np.ndarray):
             return np.array(arr)
         return arr
-
-    def _normalize_embeddings(self, embeddings):
-        """Apply the configured normalization method."""
-        if self.normalize_method == "l2":
-            return sklearn_normalize(embeddings, norm="l2")
-        elif self.normalize_method == "minmax":
-            return MinMaxScaler().fit_transform(embeddings)
-        elif self.normalize_method == "standard":
-            return StandardScaler().fit_transform(embeddings)
-        else:
-            raise ValueError(
-                f"Unsupported normalization method: '{self.normalize_method}'"
-            )
 
 
 class LaBSE(SentenceTransformerPipeline):
