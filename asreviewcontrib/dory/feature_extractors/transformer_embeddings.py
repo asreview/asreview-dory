@@ -19,6 +19,15 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
 
 torch.set_num_threads(max(1, os.cpu_count() - 1))
 
+class Quantizer(BaseEstimator, TransformerMixin):
+    def __init__(self, precision="float32"):
+        self.precision = precision
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return quantize_embeddings(X, precision=self.precision)
 
 class SentenceTransformerPipeline(Pipeline):
     """
@@ -85,8 +94,6 @@ class SentenceTransformerPipeline(Pipeline):
                 "sentence_transformer",
                 BaseSentenceTransformer(
                     model_name=self.model_name,
-                    quantize=self.quantize,
-                    precision=self.precision,
                     verbose=self.verbose,
                 ),
             ),
@@ -102,6 +109,9 @@ class SentenceTransformerPipeline(Pipeline):
                 raise ValueError(
                     f"Unsupported normalization method: '{self.normalize_method}'"
                 )
+        
+        if self.quantize:
+            steps.append(("quantizer", Quantizer(self.precision)))
 
         super().__init__(steps)
 
@@ -120,13 +130,9 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
     def __init__(
         self,
         model_name,
-        quantize,
-        precision,
         verbose,
     ):
         self.model_name = model_name
-        self.quantize = quantize
-        self.precision = precision
         self.verbose = verbose
 
     @cached_property
@@ -147,10 +153,6 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
 
         embeddings = self._model.encode(X, show_progress_bar=self.verbose)
         embeddings = self._to_numpy(embeddings)
-
-        if self.quantize:
-            embeddings = quantize_embeddings(embeddings, precision=self.precision)
-            embeddings = self._to_numpy(embeddings)
 
         return embeddings
 
