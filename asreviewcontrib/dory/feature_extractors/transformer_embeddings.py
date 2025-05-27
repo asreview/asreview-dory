@@ -159,9 +159,7 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
         """Ensure input is a NumPy array."""
         if hasattr(arr, "numpy"):
             return arr.numpy()
-        if not isinstance(arr, np.ndarray):
-            return np.array(arr)
-        return arr
+        return np.array(arr)
 
 
 class LaBSE(SentenceTransformerPipeline):
