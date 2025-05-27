@@ -15,9 +15,10 @@ from asreview.models.feature_extractors import TextMerger
 from sentence_transformers import SentenceTransformer, quantize_embeddings
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
+from sklearn.preprocessing import MinMaxScaler, Normalizer, StandardScaler
 
 torch.set_num_threads(max(1, os.cpu_count() - 1))
+
 
 class Quantizer(BaseEstimator, TransformerMixin):
     def __init__(self, precision="float32"):
@@ -28,6 +29,7 @@ class Quantizer(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         return quantize_embeddings(X, precision=self.precision)
+
 
 class SentenceTransformerPipeline(Pipeline):
     """
@@ -48,13 +50,12 @@ class SentenceTransformerPipeline(Pipeline):
     model_name : str or None, default=None
         Identifier or path for the embedding model to use.
         If None, uses `default_model_name`.
-    normalize : bool, default=True
-        Whether to normalize the resulting embedding vectors.
-    normalize_method : {"l2", "minmax", "standard"}, default="l2"
-        Normalization strategy, only has an effect when `normalize=True`:
-        - "l2": Unit vector normalization.
+    normalize : bool or {"l2", "minmax", "standard", None}, default="l2"
+        Normalization strategy:
+        - None or False: No normalization applied.
+        - "l2" or True: Unit vector normalization.
         - "minmax": Scales features to [0, 1] using MinMaxScaler.
-        - "standard": Standardizes features using StandardScaler 
+        - "standard": Standardizes features using StandardScaler
         (zero mean, unit variance).
     quantize : bool, default=False
         If True, applies quantization to reduce model/vector size.
@@ -73,8 +74,7 @@ class SentenceTransformerPipeline(Pipeline):
         columns: list[str] | None = None,
         sep: str = " ",
         model_name: str | None = None,
-        normalize: bool = True,
-        normalize_method: Literal["l2", "minmax", "standard"] = "l2",
+        normalize: bool | Literal["l2", "minmax", "standard", None] = "l2",
         quantize: bool = False,
         precision: Literal["float32", "int8", "uint8", "binary", "ubinary"] = "float32",
         verbose=True,
@@ -83,7 +83,6 @@ class SentenceTransformerPipeline(Pipeline):
         self.sep = sep
         self.model_name = model_name or self.default_model_name
         self.normalize = normalize
-        self.normalize_method = normalize_method
         self.quantize = quantize
         self.precision = precision
         self.verbose = verbose
@@ -98,18 +97,18 @@ class SentenceTransformerPipeline(Pipeline):
                 ),
             ),
         ]
-        if self.normalize:
-            if self.normalize_method == "l2":
-                steps.append(("normalizer", Normalizer(norm="l2")))
-            elif self.normalize_method == "minmax":
-                steps.append(("normalizer", MinMaxScaler()))
-            elif self.normalize_method == "standard":
-                steps.append(("normalizer", StandardScaler()))
-            else:
-                raise ValueError(
-                    f"Unsupported normalization method: '{self.normalize_method}'"
-                )
-        
+
+        if self.normalize == "l2" or self.normalize is True:
+            steps.append(("normalizer", Normalizer(norm="l2")))
+        elif self.normalize == "minmax":
+            steps.append(("normalizer", MinMaxScaler()))
+        elif self.normalize == "standard":
+            steps.append(("normalizer", StandardScaler()))
+        elif self.normalize not in Literal["l2", "minmax", "standard", None, False]:
+            raise ValueError(
+                f"Unsupported normalization method: '{self.normalize}'"
+            )
+
         if self.quantize:
             steps.append(("quantizer", Quantizer(self.precision)))
 
