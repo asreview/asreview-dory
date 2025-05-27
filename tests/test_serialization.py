@@ -16,16 +16,14 @@ classifier_parameters = {
 }
 
 feature_extractor_parameters = {
-    "labse": {"normalize": True, "normalize_method": "l2", "quantize": False},
+    "labse": {"normalize": "l2", "quantize": False},
     "mxbai": {
-        "normalize": True,
-        "normalize_method": "minmax",
+        "normalize": "minmax",
         "precision": "binary",
         "quantize": True,
     },
     "sbert": {
-        "normalize": True,
-        "normalize_method": "standard",
+        "normalize": "standard",
         "verbose": False,
         "quantize": False,
     },
