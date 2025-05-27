@@ -104,7 +104,7 @@ class SentenceTransformerPipeline(Pipeline):
             steps.append(("normalizer", MinMaxScaler()))
         elif self.normalize == "standard":
             steps.append(("normalizer", StandardScaler()))
-        elif self.normalize not in Literal["l2", "minmax", "standard", None, False]:
+        elif self.normalize not in {"l2", "minmax", "standard", None, False}:
             raise ValueError(
                 f"Unsupported normalization method: '{self.normalize}'"
             )
