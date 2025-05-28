@@ -172,3 +172,9 @@ def test_heavy_h3_preset():
 
 def test_get_all_models():
     assert len(DoryEntryPoint()._get_all_models()) == 10
+
+def test_invalid_normalization_method():
+    fe = get_extension("models.feature_extractors", "multilingual-e5-large").load()
+
+    with pytest.raises(ValueError, match="Unsupported normalization method"):
+        fe(normalize="invalid-method")

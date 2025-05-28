@@ -104,21 +104,13 @@ class SentenceTransformerPipeline(Pipeline):
             steps.append(("normalizer", MinMaxScaler()))
         elif self.normalize == "standard":
             steps.append(("normalizer", StandardScaler()))
-        elif self.normalize not in {"l2", "minmax", "standard", None, False}:
-            raise ValueError(
-                f"Unsupported normalization method: '{self.normalize}'"
-            )
+        elif self.normalize not in (None, False):
+            raise ValueError(f"Unsupported normalization method: '{self.normalize}'")
 
         if self.quantize:
             steps.append(("quantizer", Quantizer(self.precision)))
 
         super().__init__(steps)
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} model='{self.model_name}'>"
-
-    def __str__(self):
-        return self.__repr__()
 
 
 class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
