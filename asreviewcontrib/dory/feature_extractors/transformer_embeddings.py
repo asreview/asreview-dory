@@ -7,29 +7,76 @@ __all__ = [
 ]
 import os
 from functools import cached_property
+from typing import Literal
 
+import numpy as np
 import torch
 from asreview.models.feature_extractors import TextMerger
 from sentence_transformers import SentenceTransformer, quantize_embeddings
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import MinMaxScaler, Normalizer, StandardScaler
 
 torch.set_num_threads(max(1, os.cpu_count() - 1))
 
 
+class Quantizer(BaseEstimator, TransformerMixin):
+    def __init__(self, precision="float32"):
+        self.precision = precision
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return quantize_embeddings(X, precision=self.precision)
+
+
 class SentenceTransformerPipeline(Pipeline):
+    """
+    A configurable pipeline for generating sentence embeddings using a transformer-based
+    model.
+
+    This pipeline includes text merging and embedding steps. It supports normalization,
+    quantization, and configurable precision settings. Primarily designed for textual
+    data from columns such as titles and abstracts.
+
+    Parameters
+    ----------
+    columns : list of str or None, default=None
+        List of column names to extract and merge text from.
+        Defaults to ["title", "abstract"] if None is provided.
+    sep : str, default=" "
+        Separator used when joining text from multiple columns.
+    model_name : str or None, default=None
+        Identifier or path for the embedding model to use.
+        If None, uses `default_model_name`.
+    normalize : bool or {"l2", "minmax", "standard", None}, default="l2"
+        Normalization strategy:
+        - None or False: No normalization applied.
+        - "l2" or True: Unit vector normalization.
+        - "minmax": Scales features to [0, 1] using MinMaxScaler.
+        - "standard": Standardizes features using StandardScaler
+        (zero mean, unit variance).
+    quantize : bool, default=False
+        If True, applies quantization to reduce model/vector size.
+    precision : {"float32", "int8", "uint8", "binary", "ubinary"}, default="float32"
+        Precision format used for quantized embeddings.
+    verbose : bool, default=True
+        If True, logs progress or debug output during the pipeline execution.
+    """
+
     default_model_name = None
     name = None
     label = None
 
     def __init__(
         self,
-        columns=None,
-        sep=" ",
-        model_name=None,
-        normalize=True,
-        quantize=False,
-        precision="ubinary",
+        columns: list[str] | None = None,
+        sep: str = " ",
+        model_name: str | None = None,
+        normalize: bool | Literal["l2", "minmax", "standard", None] = "l2",
+        quantize: bool = False,
+        precision: Literal["float32", "int8", "uint8", "binary", "ubinary"] = "float32",
         verbose=True,
     ):
         self.columns = ["title", "abstract"] if columns is None else columns
@@ -46,21 +93,24 @@ class SentenceTransformerPipeline(Pipeline):
                 "sentence_transformer",
                 BaseSentenceTransformer(
                     model_name=self.model_name,
-                    normalize=self.normalize,
-                    quantize=self.quantize,
-                    precision=self.precision,
                     verbose=self.verbose,
                 ),
             ),
         ]
 
+        if self.normalize == "l2" or self.normalize is True:
+            steps.append(("normalizer", Normalizer(norm="l2")))
+        elif self.normalize == "minmax":
+            steps.append(("normalizer", MinMaxScaler()))
+        elif self.normalize == "standard":
+            steps.append(("normalizer", StandardScaler()))
+        elif self.normalize not in (None, False):
+            raise ValueError(f"Unsupported normalization method: '{self.normalize}'")
+
+        if self.quantize:
+            steps.append(("quantizer", Quantizer(self.precision)))
+
         super().__init__(steps)
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} model='{self.model_name}'>"
-
-    def __str__(self):
-        return self.__repr__()
 
 
 class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
@@ -71,15 +121,9 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
     def __init__(
         self,
         model_name,
-        normalize,
-        quantize,
-        precision,
         verbose,
     ):
         self.model_name = model_name
-        self.normalize = normalize
-        self.quantize = quantize
-        self.precision = precision
         self.verbose = verbose
 
     @cached_property
@@ -94,19 +138,20 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
         # for sentence-transformers, so return self
         return self
 
-    def fit_transform(self, X, y=None):
+    def transform(self, X, y=None):
         if self.verbose:
             print("Embedding text...")
 
-        embeddings = self._model.encode(
-            X, show_progress_bar=self.verbose, normalize_embeddings=self.normalize
-        )
+        embeddings = self._model.encode(X, show_progress_bar=self.verbose)
+        embeddings = self._to_numpy(embeddings)
 
-        if self.quantize:
-            embeddings = quantize_embeddings(embeddings, precision=self.precision)
-            if hasattr(embeddings, "numpy"):
-                embeddings = embeddings.numpy()
         return embeddings
+
+    def _to_numpy(self, arr):
+        """Ensure input is a NumPy array."""
+        if hasattr(arr, "numpy"):
+            return arr.numpy()
+        return np.array(arr)
 
 
 class LaBSE(SentenceTransformerPipeline):

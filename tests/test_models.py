@@ -18,11 +18,19 @@ classifier_parameters = {
 }
 
 feature_extractor_parameters = {
-    "labse": {"normalize": True, "quantize": True},
-    "mxbai": {"normalize": True, "precision": "binary", "quantize": True},
-    "sbert": {"normalize": True, "verbose": False, "quantize": True},
-    "multilingual-e5-large": {"normalize": True, "sep": ",", "quantize": True},
-    "gtr-t5-large": {"normalize": True, "columns": ["title"], "quantize": True},
+    "labse": {"normalize": "l2", "quantize": False},
+    "mxbai": {
+        "normalize": "minmax",
+        "precision": "binary",
+        "quantize": True,
+    },
+    "sbert": {
+        "normalize": "standard",
+        "verbose": False,
+        "quantize": False,
+    },
+    "multilingual-e5-large": {"normalize": False, "sep": ",", "quantize": True},
+    "gtr-t5-large": {"normalize": True, "columns": ["title"], "quantize": False},
 }
 
 # Define dataset path
@@ -164,3 +172,9 @@ def test_heavy_h3_preset():
 
 def test_get_all_models():
     assert len(DoryEntryPoint()._get_all_models()) == 10
+
+def test_invalid_normalization_method():
+    fe = get_extension("models.feature_extractors", "multilingual-e5-large").load()
+
+    with pytest.raises(ValueError, match="Unsupported normalization method"):
+        fe(normalize="invalid-method")

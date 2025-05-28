@@ -16,11 +16,19 @@ classifier_parameters = {
 }
 
 feature_extractor_parameters = {
-    "labse": {"normalize": True, "quantize": True},
-    "mxbai": {"normalize": True, "precision": "binary", "quantize": True},
-    "sbert": {"normalize": True, "verbose": False, "quantize": True},
-    "multilingual-e5-large": {"normalize": True, "sep": ",", "quantize": True},
-    "gtr-t5-large": {"normalize": True, "columns": ["title"], "quantize": True},
+    "labse": {"normalize": "l2", "quantize": False},
+    "mxbai": {
+        "normalize": "minmax",
+        "precision": "binary",
+        "quantize": True,
+    },
+    "sbert": {
+        "normalize": "standard",
+        "verbose": False,
+        "quantize": False,
+    },
+    "multilingual-e5-large": {"normalize": False, "sep": ",", "quantize": True},
+    "gtr-t5-large": {"normalize": True, "columns": ["title"], "quantize": False},
 }
 
 # Get all classifiers and feature extractors from ASReview, filtering contrib models
