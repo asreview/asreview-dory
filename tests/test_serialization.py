@@ -35,6 +35,18 @@ feature_extractor_parameters = {
         "pooling": "mean",
         "batch_size": 16,
     },
+    "scibert-uncased": {
+        "normalize": True,
+        "quantize": True,
+        "pooling": "mean",
+        "batch_size": 16,
+    },
+    "scibert-cased": {
+        "normalize": True,
+        "quantize": True,
+        "pooling": "mean",
+        "batch_size": 16,
+    },
 }
 
 # Get all classifiers and feature extractors from ASReview, filtering contrib models
