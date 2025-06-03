@@ -1,4 +1,4 @@
-__all__ = ["RoBERTa"]
+__all__ = ["XLMRoBERTaLarge"]
 
 import os
 from functools import cached_property
