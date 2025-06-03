@@ -60,6 +60,7 @@ _metadata = "asreviewcontrib.dory._metadata:MODEL_METADATA"
 "labse" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:LaBSE"
 "multilingual-e5-large" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:MultilingualE5Large"
 "gtr-t5-large" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:GTR"
+"xlm-roberta-large" = "asreviewcontrib.dory.feature_extractors.hf_embeddings:XLMRoBERTaLarge"
 
 [project.entry-points."asreview.entry_points"]
 dory = "asreviewcontrib.dory.entrypoint:DoryEntryPoint"
