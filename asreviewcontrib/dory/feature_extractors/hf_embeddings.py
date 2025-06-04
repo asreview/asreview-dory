@@ -206,6 +206,8 @@ class HFEmbedderPipeline(Pipeline):
                 "hf_embedder",
                 HFEmbedder(
                     model_name=self.model_name,
+                    pooling=self.pooling,
+                    batch_size=self.batch_size,
                     verbose=self.verbose,
                 ),
             ),
