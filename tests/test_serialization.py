@@ -31,21 +31,23 @@ feature_extractor_parameters = {
     "gtr-t5-large": {"normalize": True, "columns": ["title"], "quantize": False},
     "xlm-roberta-large": {
         "normalize": True,
-        "quantize": True,
+        "quantize": False,
         "pooling": "mean",
         "batch_size": 16,
     },
     "scibert-uncased": {
-        "normalize": True,
+        "normalize": False,
         "quantize": True,
-        "pooling": "mean",
-        "batch_size": 16,
+        "precision": "binary",
+        "pooling": "cls",
+        "batch_size": 8,
     },
     "scibert-cased": {
-        "normalize": True,
+        "normalize": "standard",
         "quantize": True,
-        "pooling": "mean",
-        "batch_size": 16,
+        "precision": "uint8",
+        "pooling": "max",
+        "batch_size": 4,
     },
 }
 
