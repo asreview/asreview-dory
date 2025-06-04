@@ -29,6 +29,26 @@ feature_extractor_parameters = {
     },
     "multilingual-e5-large": {"normalize": False, "sep": ",", "quantize": True},
     "gtr-t5-large": {"normalize": True, "columns": ["title"], "quantize": False},
+    "xlm-roberta-large": {
+        "normalize": True,
+        "quantize": False,
+        "pooling": "mean",
+        "batch_size": 16,
+    },
+    "scibert-uncased": {
+        "normalize": False,
+        "quantize": True,
+        "precision": "binary",
+        "pooling": "cls",
+        "batch_size": 8,
+    },
+    "scibert-cased": {
+        "normalize": "standard",
+        "quantize": True,
+        "precision": "uint8",
+        "pooling": "max",
+        "batch_size": 4,
+    },
 }
 
 # Get all classifiers and feature extractors from ASReview, filtering contrib models
