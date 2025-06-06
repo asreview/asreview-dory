@@ -32,5 +32,8 @@ MODEL_METADATA = {
         "gtr-t5-large": {
             "label": "Google GTR",
         },
+        "qwen3-embedding": {
+            "label": "Qwen3 Embedding",
+        },
     },
 }
