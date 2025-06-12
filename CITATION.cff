@@ -6,6 +6,7 @@ authors:
   - given-names: ASReview LAB developers
     affiliation: Utrecht University
     email: asreview@uu.nl
-version: 1.0
-date-released: 2024-06-01
+version: 1.2
+doi: 10.5281/zenodo.15649248
+date-released: 2025-06-12
 url: "https://github.com/asreview/asreview-dory/"
