@@ -20,21 +20,17 @@ classifier_parameters = {
 }
 
 # Get all classifiers and feature extractors from ASReview, filtering contrib models
-classifiers = [\
+classifiers = [
     cls for cls in extensions("models.classifiers") if "asreviewcontrib" in str(cls)
 ]
 
-feature_extractors = [SmallHFEmbedderFE,SmallSentenceTransformerFE]
+feature_extractors = [SmallHFEmbedderFE, SmallSentenceTransformerFE]
 
 
 # Parametrize: combine each classifier with each FE
 @pytest.mark.parametrize(
     "clf_entry,fe_cls",
-    [
-        (clf, fe_cls)
-        for clf in classifiers
-        for fe_cls in feature_extractors
-    ],
+    [(clf, fe_cls) for clf in classifiers for fe_cls in feature_extractors],
     ids=lambda val: getattr(val, "name", val) if hasattr(val, "name") else val,
 )
 def test_all_classifiers_with_extractors(clf_entry, fe_cls):

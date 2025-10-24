@@ -1,7 +1,7 @@
-from asreviewcontrib.dory.feature_extractors.hf_embeddings import HFEmbedderPipeline
-from asreviewcontrib.dory.feature_extractors.transformer_embeddings import (
-    SentenceTransformerPipeline,
-)
+from asreviewcontrib.dory.feature_extractors.huggingface_embeddings import \
+    HFEmbedderPipeline
+from asreviewcontrib.dory.feature_extractors.sentence_transformer_embeddings import \
+    SentenceTransformerPipeline
 
 
 class SmallHFEmbedderFE(HFEmbedderPipeline):

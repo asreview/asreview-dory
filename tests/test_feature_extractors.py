@@ -28,7 +28,7 @@ ALL_FE_VARIANTS_IDS = [test_id for test_id, _ in HF_TEST_CASES] + [
 def test_feature_extractor_variants(fe_cls, params):
     data = asr.load_dataset(dataset_path)
     features = fe_cls(**params).fit_transform(data)
-    
+
     assert features is not None, "Feature matrix is None"
     assert hasattr(features, "shape"), "Feature matrix must have a shape"
     assert features.shape[0] == len(data), "One embedding per record"
