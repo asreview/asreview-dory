@@ -61,8 +61,6 @@ _metadata = "asreviewcontrib.dory._metadata:MODEL_METADATA"
 "multilingual-e5-large" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:MultilingualE5Large"
 "gtr-t5-large" = "asreviewcontrib.dory.feature_extractors.transformer_embeddings:GTR"
 "xlm-roberta-large" = "asreviewcontrib.dory.feature_extractors.hf_embeddings:XLMRoBERTaLarge"
-"scibert-uncased" = "asreviewcontrib.dory.feature_extractors.hf_embeddings:SciBERTUncased"
-"scibert-cased" = "asreviewcontrib.dory.feature_extractors.hf_embeddings:SciBERTCased"
 
 [project.entry-points."asreview.entry_points"]
 dory = "asreviewcontrib.dory.entrypoint:DoryEntryPoint"

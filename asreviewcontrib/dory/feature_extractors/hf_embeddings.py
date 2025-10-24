@@ -1,4 +1,4 @@
-__all__ = ["XLMRoBERTaLarge", "SciBERTCased", "SciBERTUncased"]
+__all__ = ["XLMRoBERTaLarge"]
 
 import os
 from functools import cached_property
@@ -232,13 +232,3 @@ class XLMRoBERTaLarge(HFEmbedderPipeline):
     name = "xlm-roberta-large"
     label = "XLM-RoBERTa-Large Transformer"
     default_model_name = "FacebookAI/xlm-roberta-large"
-
-class SciBERTCased(HFEmbedderPipeline):
-    name = "scibert-cased"
-    label = "SciBERT Cased Transformer"
-    default_model_name = "allenai/scibert_scivocab_cased"
-
-class SciBERTUncased(HFEmbedderPipeline):
-    name = "scibert-uncased"
-    label = "SciBERT Uncased Transformer"
-    default_model_name = "allenai/scibert_scivocab_uncased"
