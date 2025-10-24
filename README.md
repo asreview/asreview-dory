@@ -1,4 +1,5 @@
 # ASReview Dory 🐟
+[![DOI](https://zenodo.org/badge/803781342.svg)](https://doi.org/10.5281/zenodo.15649247)
 
 ASReview Dory is an extension to the [ASReview
 software](https://github.com/asreview/asreview), providing new models for

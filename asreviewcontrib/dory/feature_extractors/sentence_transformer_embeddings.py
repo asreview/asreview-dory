@@ -12,23 +12,14 @@ from typing import Literal
 import numpy as np
 import torch
 from asreview.models.feature_extractors import TextMerger
-from sentence_transformers import SentenceTransformer, quantize_embeddings
+from sentence_transformers import SentenceTransformer
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, Normalizer, StandardScaler
 
+from .utils import Quantizer
+
 torch.set_num_threads(max(1, os.cpu_count() - 1))
-
-
-class Quantizer(BaseEstimator, TransformerMixin):
-    def __init__(self, precision="float32"):
-        self.precision = precision
-
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X):
-        return quantize_embeddings(X, precision=self.precision)
 
 
 class SentenceTransformerPipeline(Pipeline):
