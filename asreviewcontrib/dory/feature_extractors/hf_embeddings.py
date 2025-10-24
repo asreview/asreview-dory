@@ -18,91 +18,6 @@ from .utils import Quantizer
 torch.set_num_threads(max(1, os.cpu_count() - 1))
 
 
-class HFEmbedder(BaseEstimator, TransformerMixin):
-    def __init__(self, model_name, pooling="mean", batch_size=32, verbose=True):
-        allowed_poolings = {"cls", "mean", "max"}
-        if pooling not in allowed_poolings:
-            raise ValueError(
-                f"Unsupported pooling method: '{pooling}'. Choose: {allowed_poolings}"
-            )
-        self.model_name = model_name
-        self.pooling = pooling
-        self.batch_size = batch_size
-        self.verbose = verbose
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    @cached_property
-    def _tokenizer(self):
-        return AutoTokenizer.from_pretrained(self.model_name)
-
-    @cached_property
-    def _model(self):
-        model = AutoModel.from_pretrained(self.model_name)
-        model.to(self.device)
-        model.eval()
-        if self.verbose:
-            print(f"Loaded '{self.model_name}' on {self.device}.")
-        return model
-
-    @staticmethod
-    def _clean_text_inputs(X):
-        if isinstance(X, pd.Series):
-            X = X.fillna("").astype(str).tolist()
-        elif isinstance(X, list):
-            X = ["" if x is None else str(x) for x in X]
-        elif isinstance(X, np.ndarray):
-            X = ["" if x is None else str(x) for x in X.tolist()]
-        else:
-            raise ValueError("Expected a list or ndarray of strings or pandas Series.")
-        return X
-
-    def fit(self, X, y=None):
-        return self
-
-    def _pool(self, output, attention_mask):
-        if self.pooling == "cls":
-            return output.last_hidden_state[:, 0]
-        elif self.pooling == "mean":
-            mask_expanded = (
-                attention_mask.unsqueeze(-1)
-                .expand(output.last_hidden_state.size())
-                .float()
-            )
-            return (output.last_hidden_state * mask_expanded).sum(
-                1
-            ) / mask_expanded.sum(1)
-        elif self.pooling == "max":
-            mask_expanded = attention_mask.unsqueeze(-1).expand(
-                output.last_hidden_state.size()
-            )
-            masked_output = output.last_hidden_state.masked_fill(
-                ~mask_expanded.bool(), -1e9
-            )
-            return masked_output.max(dim=1).values
-        else:
-            raise ValueError(f"Unsupported pooling method: {self.pooling}")
-
-    def transform(self, X, y=None):
-        X = self._clean_text_inputs(X)
-
-        if self.verbose:
-            print("Embedding using HuggingFace model...")
-        embeddings = []
-
-        with torch.no_grad():
-            for batch_start in range(0, len(X), self.batch_size):
-                batch = X[batch_start : batch_start + self.batch_size]
-                encoded = self._tokenizer(
-                    batch, padding=True, truncation=True, return_tensors="pt"
-                ).to(self.device)
-
-                output = self._model(**encoded)
-                pooled = self._pool(output, encoded["attention_mask"])
-                embeddings.append(pooled.cpu())
-
-        return np.vstack(embeddings)
-
-
 class HFEmbedderPipeline(Pipeline):
     """
     A configurable pipeline for generating sentence embeddings using a transformer-based
@@ -197,6 +112,95 @@ class HFEmbedderPipeline(Pipeline):
             steps.append(("quantizer", Quantizer(self.precision)))
 
         super().__init__(steps)
+
+
+class HFEmbedder(BaseEstimator, TransformerMixin):
+    """
+    Base class for HuggingFace feature extractors.
+    """
+
+    def __init__(self, model_name, pooling="mean", batch_size=32, verbose=True):
+        allowed_poolings = {"cls", "mean", "max"}
+        if pooling not in allowed_poolings:
+            raise ValueError(
+                f"Unsupported pooling method: '{pooling}'. Choose: {allowed_poolings}"
+            )
+        self.model_name = model_name
+        self.pooling = pooling
+        self.batch_size = batch_size
+        self.verbose = verbose
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    @cached_property
+    def _tokenizer(self):
+        return AutoTokenizer.from_pretrained(self.model_name)
+
+    @cached_property
+    def _model(self):
+        model = AutoModel.from_pretrained(self.model_name)
+        model.to(self.device)
+        model.eval()
+        if self.verbose:
+            print(f"Loaded '{self.model_name}' on {self.device}.")
+        return model
+
+    @staticmethod
+    def _clean_text_inputs(X):
+        if isinstance(X, pd.Series):
+            X = X.fillna("").astype(str).tolist()
+        elif isinstance(X, list):
+            X = ["" if x is None else str(x) for x in X]
+        elif isinstance(X, np.ndarray):
+            X = ["" if x is None else str(x) for x in X.tolist()]
+        else:
+            raise ValueError("Expected a list or ndarray of strings or pandas Series.")
+        return X
+
+    def fit(self, X, y=None):
+        return self
+
+    def _pool(self, output, attention_mask):
+        if self.pooling == "cls":
+            return output.last_hidden_state[:, 0]
+        elif self.pooling == "mean":
+            mask_expanded = (
+                attention_mask.unsqueeze(-1)
+                .expand(output.last_hidden_state.size())
+                .float()
+            )
+            return (output.last_hidden_state * mask_expanded).sum(
+                1
+            ) / mask_expanded.sum(1)
+        elif self.pooling == "max":
+            mask_expanded = attention_mask.unsqueeze(-1).expand(
+                output.last_hidden_state.size()
+            )
+            masked_output = output.last_hidden_state.masked_fill(
+                ~mask_expanded.bool(), -1e9
+            )
+            return masked_output.max(dim=1).values
+        else:
+            raise ValueError(f"Unsupported pooling method: {self.pooling}")
+
+    def transform(self, X, y=None):
+        X = self._clean_text_inputs(X)
+
+        if self.verbose:
+            print("Embedding using HuggingFace model...")
+        embeddings = []
+
+        with torch.no_grad():
+            for batch_start in range(0, len(X), self.batch_size):
+                batch = X[batch_start : batch_start + self.batch_size]
+                encoded = self._tokenizer(
+                    batch, padding=True, truncation=True, return_tensors="pt"
+                ).to(self.device)
+
+                output = self._model(**encoded)
+                pooled = self._pool(output, encoded["attention_mask"])
+                embeddings.append(pooled.cpu())
+
+        return np.vstack(embeddings)
 
 
 class XLMRoBERTaLarge(HFEmbedderPipeline):
