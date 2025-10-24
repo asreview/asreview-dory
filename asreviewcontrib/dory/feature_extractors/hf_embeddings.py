@@ -13,38 +13,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, Normalizer, StandardScaler
 from transformers import AutoModel, AutoTokenizer
 
+from .utils import Quantizer
+
 torch.set_num_threads(max(1, os.cpu_count() - 1))
-
-
-class Quantizer(BaseEstimator, TransformerMixin):
-    def __init__(self, precision="float32"):
-        self.precision = precision
-
-    def fit(self, X, y=None):
-        # No fitting necessary for quantization
-        return self
-
-    def transform(self, X):
-        if self.precision == "float32":
-            return X.astype(np.float32)
-        elif self.precision == "int8":
-            # Scale embeddings to int8 range (-128 to 127)
-            X_scaled = X / np.max(np.abs(X), axis=1, keepdims=True)
-            return (X_scaled * 127).astype(np.int8)
-        elif self.precision == "uint8":
-            # Scale embeddings to uint8 range (0 to 255)
-            X_min = X.min(axis=1, keepdims=True)
-            X_max = X.max(axis=1, keepdims=True)
-            X_scaled = (X - X_min) / (X_max - X_min + 1e-8)
-            return (X_scaled * 255).astype(np.uint8)
-        elif self.precision == "binary":
-            # Binarize to {-1, +1}
-            return np.where(X >= 0, 1, -1).astype(np.int8)
-        elif self.precision == "ubinary":
-            # Binarize to {0, 1}
-            return (X >= 0).astype(np.uint8)
-        else:
-            raise ValueError(f"Unsupported precision: {self.precision}")
 
 
 class HFEmbedder(BaseEstimator, TransformerMixin):
