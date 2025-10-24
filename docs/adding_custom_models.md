@@ -23,7 +23,7 @@ Example: [HuggingFace Feature Extractors](https://github.com/asreview/asreview-d
 ### Others
 Example: [Doc2Vec Feature Extractors](https://github.com/asreview/asreview-dory/blob/main/examples/doc2vec_fe.py)
 
-The example shows the implementation of Doc2Vec from the [gensim](https://github.com/piskvorky/gensim?tab=readme-ov-file#documentation) package.
+The example shows the implementation of Doc2Vec from the [gensim](https://github.com/piskvorky/gensim?tab=readme-ov-file#documentation) package. Note the `Doc2VecWrapper` class, which is the class that ensures that the Doc2Vec implementation can be used in the ASReview ecosystem by wrapping it in a scikit-learn pipeline.
 
 ## Custom Classifier
 Classifiers exist in many ways, but for neural networks Dory provides a wrapper to quickly implement a custom network. Any other classifier can be implemented similar to [XGBoost](https://github.com/asreview/asreview-dory/blob/main/asreviewcontrib/dory/classifiers/xgboost.py) and [AdaBoost](https://github.com/asreview/asreview-dory/blob/main/asreviewcontrib/dory/classifiers/adaboost.py)
