@@ -4,8 +4,10 @@ import os
 
 os.environ["KERAS_BACKEND"] = "torch"
 
-from keras import layers,  models, optimizers, regularizers
-from asreviewcontrib.dory.classifiers import BaseNNClassifier
+from keras import layers, models, optimizers, regularizers
+
+from asreviewcontrib.dory.classifiers.neural_networks import BaseNNClassifier
+
 
 class NN1LayerClassifier(BaseNNClassifier):
     """Fully connected neural network (1 hidden layer) classifier (``nn-1-layer``).

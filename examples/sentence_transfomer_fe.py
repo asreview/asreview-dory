@@ -1,5 +1,7 @@
 __all__ = ["GemmaMedical"]
-from asreviewcontrib.dory.feature_extractors import SentenceTransformerPipeline
+from asreviewcontrib.dory.feature_extractors.sentence_transformer_embeddings import (
+    SentenceTransformerPipeline,
+)
 
 
 class GemmaMedical(SentenceTransformerPipeline):

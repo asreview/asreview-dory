@@ -1,5 +1,7 @@
 __all__ = ["Qwen3Embedding8B"]
-from asreviewcontrib.dory.feature_extractors import HFEmbedderPipeline
+from asreviewcontrib.dory.feature_extractors.huggingface_embeddings import (
+    HFEmbedderPipeline,
+)
 
 
 class Qwen3Embedding8B(HFEmbedderPipeline):
