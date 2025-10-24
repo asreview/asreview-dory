@@ -1,2 +1,0 @@
-from transformer_embeddings import SentenceTransformerPipeline
-from hf_embeddings import HFEmbedderPipeline
