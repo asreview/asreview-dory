@@ -171,9 +171,24 @@ class HFEmbedder(BaseEstimator, TransformerMixin):
         model = AutoModel.from_pretrained(self.model_name)
         model.to(self.device)
         model.eval()
-        if self.verbose:
-            print(f"Loaded '{self.model_name}' on {self.device}.")
+
+        device = self._get_model_device(model)
+        if device is not None:
+            print(f"Loaded '{self.model_name}' on {device}.")
+        else:
+            print(
+                f"Loaded '{self.model_name}', but could not detect device.",
+            )
         return model
+
+    def _get_model_device(self, model):
+        try:
+            return next(model.parameters()).device
+        except StopIteration:
+            try:
+                return next(model.buffers()).device
+            except StopIteration:
+                return None
 
     @staticmethod
     def _clean_text_inputs(X):
