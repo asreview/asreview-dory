@@ -26,6 +26,7 @@ Feature Extractors:
     MPNet
     Multilingual E5
     MXBAI
+    XLM RoBERTa
 
 Classifiers:
 
@@ -63,6 +64,11 @@ To cache all available models at once, use:
 ```console
 asreview dory cache-all
 ```
+
+## Exapmles
+Documentation for adding your own custom models can be found in the `docs` folder [here](https://github.com/asreview/asreview-dory/blob/main/docs/adding_custom_models.md). 
+
+Examples of custom model integrations can be found in the `examples` folder [here](https://github.com/asreview/asreview-dory/blob/main/examples).
 
 ## Compatibility
 
