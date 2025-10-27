@@ -16,38 +16,37 @@ classifier_parameters = {
 }
 
 feature_extractor_parameters = {
-    "labse": {"normalize": "l2", "quantize": False},
+    "labse": {"normalize": "l2", "quantize": False, "device": None},
     "mxbai": {
         "normalize": "minmax",
         "precision": "binary",
         "quantize": True,
+        "device": "cpu",
     },
     "sbert": {
         "normalize": "standard",
         "verbose": False,
         "quantize": False,
+        "device": "cuda",
     },
-    "multilingual-e5-large": {"normalize": False, "sep": ",", "quantize": True},
-    "gtr-t5-large": {"normalize": True, "columns": ["title"], "quantize": False},
+    "multilingual-e5-large": {
+        "normalize": False,
+        "sep": ",",
+        "quantize": True,
+        "device": None,
+    },
+    "gtr-t5-large": {
+        "normalize": True,
+        "columns": ["title"],
+        "quantize": False,
+        "device": "cpu",
+    },
     "xlm-roberta-large": {
         "normalize": True,
         "quantize": False,
         "pooling": "mean",
         "batch_size": 16,
-    },
-    "scibert-uncased": {
-        "normalize": False,
-        "quantize": True,
-        "precision": "binary",
-        "pooling": "cls",
-        "batch_size": 8,
-    },
-    "scibert-cased": {
-        "normalize": "standard",
-        "quantize": True,
-        "precision": "uint8",
-        "pooling": "max",
-        "batch_size": 4,
+        "device": "cuda",
     },
 }
 
