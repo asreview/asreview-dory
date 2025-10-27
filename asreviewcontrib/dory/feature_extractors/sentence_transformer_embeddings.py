@@ -52,6 +52,10 @@ class SentenceTransformerPipeline(Pipeline):
         If True, applies quantization to reduce model/vector size.
     precision : {"float32", "int8", "uint8", "binary", "ubinary"}, default="float32"
         Precision format used for quantized embeddings.
+    device : int, str, torch.device, or None, default=None
+        Device to run the model on. If None, automatically selects GPU if available,
+        otherwise CPU. Can specify device index (int) -> "cuda:{INDEX}", 
+        device name (str), or torch.device.
     verbose : bool, default=True
         If True, logs progress or debug output during the pipeline execution.
     """
@@ -68,6 +72,7 @@ class SentenceTransformerPipeline(Pipeline):
         normalize: bool | Literal["l2", "minmax", "standard", None] = "l2",
         quantize: bool = False,
         precision: Literal["float32", "int8", "uint8", "binary", "ubinary"] = "float32",
+        device: int | str | torch.device | None = None,
         verbose=True,
     ):
         self.columns = ["title", "abstract"] if columns is None else columns
@@ -76,6 +81,7 @@ class SentenceTransformerPipeline(Pipeline):
         self.normalize = normalize
         self.quantize = quantize
         self.precision = precision
+        self.device = device
         self.verbose = verbose
 
         steps = [
@@ -84,6 +90,7 @@ class SentenceTransformerPipeline(Pipeline):
                 "sentence_transformer",
                 BaseSentenceTransformer(
                     model_name=self.model_name,
+                    device=self.device,
                     verbose=self.verbose,
                 ),
             ),
@@ -111,17 +118,20 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
-        model_name,
-        verbose,
+        model_name: str,
+        device: int | str | torch.device | None = None,
+        verbose: bool = True,
     ):
         self.model_name = model_name
+        self.device = device
         self.verbose = verbose
 
     @cached_property
     def _model(self):
-        model = SentenceTransformer(self.model_name)
+        model = SentenceTransformer(self.model_name, device=self.device)
+        
         if self.verbose:
-            print(f"Model '{self.model_name}' has been loaded.")
+            print(f"Model '{self.model_name}' has been loaded on {model.device}.")
         return model
 
     def fit(self, X, y=None):
