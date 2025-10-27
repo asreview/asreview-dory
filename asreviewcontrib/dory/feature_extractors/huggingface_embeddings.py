@@ -56,6 +56,10 @@ class HFEmbedderPipeline(Pipeline):
         If True, applies quantization to reduce model/vector size.
     precision : {"float32", "int8", "uint8", "binary", "ubinary"}, default="float32"
         Precision format used for quantized embeddings.
+    device : int, str, torch.device, or None, default=None
+        Device to run the model on. If None, automatically selects GPU if available,
+        otherwise CPU. Can specify device index (int) -> "cuda:{INDEX}",
+        device name (str), or torch.device.
     verbose : bool, default=True
         If True, logs progress or debug output during the pipeline execution.
     """
@@ -74,6 +78,7 @@ class HFEmbedderPipeline(Pipeline):
         normalize: bool | Literal["l2", "minmax", "standard", None] = "l2",
         quantize: bool = False,
         precision: Literal["float32", "int8", "uint8", "binary", "ubinary"] = "float32",
+        device: int | str | torch.device | None = None,
         verbose=True,
     ):
         self.columns = ["title", "abstract"] if columns is None else columns
@@ -84,6 +89,7 @@ class HFEmbedderPipeline(Pipeline):
         self.normalize = normalize
         self.quantize = quantize
         self.precision = precision
+        self.device = device
         self.verbose = verbose
 
         steps = [
@@ -94,6 +100,7 @@ class HFEmbedderPipeline(Pipeline):
                     model_name=self.model_name,
                     pooling=self.pooling,
                     batch_size=self.batch_size,
+                    device=self.device,
                     verbose=self.verbose,
                 ),
             ),
@@ -119,7 +126,14 @@ class HFEmbedder(BaseEstimator, TransformerMixin):
     Base class for HuggingFace feature extractors.
     """
 
-    def __init__(self, model_name, pooling="mean", batch_size=32, verbose=True):
+    def __init__(
+        self,
+        model_name: str,
+        pooling: str = "mean",
+        batch_size: int = 32,
+        device: int | str | torch.device | None = None,
+        verbose: bool = True,
+    ):
         allowed_poolings = {"cls", "mean", "max"}
         if pooling not in allowed_poolings:
             raise ValueError(
@@ -129,7 +143,24 @@ class HFEmbedder(BaseEstimator, TransformerMixin):
         self.pooling = pooling
         self.batch_size = batch_size
         self.verbose = verbose
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        # Determine device
+        if device is None:
+            if torch.cuda.is_available():
+                # Use GPU if available
+                self.device = torch.device("cuda")
+            elif torch.backends.mps.is_available() and torch.backends.mps.is_built():
+                # Use MPS on macOS if available
+                self.device = torch.device("mps")
+            else:
+                # Fallback to CPU
+                self.device = torch.device("cpu")
+        elif isinstance(device, int):
+            self.device = torch.device(
+                f"cuda:{device}" if torch.cuda.is_available() else "cpu"
+            )
+        else:
+            self.device = torch.device(device)
 
     @cached_property
     def _tokenizer(self):
