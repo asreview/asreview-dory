@@ -63,3 +63,9 @@ ST_BAD_TEST_CASES = [
     ("st_bad_norm", {"normalize": "invalid-norm"}),
     ("st_bad_precision", {"quantize": True, "precision": "unsupported"}),
 ]
+
+DOC2VEC_TEST_CASES = [
+    ("doc2vec_60_50", {"vector_size": 60, "epochs": 50}),
+    ("doc2vec_100_20", {"vector_size": 100, "epochs": 20}),
+    ("doc2vec_80_30", {"vector_size": 80, "epochs": 30}),
+]

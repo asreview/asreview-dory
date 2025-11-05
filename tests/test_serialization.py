@@ -48,6 +48,10 @@ feature_extractor_parameters = {
         "batch_size": 16,
         "device": "cuda",
     },
+    "doc2vec": {
+        "vector_size": 60,
+        "epochs": 50,
+    },
 }
 
 # Get all classifiers and feature extractors from ASReview, filtering contrib models

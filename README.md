@@ -21,6 +21,7 @@ pip install asreview-dory
 
 Feature Extractors:
 
+    Doc2Vec
     GTR T5
     LaBSE
     MPNet
