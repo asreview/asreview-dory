@@ -32,5 +32,11 @@ MODEL_METADATA = {
         "gtr-t5-large": {
             "label": "Google GTR",
         },
+        "xlm-roberta-large": {
+            "label": "XLM RoBERTa Large",
+        },
+        "doc2vec": {
+            "label": "Doc2Vec",
+        },
     },
 }

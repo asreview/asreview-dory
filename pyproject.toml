@@ -28,6 +28,7 @@ dependencies = [
     "accelerate>=1.0.0",
     "torch>=2.1.0",
     "xgboost>=2.1.4",
+    "gensim>=4.4.0"
 ]
 
 [project.urls]
@@ -61,6 +62,7 @@ _metadata = "asreviewcontrib.dory._metadata:MODEL_METADATA"
 "multilingual-e5-large" = "asreviewcontrib.dory.feature_extractors.sentence_transformer_embeddings:MultilingualE5Large"
 "gtr-t5-large" = "asreviewcontrib.dory.feature_extractors.sentence_transformer_embeddings:GTR"
 "xlm-roberta-large" = "asreviewcontrib.dory.feature_extractors.huggingface_embeddings:XLMRoBERTaLarge"
+"doc2vec" = "asreviewcontrib.dory.feature_extractors.doc2vec:Doc2Vec"
 
 [project.entry-points."asreview.entry_points"]
 dory = "asreviewcontrib.dory.entrypoint:DoryEntryPoint"
