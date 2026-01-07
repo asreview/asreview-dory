@@ -1,5 +1,9 @@
 # ASReview Dory 🐟
-[![DOI](https://zenodo.org/badge/803781342.svg)](https://doi.org/10.5281/zenodo.15649247)
+[![PyPI version](https://badge.fury.io/py/asreview-dory.svg)](https://badge.fury.io/py/asreview-dory)
+[![Downloads](https://static.pepy.tech/badge/asreview-dory)](https://pepy.tech/project/asreview-dory)
+![PyPI - License](https://img.shields.io/pypi/l/asreview-dory)
+[![DOI](https://zenodo.org/badge/803781342.svg)](https://zenodo.org/badge/latestdoi/803781342)
+[![DOI](https://img.shields.io/badge/DOI-10.1016%2Fj.simpa.2025.100809-blue)](https://doi.org/10.1016/j.simpa.2025.100809)
 
 ASReview Dory is an extension to the [ASReview
 software](https://github.com/asreview/asreview), providing new models for
