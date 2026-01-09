@@ -1,12 +1,17 @@
 cff-version: 1.2.0
 title: ASReview Dory - New and exciting models for ASReview
-message: "If you use the ASReview Dory software in your work, please cite it as indicated."
+message: "If you use the ASReview Dory software in your work, please cite the Software Impacts paper."
 type: software
 authors:
-  - given-names: ASReview LAB developers
-    affiliation: Utrecht University
-    email: asreview@uu.nl
+  - family-names: van der Kuil
+    given-names: Timo
+  - family-names: Teijema
+    given-names: Jelle Jasper
+  - family-names: de Bruin
+    given-names: Jonathan
+  - family-names: van de Schoot
+    given-names: Rens
 version: 1.2.2
 doi: 10.1016/j.simpa.2025.100809
-date-released: 2025-01-07
+date-released: 2026-01-07
 url: "https://github.com/asreview/asreview-dory/"
