@@ -1,14 +1,18 @@
 # ASReview Dory 🐟
-[![PyPI version](https://badge.fury.io/py/asreview-dory.svg)](https://badge.fury.io/py/asreview-dory)
+[![PyPI version](https://img.shields.io/pypi/v/asreview-dory)](https://pypi.org/project/asreview-dory/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/asreview-dory)](https://pypi.org/project/asreview-dory/)
 [![Downloads](https://static.pepy.tech/badge/asreview-dory)](https://pepy.tech/project/asreview-dory)
-![PyPI - License](https://img.shields.io/pypi/l/asreview-dory)
-[![DOI](https://zenodo.org/badge/803781342.svg)](https://zenodo.org/badge/latestdoi/803781342)
+[![License](https://img.shields.io/pypi/l/asreview-dory)](https://pypi.org/project/asreview-dory/)
 [![DOI](https://img.shields.io/badge/DOI-10.1016%2Fj.simpa.2025.100809-blue)](https://doi.org/10.1016/j.simpa.2025.100809)
 
 ASReview Dory is an extension to the [ASReview
 software](https://github.com/asreview/asreview), providing new models for
 classification and feature extraction. The extension is maintained by the
 ASReview LAB team.
+
+**How to cite**  
+Please cite our *Software Impacts* paper (preferred) or the Zenodo software
+archive. See [Citing this repository](#citing-this-repository).
 
 ## Installation
 
@@ -83,6 +87,20 @@ installation is up-to-date to avoid compatibility issues.
 The development of this plugin is done in parallel with the development of the
 ASReview software. We aim to maintain compatibility with the latest version of
 ASReview, but please report any issues you encounter.
+
+## Citing this repository
+
+If you use **ASReview Dory** in academic work, please cite our
+**Software Impacts** publication:
+
+> van der Kuil, T., Teijema, J. J., de Bruin, J., & van de Schoot, R. ASReview Dory:
+> Bringing new and exciting models to ASReview LAB. Software Impacts, 27, 100809 (2026).
+> https://doi.org/10.1016/j.simpa.2025.100809
+
+If you are specifically citing the software itself (for example, to reference
+a particular version for reproducibility), please cite the Zenodo archived
+release: https://doi.org/10.5281/zenodo.15649247. The menu on the right can be 
+used to find the citation format you need.
 
 ## Contributing
 
