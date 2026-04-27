@@ -34,11 +34,12 @@ feature_extractors = [SmallHFEmbedderFE, SmallSentenceTransformerFE]
     ids=lambda val: getattr(val, "name", val) if hasattr(val, "name") else val,
 )
 def test_all_classifiers_with_extractors(clf_entry, fe_cls):
-    data = asr.load_dataset(dataset_path)
+    db = asr.load_dataset(dataset_path)
+    df = db.input.get_df()
 
     # Feature extraction
     fe = fe_cls()
-    fm = fe.fit_transform(data)
+    fm = fe.fit_transform(df)
 
     clf_name = clf_entry.name
     clf_kwargs = classifier_parameters.get(clf_name, {})
@@ -52,7 +53,7 @@ def test_all_classifiers_with_extractors(clf_entry, fe_cls):
 
     sim = asr.Simulate(
         X=fm,
-        labels=data["included"],
+        labels=df["included"],
         cycles=[alc],
         skip_transform=True,
     )

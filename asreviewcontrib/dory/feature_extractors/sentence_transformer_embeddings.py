@@ -17,7 +17,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, Normalizer, StandardScaler
 
-from .utils import Quantizer
+from .utils import Quantizer, clean_text_inputs
 
 torch.set_num_threads(max(1, os.cpu_count() - 1))
 
@@ -142,10 +142,11 @@ class BaseSentenceTransformer(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         if self.verbose:
             print("Embedding text...")
-
+        
+        X = clean_text_inputs(X)
         embeddings = self._model.encode(X, show_progress_bar=self.verbose)
         embeddings = self._to_numpy(embeddings)
-
+        
         return embeddings
 
     def _to_numpy(self, arr):
