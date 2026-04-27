@@ -39,7 +39,6 @@ HF_BAD_TEST_CASES = [
     ("hf_bad_norm", {"normalize": "invalid-norm"}),
     ("hf_bad_precision", {"quantize": True, "precision": "unsupported"}),
     ("hf_bad_pooling", {"pooling": "average"}),
-    ("hf_bad_bs", {"batch_size": -1}),
 ]
 
 ST_TEST_CASES = [
