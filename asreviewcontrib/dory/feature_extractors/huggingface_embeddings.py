@@ -5,7 +5,6 @@ from functools import cached_property
 from typing import Literal
 
 import numpy as np
-import pandas as pd
 import torch
 from asreview.models.feature_extractors import TextMerger
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -13,7 +12,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, Normalizer, StandardScaler
 from transformers import AutoModel, AutoTokenizer
 
-from .utils import Quantizer
+from .utils import Quantizer, clean_text_inputs
 
 torch.set_num_threads(max(1, os.cpu_count() - 1))
 
@@ -190,18 +189,6 @@ class HFEmbedder(BaseEstimator, TransformerMixin):
             except StopIteration:
                 return None
 
-    @staticmethod
-    def _clean_text_inputs(X):
-        if isinstance(X, pd.Series):
-            X = X.fillna("").astype(str).tolist()
-        elif isinstance(X, list):
-            X = ["" if x is None else str(x) for x in X]
-        elif isinstance(X, np.ndarray):
-            X = ["" if x is None else str(x) for x in X.tolist()]
-        else:
-            raise ValueError("Expected a list or ndarray of strings or pandas Series.")
-        return X
-
     def fit(self, X, y=None):
         return self
 
@@ -229,7 +216,7 @@ class HFEmbedder(BaseEstimator, TransformerMixin):
             raise ValueError(f"Unsupported pooling method: {self.pooling}")
 
     def transform(self, X, y=None):
-        X = self._clean_text_inputs(X)
+        X = clean_text_inputs(X)
 
         if self.verbose:
             print("Embedding using HuggingFace model...")
