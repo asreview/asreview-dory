@@ -59,7 +59,7 @@ class DynamicNNClassifier(BaseNNClassifier):
                 layers.Dense(
                     64,
                     activation="relu",
-                    kernel_regularizer=regularizers.L2(),
+                    kernel_regularizer=regularizers.l2(0.01),
                     kernel_initializer="he_normal",
                 )
             )
@@ -100,7 +100,6 @@ class NN2LayerClassifier(BaseNNClassifier):
             layers.Dense(
                 128,
                 kernel_regularizer=regularizers.l2(0.01),
-                activity_regularizer=regularizers.l1(0.01),
                 activation="relu",
             )
         )
@@ -109,7 +108,6 @@ class NN2LayerClassifier(BaseNNClassifier):
             layers.Dense(
                 128,
                 kernel_regularizer=regularizers.l2(0.01),
-                activity_regularizer=regularizers.l1(0.01),
                 activation="relu",
             )
         )
@@ -118,11 +116,10 @@ class NN2LayerClassifier(BaseNNClassifier):
             layers.Dense(y.shape[1] if len(y.shape) > 1 else 1, activation="sigmoid")
         )
 
-        # Compile model
         model.compile(
             loss="binary_crossentropy",
             optimizer=optimizers.RMSprop(learning_rate=0.001),
-            metrics=["acc"],
+            metrics=["accuracy"],
         )
 
         return model
@@ -149,7 +146,6 @@ class WarmStartNNClassifier(BaseNNClassifier):
             layers.Dense(
                 128,
                 kernel_regularizer=regularizers.l2(0.01),
-                activity_regularizer=regularizers.l1(0.01),
                 activation="relu",
             )
         )
@@ -157,7 +153,6 @@ class WarmStartNNClassifier(BaseNNClassifier):
             layers.Dense(
                 128,
                 kernel_regularizer=regularizers.l2(0.01),
-                activity_regularizer=regularizers.l1(0.01),
                 activation="relu",
             )
         )
@@ -171,7 +166,7 @@ class WarmStartNNClassifier(BaseNNClassifier):
         model.compile(
             loss="binary_crossentropy",
             optimizer=optimizers.RMSprop(learning_rate=0.001),
-            metrics=["acc"],
+            metrics=["accuracy"],
         )
 
         if WarmStartNNClassifier._last_weights is not None:
