@@ -27,9 +27,11 @@ dependencies = [
     "sentence-transformers>=3.4.1",
     "accelerate>=1.0.0",
     "torch>=2.1.0",
-    "xgboost>=2.1.4",
-    "gensim>=4.4.0"
+    "xgboost>=2.1.4"
 ]
+
+[project.optional-dependencies]
+doc2vec = ["gensim>=4.4.0"]
 
 [project.urls]
 Issues = "https://github.com/asreview/asreview-dory/issues"

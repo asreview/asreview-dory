@@ -2,11 +2,17 @@ __all__ = ["Doc2Vec"]
 
 import numpy as np
 from asreview.models.feature_extractors import TextMerger
-from gensim.models.doc2vec import Doc2Vec as GenSimDoc2Vec
-from gensim.models.doc2vec import TaggedDocument
-from gensim.utils import simple_preprocess
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
+
+try:
+    from gensim.models.doc2vec import Doc2Vec as GenSimDoc2Vec
+    from gensim.models.doc2vec import TaggedDocument
+    from gensim.utils import simple_preprocess
+
+    GENSIM_AVAILABLE = True
+except ImportError:
+    GENSIM_AVAILABLE = False
 
 
 class Doc2Vec(Pipeline):
@@ -72,6 +78,11 @@ class Doc2VecBase(BaseEstimator, TransformerMixin):
         dbow_words=False,
         verbose=True,
     ):
+        if not GENSIM_AVAILABLE:
+            raise ImportError(
+                "The 'gensim' package is required for Doc2Vec but is not installed. "
+                "Install it with: pip install gensim"
+            )
         self.vector_size = int(vector_size)
         self.epochs = int(epochs)
         self.min_count = int(min_count)
