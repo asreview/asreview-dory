@@ -13,9 +13,6 @@ class Doc2Vec(Pipeline):
     label = "Doc2Vec"
 
     def __init__(self, **kwargs):
-        if "ngram_range" in kwargs:
-            kwargs["ngram_range"] = tuple(kwargs["ngram_range"])
-
         super().__init__(
             [
                 ("text_merger", TextMerger(columns=["title", "abstract"])),
