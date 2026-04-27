@@ -5,6 +5,7 @@ from asreview.models.feature_extractors import TextMerger
 from gensim.models.doc2vec import Doc2Vec as GenSimDoc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from gensim.utils import simple_preprocess
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 
 
@@ -21,7 +22,7 @@ class Doc2Vec(Pipeline):
         )
 
 
-class Doc2VecBase:
+class Doc2VecBase(BaseEstimator, TransformerMixin):
     """
     Doc2Vec feature extraction technique (``doc2vec``).
 
@@ -139,10 +140,6 @@ class Doc2VecBase:
             print("Finished transforming texts to vectors.")
 
         return X
-
-    def fit_transform(self, X, y):
-        self.fit(X, y)
-        return self.transform(X)
 
     def _train_model(self, corpus, *args, **kwargs):
         model = self._model(*args, **kwargs)
