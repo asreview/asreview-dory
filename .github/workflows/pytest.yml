@@ -28,6 +28,6 @@ jobs:
 
       - name: Install package and run tests
         run: |
-          pip install .
+          pip install ".[doc2vec]"
           pip install pytest
           pytest tests -v
