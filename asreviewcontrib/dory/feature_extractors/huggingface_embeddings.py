@@ -238,5 +238,5 @@ class HFEmbedder(BaseEstimator, TransformerMixin):
 
 class XLMRoBERTaLarge(HFEmbedderPipeline):
     name = "xlm-roberta-large"
-    label = "XLM-RoBERTa-Large Transformer"
+    label = "XLM RoBERTa Large"
     default_model_name = "FacebookAI/xlm-roberta-large"
