@@ -121,6 +121,8 @@ class Doc2VecBase:
                 print(f"Training single model with dm={self.dm}...")
             self._model_instance = self._train_model(corpus, **model_param, dm=self.dm)
 
+        return self
+
     def transform(self, texts):
         if self.verbose:
             print("Preparing corpus for transformation...")
