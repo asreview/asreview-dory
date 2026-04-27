@@ -5,6 +5,7 @@ from asreview.models.feature_extractors import TextMerger
 from gensim.models.doc2vec import Doc2Vec as GenSimDoc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from gensim.utils import simple_preprocess
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 
 
@@ -13,9 +14,6 @@ class Doc2Vec(Pipeline):
     label = "Doc2Vec"
 
     def __init__(self, **kwargs):
-        if "ngram_range" in kwargs:
-            kwargs["ngram_range"] = tuple(kwargs["ngram_range"])
-
         super().__init__(
             [
                 ("text_merger", TextMerger(columns=["title", "abstract"])),
@@ -24,7 +22,7 @@ class Doc2Vec(Pipeline):
         )
 
 
-class Doc2VecBase:
+class Doc2VecBase(BaseEstimator, TransformerMixin):
     """
     Doc2Vec feature extraction technique (``doc2vec``).
 
@@ -85,15 +83,11 @@ class Doc2VecBase:
         self.verbose = verbose
         self._model_instance = None
 
-        self._tagged_document = TaggedDocument
-        self._simple_preprocess = simple_preprocess
-        self._model = GenSimDoc2Vec
-
     def fit(self, X, y=None):
         if self.verbose:
             print("Preparing corpus...")
         corpus = [
-            self._tagged_document(self._simple_preprocess(text), [i])
+            TaggedDocument(simple_preprocess(text), [i])
             for i, text in enumerate(X)
         ]
 
@@ -121,11 +115,13 @@ class Doc2VecBase:
                 print(f"Training single model with dm={self.dm}...")
             self._model_instance = self._train_model(corpus, **model_param, dm=self.dm)
 
+        return self
+
     def transform(self, texts):
         if self.verbose:
             print("Preparing corpus for transformation...")
         corpus = [
-            self._tagged_document(self._simple_preprocess(text), [i])
+            TaggedDocument(simple_preprocess(text), [i])
             for i, text in enumerate(texts)
         ]
 
@@ -141,12 +137,8 @@ class Doc2VecBase:
 
         return X
 
-    def fit_transform(self, X, y):
-        self.fit(X, y)
-        return self.transform(X)
-
     def _train_model(self, corpus, *args, **kwargs):
-        model = self._model(*args, **kwargs)
+        model = GenSimDoc2Vec(*args, **kwargs)
         if self.verbose:
             print("Building vocabulary...")
         model.build_vocab(corpus)
