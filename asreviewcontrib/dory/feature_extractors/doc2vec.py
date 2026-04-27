@@ -83,15 +83,11 @@ class Doc2VecBase(BaseEstimator, TransformerMixin):
         self.verbose = verbose
         self._model_instance = None
 
-        self._tagged_document = TaggedDocument
-        self._simple_preprocess = simple_preprocess
-        self._model = GenSimDoc2Vec
-
     def fit(self, X, y=None):
         if self.verbose:
             print("Preparing corpus...")
         corpus = [
-            self._tagged_document(self._simple_preprocess(text), [i])
+            TaggedDocument(simple_preprocess(text), [i])
             for i, text in enumerate(X)
         ]
 
@@ -125,7 +121,7 @@ class Doc2VecBase(BaseEstimator, TransformerMixin):
         if self.verbose:
             print("Preparing corpus for transformation...")
         corpus = [
-            self._tagged_document(self._simple_preprocess(text), [i])
+            TaggedDocument(simple_preprocess(text), [i])
             for i, text in enumerate(texts)
         ]
 
@@ -142,7 +138,7 @@ class Doc2VecBase(BaseEstimator, TransformerMixin):
         return X
 
     def _train_model(self, corpus, *args, **kwargs):
-        model = self._model(*args, **kwargs)
+        model = GenSimDoc2Vec(*args, **kwargs)
         if self.verbose:
             print("Building vocabulary...")
         model.build_vocab(corpus)
