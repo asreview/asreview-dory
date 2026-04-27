@@ -34,12 +34,13 @@ ALL_FE_VARIANTS_IDS = (
 
 @pytest.mark.parametrize("fe_cls,params", ALL_FE_VARIANTS, ids=ALL_FE_VARIANTS_IDS)
 def test_feature_extractor_variants(fe_cls, params):
-    data = asr.load_dataset(dataset_path)
-    features = fe_cls(**params).fit_transform(data)
+    db = asr.load_dataset(dataset_path)
+    df = db.input.get_df()
+    features = fe_cls(**params).fit_transform(df)
 
     assert features is not None, "Feature matrix is None"
     assert hasattr(features, "shape"), "Feature matrix must have a shape"
-    assert features.shape[0] == len(data), "One embedding per record"
+    assert features.shape[0] == len(df), "One embedding per record"
     assert features.ndim == 2, "Embeddings must be 2D (samples x features)"
     assert features.dtype.kind in {"f", "i", "u"}, "Expect numeric features"
     assert not np.allclose(features.std(axis=0), 0), "All embeddings are identical"
@@ -59,7 +60,8 @@ ALL_FE_BAD_VARIANTS_IDS = [test_id for test_id, _ in HF_BAD_TEST_CASES] + [
 )
 def test_feature_extractor_bad_variants(fe_cls, params):
     with pytest.raises(ValueError):
-        fe_cls(**params).fit_transform(asr.load_dataset(dataset_path))
+        db = asr.load_dataset(dataset_path)
+        fe_cls(**params).fit_transform(db.input.get_df())
 
 
 # --- clean_text_inputs unit tests ---

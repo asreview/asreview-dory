@@ -12,7 +12,8 @@ dataset_path = Path("tests/data/generic_labels.csv")
 
 def test_language_agnostic_l2_preset():
     # Load dataset
-    data = asr.load_dataset(dataset_path)
+    db = asr.load_dataset(dataset_path)
+    df = db.input.get_df()
 
     # Define Active Learning Cycle
     alc = asr.ActiveLearningCycle(
@@ -27,8 +28,8 @@ def test_language_agnostic_l2_preset():
     )
     # Run simulation
     simulate = asr.Simulate(
-        X=data,
-        labels=data["included"],
+        X=df,
+        labels=df["included"],
         cycles=[alc],
     )
     simulate.label([0, 1])
@@ -51,7 +52,8 @@ def test_language_agnostic_l2_preset():
 
 def test_heavy_h3_preset():
     # Load dataset
-    data = asr.load_dataset(dataset_path)
+    db = asr.load_dataset(dataset_path)
+    df = db.input.get_df()
 
     # Define Active Learning Cycle
     alc = asr.ActiveLearningCycle(
@@ -66,8 +68,8 @@ def test_heavy_h3_preset():
     )
     # Run simulation
     simulate = asr.Simulate(
-        X=data,
-        labels=data["included"],
+        X=df,
+        labels=df["included"],
         cycles=[alc],
     )
     simulate.label([0, 1])
