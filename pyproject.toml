@@ -18,7 +18,7 @@ classifiers = [
     "Topic :: Text Processing :: General",
 ]
 license = {text = "MIT"}
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.14"
 dynamic = ["version"]
 dependencies = [
     "asreview>=2.0",
