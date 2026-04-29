@@ -18,6 +18,8 @@ classifiers = [
     "Topic :: Text Processing :: General",
 ]
 license = {text = "MIT"}
+# Upper bound due to gensim not yet supporting Python 3.14
+# Track: https://github.com/piskvorky/gensim/pull/3627
 requires-python = ">=3.10,<3.14"
 dynamic = ["version"]
 dependencies = [
